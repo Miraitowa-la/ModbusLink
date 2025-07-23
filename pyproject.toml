@@ -1,0 +1,62 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "modbuslink"
+version = "0.1.0"
+description = "现代化、功能强大、开发者友好且高度可扩展的Python Modbus库 Modern, powerful, developer-friendly and highly scalable Python Modbus library"
+authors = [
+    {name = "Miraitowa", email = "2056978412@qq.com"}
+]
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Hardware",
+    "Topic :: Communications"
+]
+dependencies = [
+    "pyserial>=3.5"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-mock>=3.0",
+    "black>=22.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0"
+]
+
+[project.urls]
+Homepage = "https://github.com/Miraitowa/ModbusLink"
+Repository = "https://github.com/Miraitowa/ModbusLink"
+Issues = "https://github.com/Miraitowa/ModbusLink/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+
+[tool.ruff]
+line-length = 88
+target-version = "py38"
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
