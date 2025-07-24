@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""ModbusLink TCP使用示例 ModbusLink TCP Usage Example
+"""ModbusLink TCP示例 TCP Example
 
-演示如何使用ModbusLink库进行TCP通信。
-Demonstrates how to use the ModbusLink library for TCP communication.
+演示如何使用ModbusLink库进行Modbus TCP通信，包括高级数据类型和日志功能。
+Demonstrates how to use ModbusLink library for Modbus TCP communication, including advanced data types and logging features.
 """
 
 import sys
@@ -12,15 +12,27 @@ import os
 # Add src directory to Python path to import modbuslink module
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
+import time
+import logging
 from modbuslink import (
     ModbusClient, TcpTransport,
     ConnectionError, TimeoutError, InvalidResponseError, ModbusException
 )
+from modbuslink.utils.logging import ModbusLogger
 
 
 def main():
     """TCP通信示例主函数 TCP communication example main function"""
     print("=== ModbusLink TCP示例 ModbusLink TCP Example ===")
+    
+    # 配置日志系统 Configure logging system
+    ModbusLogger.setup_logging(
+        level=logging.INFO,
+        enable_debug=False  # 设置为True可查看详细的协议调试信息 Set to True to see detailed protocol debug info
+    )
+    
+    # 如果需要查看原始数据包，可以启用协议调试 Enable protocol debug to see raw packets
+    # ModbusLogger.enable_protocol_debug()
     
     # 配置TCP参数 Configure TCP parameters
     host = '192.168.1.100'  # 目标设备IP地址 Target device IP address
@@ -193,6 +205,75 @@ def main():
                         print("✓ 温度正常 Temperature normal")
             except Exception as e:
                 print(f"读取温度传感器失败 Failed to read temperature sensor: {e}")
+            
+            # 示例8: 高级数据类型操作 Example 8: Advanced data type operations
+            print("\n--- 示例8: 高级数据类型操作 Example 8: Advanced data type operations ---")
+            try:
+                # 写入32位浮点数 Write 32-bit float
+                temperature_setpoint = 25.6
+                client.write_float32(
+                    slave_id=slave_id,
+                    start_address=200,
+                    value=temperature_setpoint
+                )
+                print(f"✓ 写入32位浮点数 Wrote 32-bit float: {temperature_setpoint}°C")
+                
+                # 读取32位浮点数 Read 32-bit float
+                read_temperature = client.read_float32(
+                    slave_id=slave_id,
+                    start_address=200
+                )
+                print(f"读取32位浮点数 Read 32-bit float: {read_temperature:.2f}°C")
+                
+                # 写入32位整数 Write 32-bit integer
+                counter_value = 123456789
+                client.write_int32(
+                    slave_id=slave_id,
+                    start_address=202,
+                    value=counter_value
+                )
+                print(f"✓ 写入32位整数 Wrote 32-bit integer: {counter_value}")
+                
+                # 读取32位整数 Read 32-bit integer
+                read_counter = client.read_int32(
+                    slave_id=slave_id,
+                    start_address=202
+                )
+                print(f"读取32位整数 Read 32-bit integer: {read_counter}")
+                
+                # 写入字符串 Write string
+                device_name = "ModbusLink"
+                client.write_string(
+                    slave_id=slave_id,
+                    start_address=210,
+                    value=device_name
+                )
+                print(f"✓ 写入字符串 Wrote string: '{device_name}'")
+                
+                # 读取字符串 Read string
+                read_name = client.read_string(
+                    slave_id=slave_id,
+                    start_address=210,
+                    length=len(device_name.encode('utf-8'))
+                )
+                print(f"读取字符串 Read string: '{read_name}'")
+                
+                # 演示不同字节序和字序 Demonstrate different byte and word orders
+                print("\n字节序和字序演示 Byte and word order demonstration:")
+                test_float = 3.14159
+                
+                # 大端字节序，高字在前 Big endian, high word first
+                client.write_float32(slave_id, 220, test_float, 'big', 'high')
+                read_val1 = client.read_float32(slave_id, 220, 'big', 'high')
+                print(f"  大端高字序 Big endian high word: {read_val1:.5f}")
+                
+                # 小端字节序，低字在前 Little endian, low word first
+                client.write_float32(slave_id, 222, test_float, 'little', 'low')
+                read_val2 = client.read_float32(slave_id, 222, 'little', 'low')
+                print(f"  小端低字序 Little endian low word: {read_val2:.5f}")
+                
+            except Exception as e:
+                print(f"高级数据类型操作失败 Advanced data type operation failed: {e}")
             
             print("\n✓ 所有示例执行完成 All examples completed")
     

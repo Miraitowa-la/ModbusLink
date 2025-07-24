@@ -4,10 +4,12 @@
 """
 
 import struct
-from typing import List
-
+from typing import List, Optional
+import struct
 from ..transport.base import BaseTransport
 from ..common.exceptions import InvalidResponseError
+from ..utils.coder import PayloadCoder
+from ..utils.logging import get_logger
 
 
 class ModbusClient:
@@ -32,6 +34,7 @@ class ModbusClient:
             transport: 传输层实例（RtuTransport或TcpTransport） Transport layer instance (RtuTransport or TcpTransport)
         """
         self.transport = transport
+        self._logger = get_logger('client.sync')
     
     def read_coils(self, slave_id: int, start_address: int, quantity: int) -> List[bool]:
         """读取线圈状态（功能码0x01） Read Coil Status (Function Code 0x01)
@@ -360,6 +363,200 @@ class ModbusClient:
     def __exit__(self, exc_type, exc_val, exc_tb):
         """上下文管理器出口 Context manager exit"""
         self.transport.close()
+    
+    # 高级数据类型API Advanced Data Type APIs
+    
+    def read_float32(self, slave_id: int, start_address: int, 
+                     byte_order: str = 'big', word_order: str = 'high') -> float:
+        """读取32位浮点数（占用2个连续寄存器） Read 32-bit float (occupies 2 consecutive registers)
+        
+        Args:
+            slave_id: 从站地址 Slave address
+            start_address: 起始寄存器地址 Starting register address
+            byte_order: 字节序，'big'或'little' Byte order, 'big' or 'little'
+            word_order: 字序，'high'或'low' Word order, 'high' or 'low'
+            
+        Returns:
+            32位浮点数值 32-bit float value
+            
+        Example:
+            >>> temperature = client.read_float32(1, 100)  # 读取温度传感器值 Read temperature sensor value
+        """
+        registers = self.read_holding_registers(slave_id, start_address, 2)
+        return PayloadCoder.decode_float32(registers, byte_order, word_order)
+    
+    def write_float32(self, slave_id: int, start_address: int, value: float,
+                      byte_order: str = 'big', word_order: str = 'high') -> None:
+        """写入32位浮点数（占用2个连续寄存器） Write 32-bit float (occupies 2 consecutive registers)
+        
+        Args:
+            slave_id: 从站地址 Slave address
+            start_address: 起始寄存器地址 Starting register address
+            value: 要写入的浮点数值 Float value to write
+            byte_order: 字节序，'big'或'little' Byte order, 'big' or 'little'
+            word_order: 字序，'high'或'low' Word order, 'high' or 'low'
+            
+        Example:
+            >>> client.write_float32(1, 100, 25.6)  # 写入温度设定值 Write temperature setpoint
+        """
+        registers = PayloadCoder.encode_float32(value, byte_order, word_order)
+        self.write_multiple_registers(slave_id, start_address, registers)
+    
+    def read_int32(self, slave_id: int, start_address: int,
+                   byte_order: str = 'big', word_order: str = 'high') -> int:
+        """读取32位有符号整数（占用2个连续寄存器） Read 32-bit signed integer (occupies 2 consecutive registers)
+        
+        Args:
+            slave_id: 从站地址 Slave address
+            start_address: 起始寄存器地址 Starting register address
+            byte_order: 字节序，'big'或'little' Byte order, 'big' or 'little'
+            word_order: 字序，'high'或'low' Word order, 'high' or 'low'
+            
+        Returns:
+            32位有符号整数值 32-bit signed integer value
+        """
+        registers = self.read_holding_registers(slave_id, start_address, 2)
+        return PayloadCoder.decode_int32(registers, byte_order, word_order)
+    
+    def write_int32(self, slave_id: int, start_address: int, value: int,
+                    byte_order: str = 'big', word_order: str = 'high') -> None:
+        """写入32位有符号整数（占用2个连续寄存器） Write 32-bit signed integer (occupies 2 consecutive registers)
+        
+        Args:
+            slave_id: 从站地址 Slave address
+            start_address: 起始寄存器地址 Starting register address
+            value: 要写入的整数值 Integer value to write
+            byte_order: 字节序，'big'或'little' Byte order, 'big' or 'little'
+            word_order: 字序，'high'或'low' Word order, 'high' or 'low'
+        """
+        registers = PayloadCoder.encode_int32(value, byte_order, word_order)
+        self.write_multiple_registers(slave_id, start_address, registers)
+    
+    def read_uint32(self, slave_id: int, start_address: int,
+                    byte_order: str = 'big', word_order: str = 'high') -> int:
+        """读取32位无符号整数（占用2个连续寄存器） Read 32-bit unsigned integer (occupies 2 consecutive registers)
+        
+        Args:
+            slave_id: 从站地址 Slave address
+            start_address: 起始寄存器地址 Starting register address
+            byte_order: 字节序，'big'或'little' Byte order, 'big' or 'little'
+            word_order: 字序，'high'或'low' Word order, 'high' or 'low'
+            
+        Returns:
+            32位无符号整数值 32-bit unsigned integer value
+        """
+        registers = self.read_holding_registers(slave_id, start_address, 2)
+        return PayloadCoder.decode_uint32(registers, byte_order, word_order)
+    
+    def write_uint32(self, slave_id: int, start_address: int, value: int,
+                     byte_order: str = 'big', word_order: str = 'high') -> None:
+        """写入32位无符号整数（占用2个连续寄存器） Write 32-bit unsigned integer (occupies 2 consecutive registers)
+        
+        Args:
+            slave_id: 从站地址 Slave address
+            start_address: 起始寄存器地址 Starting register address
+            value: 要写入的无符号整数值 Unsigned integer value to write
+            byte_order: 字节序，'big'或'little' Byte order, 'big' or 'little'
+            word_order: 字序，'high'或'low' Word order, 'high' or 'low'
+        """
+        registers = PayloadCoder.encode_uint32(value, byte_order, word_order)
+        self.write_multiple_registers(slave_id, start_address, registers)
+    
+    def read_int64(self, slave_id: int, start_address: int,
+                   byte_order: str = 'big', word_order: str = 'high') -> int:
+        """读取64位有符号整数（占用4个连续寄存器） Read 64-bit signed integer (occupies 4 consecutive registers)
+        
+        Args:
+            slave_id: 从站地址 Slave address
+            start_address: 起始寄存器地址 Starting register address
+            byte_order: 字节序，'big'或'little' Byte order, 'big' or 'little'
+            word_order: 字序，'high'或'low' Word order, 'high' or 'low'
+            
+        Returns:
+            64位有符号整数值 64-bit signed integer value
+        """
+        registers = self.read_holding_registers(slave_id, start_address, 4)
+        return PayloadCoder.decode_int64(registers, byte_order, word_order)
+    
+    def write_int64(self, slave_id: int, start_address: int, value: int,
+                    byte_order: str = 'big', word_order: str = 'high') -> None:
+        """写入64位有符号整数（占用4个连续寄存器） Write 64-bit signed integer (occupies 4 consecutive registers)
+        
+        Args:
+            slave_id: 从站地址 Slave address
+            start_address: 起始寄存器地址 Starting register address
+            value: 要写入的整数值 Integer value to write
+            byte_order: 字节序，'big'或'little' Byte order, 'big' or 'little'
+            word_order: 字序，'high'或'low' Word order, 'high' or 'low'
+        """
+        registers = PayloadCoder.encode_int64(value, byte_order, word_order)
+        self.write_multiple_registers(slave_id, start_address, registers)
+    
+    def read_uint64(self, slave_id: int, start_address: int,
+                    byte_order: str = 'big', word_order: str = 'high') -> int:
+        """读取64位无符号整数（占用4个连续寄存器） Read 64-bit unsigned integer (occupies 4 consecutive registers)
+        
+        Args:
+            slave_id: 从站地址 Slave address
+            start_address: 起始寄存器地址 Starting register address
+            byte_order: 字节序，'big'或'little' Byte order, 'big' or 'little'
+            word_order: 字序，'high'或'low' Word order, 'high' or 'low'
+            
+        Returns:
+            64位无符号整数值 64-bit unsigned integer value
+        """
+        registers = self.read_holding_registers(slave_id, start_address, 4)
+        return PayloadCoder.decode_uint64(registers, byte_order, word_order)
+    
+    def write_uint64(self, slave_id: int, start_address: int, value: int,
+                     byte_order: str = 'big', word_order: str = 'high') -> None:
+        """写入64位无符号整数（占用4个连续寄存器） Write 64-bit unsigned integer (occupies 4 consecutive registers)
+        
+        Args:
+            slave_id: 从站地址 Slave address
+            start_address: 起始寄存器地址 Starting register address
+            value: 要写入的无符号整数值 Unsigned integer value to write
+            byte_order: 字节序，'big'或'little' Byte order, 'big' or 'little'
+            word_order: 字序，'high'或'low' Word order, 'high' or 'low'
+        """
+        registers = PayloadCoder.encode_uint64(value, byte_order, word_order)
+        self.write_multiple_registers(slave_id, start_address, registers)
+    
+    def read_string(self, slave_id: int, start_address: int, length: int,
+                    encoding: str = 'utf-8') -> str:
+        """读取字符串（从连续寄存器中） Read string (from consecutive registers)
+        
+        Args:
+            slave_id: 从站地址 Slave address
+            start_address: 起始寄存器地址 Starting register address
+            length: 字符串字节长度 String byte length
+            encoding: 字符编码，默认'utf-8' Character encoding, default 'utf-8'
+            
+        Returns:
+            解码后的字符串 Decoded string
+            
+        Example:
+            >>> device_name = client.read_string(1, 200, 16)  # 读取设备名称 Read device name
+        """
+        register_count = (length + 1) // 2  # 每个寄存器2字节 2 bytes per register
+        registers = self.read_holding_registers(slave_id, start_address, register_count)
+        return PayloadCoder.decode_string(registers, length, encoding)
+    
+    def write_string(self, slave_id: int, start_address: int, value: str,
+                     encoding: str = 'utf-8') -> None:
+        """写入字符串（到连续寄存器中） Write string (to consecutive registers)
+        
+        Args:
+            slave_id: 从站地址 Slave address
+            start_address: 起始寄存器地址 Starting register address
+            value: 要写入的字符串 String to write
+            encoding: 字符编码，默认'utf-8' Character encoding, default 'utf-8'
+            
+        Example:
+            >>> client.write_string(1, 200, "ModbusLink")  # 写入设备名称 Write device name
+        """
+        registers = PayloadCoder.encode_string(value, encoding)
+        self.write_multiple_registers(slave_id, start_address, registers)
     
     def __repr__(self) -> str:
         """字符串表示 String representation"""

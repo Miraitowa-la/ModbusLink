@@ -3,7 +3,6 @@
 实现基于串口的Modbus RTU协议传输，包括CRC16校验。 Implements Modbus RTU protocol transport based on serial port, including CRC16 validation.
 """
 
-import logging
 import time
 from typing import Optional
 
@@ -12,6 +11,7 @@ import serial
 from .base import BaseTransport
 from ..common.exceptions import ConnectionError, TimeoutError, CRCError, InvalidResponseError
 from ..utils.crc import CRC16Modbus
+from ..utils.logging import get_logger
 
 
 class RtuTransport(BaseTransport):
@@ -51,7 +51,7 @@ class RtuTransport(BaseTransport):
         self.timeout = timeout
         
         self._serial: Optional[serial.Serial] = None
-        self._logger = logging.getLogger(__name__)
+        self._logger = get_logger('transport.rtu')
     
     def open(self) -> None:
         """打开串口连接 Open serial port connection"""

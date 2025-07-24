@@ -3,13 +3,13 @@
 实现基于TCP/IP的Modbus TCP协议传输，包括MBAP头处理。 Implements Modbus TCP protocol transport based on TCP/IP, including MBAP header processing.
 """
 
-import logging
 import socket
 import struct
 from typing import Optional
 
 from .base import BaseTransport
 from ..common.exceptions import ConnectionError, TimeoutError, InvalidResponseError
+from ..utils.logging import get_logger
 
 
 class TcpTransport(BaseTransport):
@@ -36,7 +36,7 @@ class TcpTransport(BaseTransport):
         
         self._socket: Optional[socket.socket] = None
         self._transaction_id = 0
-        self._logger = logging.getLogger(__name__)
+        self._logger = get_logger('transport.tcp')
     
     def open(self) -> None:
         """建立TCP连接 Establish TCP connection"""
