@@ -19,5 +19,6 @@ src/modbuslink/utils/__init__.py
 src/modbuslink/utils/coder.py
 src/modbuslink/utils/crc.py
 src/modbuslink/utils/logging.py
+tests/test_advanced_features.py
 tests/test_basic.py
 tests/test_crc.py
