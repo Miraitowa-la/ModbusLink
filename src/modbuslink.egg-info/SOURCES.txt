@@ -8,10 +8,15 @@ src/modbuslink.egg-info/dependency_links.txt
 src/modbuslink.egg-info/requires.txt
 src/modbuslink.egg-info/top_level.txt
 src/modbuslink/client/__init__.py
+src/modbuslink/client/async_client.py
 src/modbuslink/client/sync_client.py
 src/modbuslink/common/__init__.py
 src/modbuslink/common/exceptions.py
+src/modbuslink/server/__init__.py
+src/modbuslink/server/slave.py
 src/modbuslink/transport/__init__.py
+src/modbuslink/transport/async_base.py
+src/modbuslink/transport/async_tcp.py
 src/modbuslink/transport/base.py
 src/modbuslink/transport/rtu.py
 src/modbuslink/transport/tcp.py
@@ -20,5 +25,6 @@ src/modbuslink/utils/coder.py
 src/modbuslink/utils/crc.py
 src/modbuslink/utils/logging.py
 tests/test_advanced_features.py
+tests/test_async_integration.py
 tests/test_basic.py
 tests/test_crc.py

@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: modbuslink
-Version: 0.1.2
+Version: 0.1.3
 Summary: 现代化、功能强大、开发者友好且高度可扩展的Python Modbus库 Modern, powerful, developer-friendly and highly scalable Python Modbus library
 Author-email: Miraitowa <2056978412@qq.com>
 Project-URL: Homepage, https://github.com/Miraitowa-la/ModbusLink
@@ -172,26 +172,40 @@ ModbusLink/
 │   ├── __init__.py          # Main export interface
 │   ├── client/              # Client module
 │   │   ├── __init__.py
-│   │   └── sync_client.py   # Synchronous client implementation
+│   │   ├── sync_client.py   # Synchronous client implementation
+│   │   └── async_client.py  # Asynchronous client implementation
 │   ├── transport/           # Transport layer module
 │   │   ├── __init__.py
 │   │   ├── base.py         # Transport layer abstract base class
+│   │   ├── async_base.py   # Async transport layer abstract base class
 │   │   ├── rtu.py          # RTU transport layer implementation
-│   │   └── tcp.py          # TCP transport layer implementation
+│   │   ├── tcp.py          # TCP transport layer implementation
+│   │   └── async_tcp.py    # Async TCP transport layer implementation
+│   ├── server/              # Server module (Stage 3)
+│   │   ├── __init__.py
+│   │   └── slave.py        # Modbus slave simulator
 │   ├── utils/               # Utility module
 │   │   ├── __init__.py
-│   │   └── crc.py          # CRC16 validation tool
+│   │   ├── crc.py          # CRC16 validation tool
+│   │   ├── payload_coder.py # Data encoding/decoding utilities
+│   │   └── logger.py       # Unified logging system
 │   └── common/              # Common module
 │       ├── __init__.py
 │       └── exceptions.py    # Exception definitions
 ├── tests/                   # Test module
 │   ├── __init__.py
 │   ├── test_basic.py        # Basic functionality tests
-│   └── test_crc.py          # CRC functionality tests
+│   ├── test_crc.py          # CRC functionality tests
+│   ├── test_payload_coder.py # Data encoding tests
+│   └── test_async_integration.py # Async integration tests
 ├── examples/                # Usage examples
 │   ├── __init__.py
 │   ├── rtu_example.py       # RTU usage example
-│   └── tcp_example.py       # TCP usage example
+│   ├── tcp_example.py       # TCP usage example
+│   ├── advanced_example.py  # Advanced data types example
+│   ├── async_tcp_example.py # Async TCP example
+│   ├── slave_simulator_example.py # Slave simulator example
+│   └── stage3_complete_demo.py # Stage 3 complete demo
 ├── pyproject.toml           # Project configuration
 ├── README.md                # Project documentation
 └── LICENSE.txt              # License
@@ -341,11 +355,213 @@ When protocol debugging is enabled, you can view raw Modbus messages:
 - New advanced APIs are optional
 - Logging system is disabled by default
 
+## Stage 3 Features
+
+Stage 3 introduces modern asynchronous programming support, callback mechanisms, and Modbus slave simulation capabilities.
+
+### Async Transport and Client
+
+#### Async TCP Transport
+
+```python
+from modbuslink import AsyncModbusClient, AsyncTcpTransport
+import asyncio
+
+# Create async TCP transport
+transport = AsyncTcpTransport(
+    host='192.168.1.100',
+    port=502,
+    timeout=10.0
+)
+
+# Create async client
+client = AsyncModbusClient(transport)
+
+async def main():
+    async with client:
+        # Async read holding registers
+        registers = await client.read_holding_registers(
+            slave_id=1,
+            start_address=0,
+            quantity=10
+        )
+        print(f"Registers: {registers}")
+        
+        # Async write multiple registers
+        await client.write_multiple_registers(
+            slave_id=1,
+            start_address=0,
+            values=[100, 200, 300, 400]
+        )
+
+asyncio.run(main())
+```
+
+#### Async Advanced Data Types
+
+```python
+async def advanced_operations():
+    async with client:
+        # Async 32-bit float operations
+        await client.write_float32(slave_id=1, start_address=100, value=3.14159)
+        temperature = await client.read_float32(slave_id=1, start_address=100)
+        
+        # Async 32-bit integer operations
+        await client.write_int32(slave_id=1, start_address=102, value=-123456)
+        counter = await client.read_int32(slave_id=1, start_address=102)
+```
+
+### Callback Mechanism
+
+Async client supports callback functions for operation completion notifications:
+
+```python
+def on_registers_read(registers):
+    print(f"Callback: Read {len(registers)} registers")
+
+def on_write_completed():
+    print("Callback: Write operation completed")
+
+async def callback_demo():
+    async with client:
+        # Read with callback
+        registers = await client.read_holding_registers(
+            slave_id=1,
+            start_address=0,
+            quantity=5,
+            callback=on_registers_read
+        )
+        
+        # Write with callback
+        await client.write_single_register(
+            slave_id=1,
+            address=0,
+            value=1234,
+            callback=on_write_completed
+        )
+```
+
+### Concurrent Operations
+
+Async client supports concurrent operations for improved performance:
+
+```python
+async def concurrent_operations():
+    async with client:
+        # Create multiple concurrent tasks
+        tasks = [
+            client.read_holding_registers(slave_id=1, start_address=0, quantity=5),
+            client.read_coils(slave_id=1, start_address=0, quantity=8),
+            client.read_input_registers(slave_id=1, start_address=0, quantity=5),
+            client.write_single_register(slave_id=1, address=100, value=9999),
+        ]
+        
+        # Execute all tasks concurrently
+        results = await asyncio.gather(*tasks)
+        print(f"Concurrent results: {results}")
+```
+
+### Modbus Slave Simulator
+
+#### Basic Slave Setup
+
+```python
+from modbuslink import ModbusSlave, DataStore
+
+# Create data store
+data_store = DataStore()
+
+# Initialize data
+data_store.set_holding_registers(0, [1000, 2000, 3000, 4000, 5000])
+data_store.set_coils(0, [True, False, True, False, True, False, True, False])
+data_store.set_input_registers(0, [100, 200, 300, 400, 500])
+data_store.set_discrete_inputs(0, [False, True, False, True, False, True])
+
+# Create slave
+slave = ModbusSlave(slave_id=1, data_store=data_store)
+
+# Start TCP server
+slave.start_tcp_server(host='127.0.0.1', port=5020)
+print("Slave simulator started on 127.0.0.1:5020")
+
+# Use context manager
+with slave:
+    # Slave runs in background
+    # Your client code here
+    pass
+
+# Or manual control
+slave.stop()
+```
+
+#### Data Store Operations
+
+```python
+# Direct data manipulation
+data_store = DataStore()
+
+# Set holding registers
+data_store.set_holding_registers(0, [1000, 2000, 3000])
+registers = data_store.get_holding_registers(0, 3)
+
+# Set coils
+data_store.set_coils(0, [True, False, True, False])
+coils = data_store.get_coils(0, 4)
+
+# Set input registers (read-only from client perspective)
+data_store.set_input_registers(0, [100, 200, 300])
+input_regs = data_store.get_input_registers(0, 3)
+
+# Set discrete inputs (read-only from client perspective)
+data_store.set_discrete_inputs(0, [True, False, True])
+inputs = data_store.get_discrete_inputs(0, 3)
+```
+
+### Complete Integration Example
+
+```python
+import asyncio
+from modbuslink import (
+    AsyncModbusClient, AsyncTcpTransport,
+    ModbusSlave, DataStore
+)
+
+async def integration_demo():
+    # Setup slave simulator
+    data_store = DataStore()
+    data_store.set_holding_registers(0, [1000, 2000, 3000, 4000, 5000])
+    
+    slave = ModbusSlave(slave_id=1, data_store=data_store)
+    slave.start_tcp_server(host='127.0.0.1', port=5020)
+    
+    # Setup async client
+    transport = AsyncTcpTransport(host='127.0.0.1', port=5020, timeout=5.0)
+    client = AsyncModbusClient(transport)
+    
+    try:
+        async with client:
+            # Test basic operations
+            registers = await client.read_holding_registers(slave_id=1, start_address=0, quantity=5)
+            print(f"Read registers: {registers}")
+            
+            # Test write operation
+            await client.write_single_register(slave_id=1, address=0, value=9999)
+            
+            # Verify write
+            new_value = await client.read_holding_registers(slave_id=1, start_address=0, quantity=1)
+            print(f"After write: {new_value[0]}")
+            
+    finally:
+        slave.stop()
+
+asyncio.run(integration_demo())
+```
+
 ## Development Plan
 
 - [x] **Phase 1**: Build a solid and reliable core foundation (synchronous MVP)
 - [x] **Phase 2**: Improve usability and developer experience
-- [ ] **Phase 3**: Embrace modernization: asynchronous, callbacks and extensions
+- [x] **Phase 3**: Embrace modernization: asynchronous, callbacks and extensions
 - [ ] **Phase 4**: Release, testing and community ecosystem
 
 ## License

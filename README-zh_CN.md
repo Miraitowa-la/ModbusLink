@@ -139,26 +139,40 @@ ModbusLink/
 │   ├── __init__.py          # 主要导出接口
 │   ├── client/              # 客户端模块
 │   │   ├── __init__.py
-│   │   └── sync_client.py   # 同步客户端实现
+│   │   ├── sync_client.py   # 同步客户端实现
+│   │   └── async_client.py  # 异步客户端实现
 │   ├── transport/           # 传输层模块
 │   │   ├── __init__.py
 │   │   ├── base.py         # 传输层抽象基类
+│   │   ├── async_base.py   # 异步传输层抽象基类
 │   │   ├── rtu.py          # RTU传输层实现
-│   │   └── tcp.py          # TCP传输层实现
+│   │   ├── tcp.py          # TCP传输层实现
+│   │   └── async_tcp.py    # 异步TCP传输层实现
+│   ├── server/              # 服务器模块（第三阶段）
+│   │   ├── __init__.py
+│   │   └── slave.py        # Modbus从站模拟器
 │   ├── utils/               # 工具模块
 │   │   ├── __init__.py
-│   │   └── crc.py          # CRC16校验工具
+│   │   ├── crc.py          # CRC16校验工具
+│   │   ├── payload_coder.py # 数据编解码工具
+│   │   └── logger.py       # 统一日志系统
 │   └── common/              # 通用模块
 │       ├── __init__.py
 │       └── exceptions.py    # 异常定义
 ├── tests/                   # 测试模块
 │   ├── __init__.py
 │   ├── test_basic.py        # 基本功能测试
-│   └── test_crc.py          # CRC功能测试
+│   ├── test_crc.py          # CRC功能测试
+│   ├── test_payload_coder.py # 数据编码测试
+│   └── test_async_integration.py # 异步集成测试
 ├── examples/                # 使用示例
 │   ├── __init__.py
 │   ├── rtu_example.py       # RTU使用示例
-│   └── tcp_example.py       # TCP使用示例
+│   ├── tcp_example.py       # TCP使用示例
+│   ├── advanced_example.py  # 高级数据类型示例
+│   ├── async_tcp_example.py # 异步TCP示例
+│   ├── slave_simulator_example.py # 从站模拟器示例
+│   └── stage3_complete_demo.py # 第三阶段完整演示
 ├── pyproject.toml           # 项目配置
 ├── README.md                # 项目说明
 └── LICENSE.txt              # 许可证
@@ -308,11 +322,213 @@ logger.info("这是一条信息日志")
 - 新的高级API是可选的
 - 日志系统默认不启用
 
+## 第三阶段功能
+
+第三阶段引入了现代化的异步编程支持、回调机制和Modbus从站模拟功能。
+
+### 异步传输层和客户端
+
+#### 异步TCP传输
+
+```python
+from modbuslink import AsyncModbusClient, AsyncTcpTransport
+import asyncio
+
+# 创建异步TCP传输层
+transport = AsyncTcpTransport(
+    host='192.168.1.100',
+    port=502,
+    timeout=10.0
+)
+
+# 创建异步客户端
+client = AsyncModbusClient(transport)
+
+async def main():
+    async with client:
+        # 异步读取保持寄存器
+        registers = await client.read_holding_registers(
+            slave_id=1,
+            start_address=0,
+            quantity=10
+        )
+        print(f"寄存器: {registers}")
+        
+        # 异步写多个寄存器
+        await client.write_multiple_registers(
+            slave_id=1,
+            start_address=0,
+            values=[100, 200, 300, 400]
+        )
+
+asyncio.run(main())
+```
+
+#### 异步高级数据类型
+
+```python
+async def advanced_operations():
+    async with client:
+        # 异步32位浮点数操作
+        await client.write_float32(slave_id=1, start_address=100, value=3.14159)
+        temperature = await client.read_float32(slave_id=1, start_address=100)
+        
+        # 异步32位整数操作
+        await client.write_int32(slave_id=1, start_address=102, value=-123456)
+        counter = await client.read_int32(slave_id=1, start_address=102)
+```
+
+### 回调机制
+
+异步客户端支持回调函数，用于操作完成通知：
+
+```python
+def on_registers_read(registers):
+    print(f"回调: 读取了 {len(registers)} 个寄存器")
+
+def on_write_completed():
+    print("回调: 写入操作完成")
+
+async def callback_demo():
+    async with client:
+        # 带回调的读取
+        registers = await client.read_holding_registers(
+            slave_id=1,
+            start_address=0,
+            quantity=5,
+            callback=on_registers_read
+        )
+        
+        # 带回调的写入
+        await client.write_single_register(
+            slave_id=1,
+            address=0,
+            value=1234,
+            callback=on_write_completed
+        )
+```
+
+### 并发操作
+
+异步客户端支持并发操作，提升性能：
+
+```python
+async def concurrent_operations():
+    async with client:
+        # 创建多个并发任务
+        tasks = [
+            client.read_holding_registers(slave_id=1, start_address=0, quantity=5),
+            client.read_coils(slave_id=1, start_address=0, quantity=8),
+            client.read_input_registers(slave_id=1, start_address=0, quantity=5),
+            client.write_single_register(slave_id=1, address=100, value=9999),
+        ]
+        
+        # 并发执行所有任务
+        results = await asyncio.gather(*tasks)
+        print(f"并发结果: {results}")
+```
+
+### Modbus从站模拟器
+
+#### 基本从站设置
+
+```python
+from modbuslink import ModbusSlave, DataStore
+
+# 创建数据存储区
+data_store = DataStore()
+
+# 初始化数据
+data_store.set_holding_registers(0, [1000, 2000, 3000, 4000, 5000])
+data_store.set_coils(0, [True, False, True, False, True, False, True, False])
+data_store.set_input_registers(0, [100, 200, 300, 400, 500])
+data_store.set_discrete_inputs(0, [False, True, False, True, False, True])
+
+# 创建从站
+slave = ModbusSlave(slave_id=1, data_store=data_store)
+
+# 启动TCP服务器
+slave.start_tcp_server(host='127.0.0.1', port=5020)
+print("从站模拟器已启动在 127.0.0.1:5020")
+
+# 使用上下文管理器
+with slave:
+    # 从站在后台运行
+    # 你的客户端代码在这里
+    pass
+
+# 或手动控制
+slave.stop()
+```
+
+#### 数据存储区操作
+
+```python
+# 直接数据操作
+data_store = DataStore()
+
+# 设置保持寄存器
+data_store.set_holding_registers(0, [1000, 2000, 3000])
+registers = data_store.get_holding_registers(0, 3)
+
+# 设置线圈
+data_store.set_coils(0, [True, False, True, False])
+coils = data_store.get_coils(0, 4)
+
+# 设置输入寄存器（从客户端角度只读）
+data_store.set_input_registers(0, [100, 200, 300])
+input_regs = data_store.get_input_registers(0, 3)
+
+# 设置离散输入（从客户端角度只读）
+data_store.set_discrete_inputs(0, [True, False, True])
+inputs = data_store.get_discrete_inputs(0, 3)
+```
+
+### 完整集成示例
+
+```python
+import asyncio
+from modbuslink import (
+    AsyncModbusClient, AsyncTcpTransport,
+    ModbusSlave, DataStore
+)
+
+async def integration_demo():
+    # 设置从站模拟器
+    data_store = DataStore()
+    data_store.set_holding_registers(0, [1000, 2000, 3000, 4000, 5000])
+    
+    slave = ModbusSlave(slave_id=1, data_store=data_store)
+    slave.start_tcp_server(host='127.0.0.1', port=5020)
+    
+    # 设置异步客户端
+    transport = AsyncTcpTransport(host='127.0.0.1', port=5020, timeout=5.0)
+    client = AsyncModbusClient(transport)
+    
+    try:
+        async with client:
+            # 测试基本操作
+            registers = await client.read_holding_registers(slave_id=1, start_address=0, quantity=5)
+            print(f"读取寄存器: {registers}")
+            
+            # 测试写入操作
+            await client.write_single_register(slave_id=1, address=0, value=9999)
+            
+            # 验证写入
+            new_value = await client.read_holding_registers(slave_id=1, start_address=0, quantity=1)
+            print(f"写入后: {new_value[0]}")
+            
+    finally:
+        slave.stop()
+
+asyncio.run(integration_demo())
+```
+
 ## 开发计划
 
 - [x] **第一阶段**: 构建坚实可靠的核心基础（同步MVP）
 - [x] **第二阶段**: 提升易用性与开发者体验
-- [ ] **第三阶段**: 拥抱现代化：异步、回调与扩展
+- [x] **第三阶段**: 拥抱现代化：异步、回调与扩展
 - [ ] **第四阶段**: 发布、测试与社区生态
 
 ## 许可证

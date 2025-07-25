@@ -3,5 +3,5 @@
 包含所有测试脚本和测试工具。 | Contains all test scripts and testing tools.
 """
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 __author__ = "Miraitowa"
