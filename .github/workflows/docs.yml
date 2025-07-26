@@ -35,11 +35,27 @@ jobs:
     
     - name: Build English documentation
       run: |
-        sphinx-build -b html -c docs/en docs/en docs/_build/html/en
+        echo "Building English documentation..."
+        sphinx-build -b html -c docs/en docs/en docs/_build/html/en -v
+        echo "English documentation build completed"
     
     - name: Build Chinese documentation
       run: |
-        sphinx-build -b html -c docs/zh docs/zh docs/_build/html/zh
+        echo "Building Chinese documentation..."
+        sphinx-build -b html -c docs/zh docs/zh docs/_build/html/zh -v
+        echo "Chinese documentation build completed"
+    
+    - name: Verify documentation build
+      run: |
+        echo "Verifying documentation structure..."
+        ls -la docs/_build/html/
+        echo "English documentation:"
+        ls -la docs/_build/html/en/ || echo "English docs not found"
+        echo "Chinese documentation:"
+        ls -la docs/_build/html/zh/ || echo "Chinese docs not found"
+        echo "Checking if index files exist:"
+        test -f docs/_build/html/en/index.html && echo "✓ English index.html exists" || echo "✗ English index.html missing"
+        test -f docs/_build/html/zh/index.html && echo "✓ Chinese index.html exists" || echo "✗ Chinese index.html missing"
     
     - name: Create index page
       run: |
@@ -135,6 +151,18 @@ jobs:
         # Documentation is already built in the correct location
         # Just ensure the index.html is in the right place
         cp docs/_build/html/index.html docs/_build/html/index.html || echo "Index already exists"
+        
+        # Create .nojekyll file to prevent GitHub Pages from ignoring files starting with underscore
+        touch docs/_build/html/.nojekyll
+        
+        echo "Final verification before deployment:"
+        echo "Root directory contents:"
+        ls -la docs/_build/html/
+        echo "Total size of documentation:"
+        du -sh docs/_build/html/
+        echo "Checking critical files:"
+        test -f docs/_build/html/index.html && echo "✓ Root index.html exists" || echo "✗ Root index.html missing"
+        test -f docs/_build/html/.nojekyll && echo "✓ .nojekyll file created" || echo "✗ .nojekyll file missing"
     
     - name: Deploy to GitHub Pages
       if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'

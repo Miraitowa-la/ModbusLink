@@ -129,10 +129,10 @@ html_theme_options = {
     'titles_only': False
 }
 
-# Add custom CSS
-html_css_files = [
-    'custom.css',
-]
+# Add custom CSS (commented out until _static directory is created)
+# html_css_files = [
+#     'custom.css',
+# ]
 
 # The master toctree document.
 master_doc = 'index'
