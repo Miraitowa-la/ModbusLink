@@ -1,0 +1,151 @@
+name: Build and Deploy Documentation
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r docs/requirements.txt
+        # Install the package itself for autodoc
+        pip install -e .
+    
+    - name: Build English documentation
+      run: |
+        sphinx-build -b html -c docs/en docs/en docs/_build/html/en
+    
+    - name: Build Chinese documentation
+      run: |
+        sphinx-build -b html -c docs/zh docs/zh docs/_build/html/zh
+    
+    - name: Create index page
+      run: |
+        mkdir -p docs/_build/html
+        cat > docs/_build/html/index.html << 'EOF'
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>ModbusLink Documentation</title>
+            <style>
+                body {
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                    max-width: 800px;
+                    margin: 0 auto;
+                    padding: 2rem;
+                    background: #f8f9fa;
+                }
+                .container {
+                    background: white;
+                    padding: 3rem;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                }
+                h1 {
+                    color: #2c3e50;
+                    text-align: center;
+                    margin-bottom: 2rem;
+                }
+                .language-selector {
+                    display: flex;
+                    gap: 2rem;
+                    justify-content: center;
+                    margin-top: 2rem;
+                }
+                .language-card {
+                    background: #3498db;
+                    color: white;
+                    padding: 2rem;
+                    border-radius: 8px;
+                    text-decoration: none;
+                    text-align: center;
+                    transition: all 0.3s ease;
+                    min-width: 200px;
+                }
+                .language-card:hover {
+                    background: #2980b9;
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+                }
+                .language-card h2 {
+                    margin: 0 0 0.5rem 0;
+                    font-size: 1.5rem;
+                }
+                .language-card p {
+                    margin: 0;
+                    opacity: 0.9;
+                }
+                .description {
+                    text-align: center;
+                    color: #7f8c8d;
+                    margin-bottom: 2rem;
+                    line-height: 1.6;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>ModbusLink Documentation</h1>
+                <p class="description">
+                    Welcome to ModbusLink documentation. Choose your preferred language to get started.
+                    <br>
+                    欢迎使用ModbusLink文档。请选择您的首选语言开始使用。
+                </p>
+                <div class="language-selector">
+                    <a href="en/index.html" class="language-card">
+                        <h2>English</h2>
+                        <p>English Documentation</p>
+                    </a>
+                    <a href="zh/index.html" class="language-card">
+                        <h2>中文</h2>
+                        <p>中文文档</p>
+                    </a>
+                </div>
+            </div>
+        </body>
+        </html>
+        EOF
+    
+    - name: Copy built documentation
+      run: |
+        # Documentation is already built in the correct location
+        # Just ensure the index.html is in the right place
+        cp docs/_build/html/index.html docs/_build/html/index.html || echo "Index already exists"
+    
+    - name: Deploy to GitHub Pages
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs/_build/html
+        force_orphan: true
+        user_name: 'github-actions[bot]'
+        user_email: 'github-actions[bot]@users.noreply.github.com'
+        commit_message: 'Deploy documentation'
+    
+    - name: Upload documentation artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: documentation
+        path: docs/_build/html
+        retention-days: 30
