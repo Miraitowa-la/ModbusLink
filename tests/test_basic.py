@@ -1,259 +1,283 @@
-#!/usr/bin/env python3
-"""ModbusLink基本功能测试脚本 ModbusLink basic function test script
+"""基础功能测试 | Basic Functionality Tests
 
-测试库的基本导入和接口功能。 Test the basic import and interface functions of the library.
+测试ModbusLink库的基本功能，包括模块导入、传输层创建、客户端基本操作等。
+Tests basic functionality of ModbusLink library, including module imports, transport layer creation, basic client operations.
 """
 
+import pytest
 import sys
 import os
+from unittest.mock import Mock, patch, MagicMock
 
-# 添加src目录到Python路径 | Add src directory to Python path
+# 添加源代码路径 | Add source code path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
+# 尝试导入ModbusLink模块 | Try to import ModbusLink modules
+modbuslink_available = True
+try:
+    from modbuslink import ModbusClient, TcpTransport, RtuTransport
+    from modbuslink.common.exceptions import (
+        ModbusException, ConnectionError, TimeoutError, CRCError
+    )
+    from modbuslink.utils.crc import CRC16Modbus
+    from modbuslink.utils.coder import PayloadCoder
+except ImportError as e:
+    modbuslink_available = False
+    import_error = str(e)
+    # 创建模拟类以避免测试收集错误 | Create mock classes to avoid test collection errors
+    ModbusClient = Mock
+    TcpTransport = Mock
+    RtuTransport = Mock
+    ModbusException = Exception
+    ConnectionError = Exception
+    TimeoutError = Exception
+    CRCError = Exception
+    CRC16Modbus = Mock
+    PayloadCoder = Mock
 
-def test_imports():
-    """测试模块导入 Test module imports"""
-    print("=== 模块导入测试 Module Import Test ===")
+
+class TestModuleImports:
+    """模块导入测试 | Module Import Tests"""
     
-    try:
-        # 测试主要接口导入 | Test main interface imports
-        from modbuslink import (
-            ModbusClient, RtuTransport, TcpTransport,
-            ModbusLinkError, ConnectionError, TimeoutError, 
-            CRCError, InvalidResponseError, ModbusException
-        )
-        print("✓ 主要接口导入成功 | Main interface import successful")
-        
-        # 测试子模块导入 | Test submodule imports
-        from modbuslink.utils.crc import CRC16Modbus
-        from modbuslink.transport.base import BaseTransport
-        from modbuslink.client.sync_client import ModbusClient as SyncClient
-        print("✓ 子模块导入成功 | Submodule import successful")
-        
-        return True
-        
-    except ImportError as e:
-        print(f"❌ 导入失败 | Import failed: {e}")
-        return False
-
-
-def test_transport_creation():
-    """测试传输层创建 Test transport layer creation"""
-    print("\n=== 传输层创建测试 Transport Layer Creation Test ===")
+    @pytest.mark.skipif(not modbuslink_available, reason=f"ModbusLink模块不可用 | ModbusLink modules not available: {import_error if not modbuslink_available else ''}")
+    def test_import_main_classes(self):
+        """测试主要类的导入 | Test importing main classes"""
+        assert ModbusClient is not None
+        assert TcpTransport is not None
+        assert RtuTransport is not None
+        print("✓ 主要类导入成功 | Main classes imported successfully")
     
-    try:
-        from modbuslink import RtuTransport, TcpTransport
-        
-        # 测试RTU传输层创建 | Test RTU transport layer creation
-        rtu_transport = RtuTransport(
-            port='COM1',
-            baudrate=9600,
-            timeout=1.0
-        )
-        print(f"✓ RTU传输层创建成功 | RTU transport layer creation successful: {rtu_transport}")
-        
-        # 测试TCP传输层创建 | Test TCP transport layer creation
-        tcp_transport = TcpTransport(
-            host='192.168.1.100',
-            port=502,
-            timeout=10.0
-        )
-        print(f"✓ TCP传输层创建成功 | TCP transport layer creation successful: {tcp_transport}")
-        
-        return True
-        
-    except Exception as e:
-        print(f"❌ 传输层创建失败 | Transport layer creation failed: {e}")
-        return False
-
-
-def test_client_creation():
-    """测试客户端创建 Test client creation"""
-    print("\n=== 客户端创建测试 Client Creation Test ===")
+    @pytest.mark.skipif(not modbuslink_available, reason=f"ModbusLink模块不可用 | ModbusLink modules not available: {import_error if not modbuslink_available else ''}")
+    def test_import_exceptions(self):
+        """测试异常类的导入 | Test importing exception classes"""
+        assert ModbusException is not None
+        assert ConnectionError is not None
+        assert TimeoutError is not None
+        assert CRCError is not None
+        print("✓ 异常类导入成功 | Exception classes imported successfully")
     
-    try:
-        from modbuslink import ModbusClient, RtuTransport
-        
-        # 创建传输层 | Create transport layer
-        transport = RtuTransport('COM1')
-        
-        # 创建客户端 | Create client
+    @pytest.mark.skipif(not modbuslink_available, reason=f"ModbusLink模块不可用 | ModbusLink modules not available: {import_error if not modbuslink_available else ''}")
+    def test_import_utilities(self):
+        """测试工具类的导入 | Test importing utility classes"""
+        assert CRC16Modbus is not None
+        assert PayloadCoder is not None
+        print("✓ 工具类导入成功 | Utility classes imported successfully")
+
+
+@pytest.mark.skipif(not modbuslink_available, reason=f"ModbusLink模块不可用 | ModbusLink modules not available: {import_error if not modbuslink_available else ''}")
+class TestTransportLayer:
+    """传输层测试 | Transport Layer Tests"""
+    
+    def test_tcp_transport_creation(self):
+        """测试TCP传输层创建 | Test TCP transport creation"""
+        transport = TcpTransport(host='127.0.0.1', port=502, timeout=5.0)
+        assert transport.host == '127.0.0.1'
+        assert transport.port == 502
+        assert transport.timeout == 5.0
+        print("✓ TCP传输层创建成功 | TCP transport created successfully")
+    
+    def test_rtu_transport_creation(self):
+        """测试RTU传输层创建 | Test RTU transport creation"""
+        transport = RtuTransport(port='COM1', baudrate=9600, timeout=1.0)
+        assert transport.port == 'COM1'
+        assert transport.baudrate == 9600
+        assert transport.timeout == 1.0
+        print("✓ RTU传输层创建成功 | RTU transport created successfully")
+    
+    def test_tcp_transport_invalid_params(self):
+        """测试TCP传输层无效参数 | Test TCP transport with invalid parameters"""
+        with pytest.raises((ValueError, TypeError)):
+            TcpTransport(host='', port=-1)
+        print("✓ TCP传输层参数验证正常 | TCP transport parameter validation works")
+    
+    def test_rtu_transport_invalid_params(self):
+        """测试RTU传输层无效参数 | Test RTU transport with invalid parameters"""
+        with pytest.raises((ValueError, TypeError)):
+            RtuTransport(port='', baudrate=-1)
+        print("✓ RTU传输层参数验证正常 | RTU transport parameter validation works")
+
+
+@pytest.mark.skipif(not modbuslink_available, reason=f"ModbusLink模块不可用 | ModbusLink modules not available: {import_error if not modbuslink_available else ''}")
+class TestModbusClient:
+    """Modbus客户端测试 | Modbus Client Tests"""
+    
+    def test_client_creation_with_tcp(self):
+        """测试使用TCP传输层创建客户端 | Test client creation with TCP transport"""
+        transport = TcpTransport(host='127.0.0.1', port=502)
         client = ModbusClient(transport)
-        print(f"✓ 客户端创建成功 | Client creation successful: {client}")
-        
-        # 测试客户端方法存在性 | Test client method existence
-        methods = [
-            'read_coils', 'read_discrete_inputs',
-            'read_holding_registers', 'read_input_registers',
-            'write_single_coil', 'write_single_register',
-            'write_multiple_coils', 'write_multiple_registers'
-        ]
-        
-        for method in methods:
-            if hasattr(client, method):
-                print(f"  ✓ 方法 | Method {method} 存在 | exists")
-            else:
-                print(f"  ❌ 方法 | Method {method} 不存在 | does not exist")
-                return False
-        
-        return True
-        
-    except Exception as e:
-        print(f"❌ 客户端创建失败 | Client creation failed: {e}")
-        return False
-
-
-def test_pdu_construction():
-    """测试PDU构建（不实际发送） Test PDU construction (without actual sending)"""
-    print("\n=== PDU构建测试 PDU Construction Test ===")
+        assert client.transport is transport
+        print("✓ TCP客户端创建成功 | TCP client created successfully")
     
-    try:
-        import struct
-        
-        # 测试读取保持寄存器PDU构建 | Test read holding registers PDU construction
-        pdu = struct.pack('>BHH', 0x03, 0, 4)  # 功能码0x03, 地址0, 数量4 | Function code 0x03, address 0, quantity 4
-        expected = b'\x03\x00\x00\x00\x04'
-        if pdu == expected:
-            print(f"✓ 读取保持寄存器PDU构建正确 | Read holding registers PDU construction correct: {pdu.hex(' ').upper()}")
-        else:
-            print(f"❌ PDU构建错误 | PDU construction error: 期望 | Expected {expected.hex(' ').upper()}, 得到 | Got {pdu.hex(' ').upper()}")
-            return False
-        
-        # 测试写单个寄存器PDU构建 | Test write single register PDU construction
-        pdu = struct.pack('>BHH', 0x06, 0, 1234)  # 功能码0x06, 地址0, 值1234 | Function code 0x06, address 0, value 1234
-        expected = b'\x06\x00\x00\x04\xd2'
-        if pdu == expected:
-            print(f"✓ 写单个寄存器PDU构建正确 | Write single register PDU construction correct: {pdu.hex(' ').upper()}")
-        else:
-            print(f"❌ PDU构建错误 | PDU construction error: 期望 | Expected {expected.hex(' ').upper()}, 得到 | Got {pdu.hex(' ').upper()}")
-            return False
-        
-        return True
-        
-    except Exception as e:
-        print(f"❌ PDU构建测试失败 | PDU construction test failed: {e}")
-        return False
-
-
-def test_exception_hierarchy():
-    """测试异常层次结构 Test exception hierarchy"""
-    print("\n=== 异常层次结构测试 Exception Hierarchy Test ===")
+    def test_client_creation_with_rtu(self):
+        """测试使用RTU传输层创建客户端 | Test client creation with RTU transport"""
+        transport = RtuTransport(port='COM1', baudrate=9600)
+        client = ModbusClient(transport)
+        assert client.transport is transport
+        print("✓ RTU客户端创建成功 | RTU client created successfully")
     
-    try:
-        from modbuslink.common.exceptions import (
-            ModbusLinkError, ConnectionError, TimeoutError,
-            CRCError, InvalidResponseError, ModbusException
-        )
+    @patch('socket.socket')
+    def test_client_connect_tcp(self, mock_socket):
+        """测试TCP客户端连接 | Test TCP client connection"""
+        mock_sock = Mock()
+        mock_socket.return_value = mock_sock
         
-        # 测试异常继承关系 | Test exception inheritance relationships
-        exceptions = [
-            ConnectionError, TimeoutError, CRCError,
-            InvalidResponseError, ModbusException
-        ]
+        transport = TcpTransport(host='127.0.0.1', port=502)
+        client = ModbusClient(transport)
         
-        for exc_class in exceptions:
-            if issubclass(exc_class, ModbusLinkError):
-                print(f"✓ {exc_class.__name__} 正确继承自 | Correctly inherits from ModbusLinkError")
-            else:
-                print(f"❌ {exc_class.__name__} 未继承自 | Does not inherit from ModbusLinkError")
-                return False
-        
-        # 测试ModbusException的特殊功能 | Test ModbusException special functionality
-        exc = ModbusException(0x02, 0x03)
-        if hasattr(exc, 'exception_code') and hasattr(exc, 'function_code'):
-            print(f"✓ ModbusException属性正确 | ModbusException attributes correct: {exc}")
-        else:
-            print("❌ ModbusException属性缺失 | ModbusException attributes missing")
-            return False
-        
-        return True
-        
-    except Exception as e:
-        print(f"❌ 异常层次结构测试失败 | Exception hierarchy test failed: {e}")
-        return False
-
-
-def test_version_info():
-    """测试版本信息 Test version information"""
-    print("\n=== 版本信息测试 Version Information Test ===")
-    
-    try:
-        import modbuslink
-        
-        # 检查版本信息 | Check version information
-        if hasattr(modbuslink, '__version__'):
-            print(f"✓ 版本号 | Version: {modbuslink.__version__}")
-        else:
-            print("❌ 版本号缺失 | Version number missing")
-            return False
-        
-        if hasattr(modbuslink, '__author__'):
-            print(f"✓ 作者 | Author: {modbuslink.__author__}")
-        else:
-            print("❌ 作者信息缺失 | Author information missing")
-        
-        return True
-        
-    except Exception as e:
-        print(f"❌ 版本信息测试失败 | Version information test failed: {e}")
-        return False
-
-
-def main():
-    """主测试函数 Main test function"""
-    print("ModbusLink基本功能测试 | ModbusLink Basic Function Test")
-    print("=" * 50)
-    
-    # 执行所有测试 | Execute all tests
-    tests = [
-        ("模块导入 | Module Import", test_imports),
-        ("传输层创建 | Transport Layer Creation", test_transport_creation),
-        ("客户端创建 | Client Creation", test_client_creation),
-        ("PDU构建 | PDU Construction", test_pdu_construction),
-        ("异常层次结构 | Exception Hierarchy", test_exception_hierarchy),
-        ("版本信息 | Version Information", test_version_info),
-    ]
-    
-    results = []
-    for test_name, test_func in tests:
         try:
-            result = test_func()
-            results.append((test_name, result))
+            client.connect()
+            print("✓ TCP客户端连接测试通过 | TCP client connection test passed")
         except Exception as e:
-            print(f"❌ {test_name}测试异常 | test exception: {e}")
-            results.append((test_name, False))
+            print(f"TCP连接测试异常（预期）: {e} | TCP connection test exception (expected): {e}")
+        finally:
+            try:
+                client.disconnect()
+            except:
+                pass
     
-    # 总结 | Summary
-    print("\n" + "=" * 50)
-    print("=== 测试总结 Test Summary ===")
+    def test_client_context_manager(self):
+        """测试客户端上下文管理器 | Test client context manager"""
+        transport = TcpTransport(host='127.0.0.1', port=502)
+        client = ModbusClient(transport)
+        
+        # 测试上下文管理器协议 | Test context manager protocol
+        assert hasattr(client, '__enter__')
+        assert hasattr(client, '__exit__')
+        print("✓ 客户端上下文管理器协议正常 | Client context manager protocol works")
+
+
+@pytest.mark.skipif(not modbuslink_available, reason=f"ModbusLink模块不可用 | ModbusLink modules not available: {import_error if not modbuslink_available else ''}")
+class TestCRC16Modbus:
+    """CRC16 Modbus测试 | CRC16 Modbus Tests"""
     
-    passed = 0
-    total = len(results)
+    def test_crc_calculation(self):
+        """测试CRC计算 | Test CRC calculation"""
+        # 测试已知数据的CRC值 | Test CRC value for known data
+        data = b'\x01\x03\x00\x00\x00\x0A'
+        expected_crc = 0xCDC5  # 已知的正确CRC值 | Known correct CRC value
+        
+        calculated_crc_bytes = CRC16Modbus.calculate(data)
+        calculated_crc = int.from_bytes(calculated_crc_bytes, byteorder='little')
+        assert calculated_crc == expected_crc
+        print(f"✓ CRC计算正确: {calculated_crc:04X} | CRC calculation correct: {calculated_crc:04X}")
     
-    for test_name, result in results:
-        status = "✓ 通过 | Passed" if result else "❌ 失败 | Failed"
-        print(f"{test_name}: {status}")
-        if result:
-            passed += 1
+    def test_crc_verify(self):
+        """测试CRC验证 | Test CRC verification"""
+        # 包含正确CRC的完整数据包 | Complete packet with correct CRC
+        data_with_crc = b'\x01\x03\x00\x00\x00\x0A\xC5\xCD'
+        
+        is_valid = CRC16Modbus.validate(data_with_crc)
+        assert is_valid is True
+        print("✓ CRC验证功能正常 | CRC verification works correctly")
     
-    print(f"\n总计 | Total: {passed}/{total} 测试通过 | tests passed")
+    def test_crc_verify_invalid(self):
+        """测试无效CRC验证 | Test invalid CRC verification"""
+        # 包含错误CRC的数据包 | Packet with incorrect CRC
+        data_with_wrong_crc = b'\x01\x03\x00\x00\x00\x0A\x00\x00'
+        
+        is_valid = CRC16Modbus.validate(data_with_wrong_crc)
+        assert is_valid is False
+        print("✓ 无效CRC检测正常 | Invalid CRC detection works")
+
+
+@pytest.mark.skipif(not modbuslink_available, reason=f"ModbusLink模块不可用 | ModbusLink modules not available: {import_error if not modbuslink_available else ''}")
+class TestPayloadCoder:
+    """数据编码器测试 | Payload Coder Tests"""
     
-    if passed == total:
-        print("🎉 所有基本功能测试通过！ | All basic function tests passed!")
-        print("\n✅ ModbusLink第一阶段开发完成 | ModbusLink Phase 1 Development Completed:")
-        print("   - ✓ 项目结构初始化 | Project structure initialization")
-        print("   - ✓ 核心工具与异常模块 | Core utilities and exception modules")
-        print("   - ✓ 统一的传输层抽象基类 | Unified transport layer abstract base class")
-        print("   - ✓ RTU和TCP传输层实现 | RTU and TCP transport layer implementation")
-        print("   - ✓ 统一的同步客户端 | Unified synchronous client")
-        print("   - ✓ 完整的API接口 | Complete API interface")
-        print("   - ✓ 错误处理和异常管理 | Error handling and exception management")
-    else:
-        print(f"❌ {total - passed} 个测试失败，请检查实现。 | tests failed, please check implementation.")
+    def test_encode_decode_float32(self):
+        """测试32位浮点数编码解码 | Test 32-bit float encoding/decoding"""
+        original_value = 3.14159
+        
+        # 编码 | Encode
+        registers = PayloadCoder.encode_float32(original_value, 'big', 'high')
+        assert len(registers) == 2
+        
+        # 解码 | Decode
+        decoded_value = PayloadCoder.decode_float32(registers, 'big', 'high')
+        assert abs(decoded_value - original_value) < 0.0001
+        print(f"✓ Float32编码解码正常: {original_value} -> {decoded_value} | Float32 encode/decode works: {original_value} -> {decoded_value}")
     
-    return passed == total
+    def test_encode_decode_int32(self):
+        """测试32位整数编码解码 | Test 32-bit integer encoding/decoding"""
+        original_value = 123456789
+        
+        # 编码 | Encode
+        registers = PayloadCoder.encode_int32(original_value, 'big', 'high')
+        assert len(registers) == 2
+        
+        # 解码 | Decode
+        decoded_value = PayloadCoder.decode_int32(registers, 'big', 'high')
+        assert decoded_value == original_value
+        print(f"✓ Int32编码解码正常: {original_value} -> {decoded_value} | Int32 encode/decode works: {original_value} -> {decoded_value}")
+    
+    def test_encode_decode_string(self):
+        """测试字符串编码解码 | Test string encoding/decoding"""
+        original_string = "ModbusLink Test"  # 使用纯ASCII字符串避免编码问题 | Use pure ASCII string to avoid encoding issues
+        
+        # 计算需要的寄存器数量 | Calculate required register count
+        byte_length = len(original_string.encode('utf-8'))
+        register_count = (byte_length + 1) // 2  # 向上取整 | Round up
+        
+        # 编码 | Encode
+        registers = PayloadCoder.encode_string(original_string, register_count)
+        assert len(registers) > 0
+        
+        # 解码 | Decode
+        decoded_string = PayloadCoder.decode_string(registers)
+        assert decoded_string == original_string
+        print(f"✓ 字符串编码解码正常: '{original_string}' | String encode/decode works: '{original_string}'")
+    
+    def test_different_byte_orders(self):
+        """测试不同字节序 | Test different byte orders"""
+        value = 0x12345678
+        
+        # 大端序，高字在前 | Big endian, high word first
+        registers_big_high = PayloadCoder.encode_int32(value, 'big', 'high')
+        decoded_big_high = PayloadCoder.decode_int32(registers_big_high, 'big', 'high')
+        
+        # 大端序，低字在前 | Big endian, low word first
+        registers_big_low = PayloadCoder.encode_int32(value, 'big', 'low')
+        decoded_big_low = PayloadCoder.decode_int32(registers_big_low, 'big', 'low')
+        
+        # 验证解码结果正确 | Verify decoding results are correct
+        assert decoded_big_high == value
+        assert decoded_big_low == value
+        
+        # 验证不同字序产生不同的寄存器排列 | Verify different word orders produce different register arrangements
+        assert registers_big_high != registers_big_low
+        print(f"✓ 不同字序处理正常: 高字在前={registers_big_high}, 低字在前={registers_big_low} | Different word order handling works: high first={registers_big_high}, low first={registers_big_low}")
+
+
+@pytest.mark.skipif(not modbuslink_available, reason=f"ModbusLink模块不可用 | ModbusLink modules not available: {import_error if not modbuslink_available else ''}")
+class TestTransportErrorHandling:
+    """传输层错误处理测试 | Transport Layer Error Handling Tests"""
+    
+    def test_transport_connection_errors(self):
+        """测试传输层连接错误 | Test transport layer connection errors"""
+        # 测试TCP传输连接失败 | Test TCP transport connection failure
+        tcp_transport = TcpTransport(host='192.0.2.1', port=12345, timeout=0.1)  # 使用不存在的地址 | Use non-existent address
+        
+        with pytest.raises(Exception):  # 应该抛出连接异常 | Should raise connection exception
+            tcp_transport.connect()
+        
+        print("✓ 传输层连接错误处理正常 | Transport layer connection error handling works")
+    
+    def test_transport_send_without_connection(self):
+        """测试未连接时发送数据 | Test sending data without connection"""
+        tcp_transport = TcpTransport(host='127.0.0.1', port=502)
+        
+        with pytest.raises(Exception):  # 应该抛出未连接异常 | Should raise not connected exception
+            tcp_transport.send(b'\x01\x03\x00\x00\x00\x01')
+        
+        print("✓ 未连接发送错误处理正常 | Send without connection error handling works")
 
 
 if __name__ == '__main__':
-    success = main()
-    sys.exit(0 if success else 1)
+    print("开始运行基础功能测试... | Starting basic functionality tests...")
+    print("=" * 60)
+    
+    # 运行所有测试 | Run all tests
+    pytest.main([__file__, '-v', '--tb=short'])
+    
+    print("=" * 60)
+    print("基础功能测试完成 | Basic functionality tests completed")

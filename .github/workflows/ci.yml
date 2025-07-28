@@ -1,0 +1,305 @@
+name: CI/CD Pipeline
+
+# 触发条件 | Trigger conditions
+on:
+  push:
+    branches: [ main, master, develop ]
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_dispatch:
+
+# 环境变量 | Environment variables
+env:
+  PYTHONPATH: ${{ github.workspace }}/src
+
+jobs:
+  # 代码质量检查 | Code quality checks
+  quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 检出代码 | Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 设置Python环境 | Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: 安装依赖 | Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install black ruff mypy
+        pip install -e .
+    
+    - name: 代码格式检查 | Code formatting check
+      run: |
+        echo "检查代码格式... | Checking code formatting..."
+        black --check --diff src/ tests/
+    
+    - name: 代码风格检查 | Code style check
+      run: |
+        echo "运行Ruff静态分析... | Running Ruff static analysis..."
+        ruff check src/ tests/
+    
+    - name: 类型检查 | Type checking
+      run: |
+        echo "运行MyPy类型检查... | Running MyPy type checking..."
+        mypy src/modbuslink --ignore-missing-imports
+  
+  # 测试矩阵 | Test matrix
+  test:
+    name: Test Python ${{ matrix.python-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: quality
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        exclude:
+          # 排除一些组合以节省资源 | Exclude some combinations to save resources
+          - os: macos-latest
+            python-version: '3.8'
+          - os: macos-latest
+            python-version: '3.9'
+    
+    steps:
+    - name: 检出代码 | Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 设置Python ${{ matrix.python-version }} | Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: 安装依赖 | Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov pytest-mock pytest-asyncio
+        pip install -e .
+    
+    - name: 运行基础测试 | Run basic tests
+      run: |
+        echo "运行基础功能测试... | Running basic functionality tests..."
+        pytest tests/test_basic.py -v --tb=short
+    
+    - name: 运行CRC测试 | Run CRC tests
+      run: |
+        echo "运行CRC功能测试... | Running CRC functionality tests..."
+        pytest tests/test_crc.py -v --tb=short
+    
+    - name: 运行高级功能测试 | Run advanced features tests
+      run: |
+        echo "运行高级功能测试... | Running advanced features tests..."
+        pytest tests/test_advanced_features.py -v --tb=short
+    
+    - name: 运行异步集成测试 | Run async integration tests
+      run: |
+        echo "运行异步集成测试... | Running async integration tests..."
+        pytest tests/test_async_integration.py -v --tb=short
+    
+    - name: 运行集成测试 | Run integration tests
+      run: |
+        echo "运行端到端集成测试... | Running end-to-end integration tests..."
+        pytest tests/test_integration.py -v --tb=short
+  
+  # 测试覆盖率 | Test coverage
+  coverage:
+    name: Test Coverage
+    runs-on: ubuntu-latest
+    needs: quality
+    
+    steps:
+    - name: 检出代码 | Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 设置Python环境 | Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: 安装依赖 | Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov pytest-mock pytest-asyncio coverage
+        pip install -e .
+    
+    - name: 运行测试并生成覆盖率报告 | Run tests with coverage
+      run: |
+        echo "运行所有测试并生成覆盖率报告... | Running all tests with coverage report..."
+        pytest tests/ --cov=src/modbuslink --cov-report=xml --cov-report=html --cov-report=term-missing -v
+    
+    - name: 上传覆盖率报告到Codecov | Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        fail_ci_if_error: false
+    
+    - name: 上传覆盖率报告工件 | Upload coverage report artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: htmlcov/
+        retention-days: 30
+  
+  # 性能测试 | Performance tests
+  performance:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: 检出代码 | Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 设置Python环境 | Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: 安装依赖 | Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest pytest-benchmark pytest-mock pytest-asyncio
+        pip install -e .
+    
+    - name: 运行性能测试 | Run performance tests
+      run: |
+        echo "运行性能基准测试... | Running performance benchmark tests..."
+        # 运行包含性能测试的测试文件 | Run test files containing performance tests
+        pytest tests/test_crc.py::TestCRC16ModbusPerformance -v --tb=short
+        pytest tests/test_async_integration.py::TestAsyncPerformance -v --tb=short
+        pytest tests/test_integration.py::TestPerformanceIntegration -v --tb=short
+  
+  # 安全扫描 | Security scanning
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: quality
+    
+    steps:
+    - name: 检出代码 | Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 设置Python环境 | Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: 安装安全扫描工具 | Install security scanning tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install bandit safety
+        pip install -e .
+    
+    - name: 运行Bandit安全扫描 | Run Bandit security scan
+      run: |
+        echo "运行Bandit安全扫描... | Running Bandit security scan..."
+        bandit -r src/ -f json -o bandit-report.json || true
+        bandit -r src/ -f txt
+    
+    - name: 检查依赖安全性 | Check dependency security
+      run: |
+        echo "检查依赖包安全性... | Checking dependency security..."
+        safety check --json --output safety-report.json || true
+        safety check
+    
+    - name: 上传安全报告 | Upload security reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: security-reports
+        path: |
+          bandit-report.json
+          safety-report.json
+        retention-days: 30
+  
+  # 构建测试 | Build test
+  build:
+    name: Build Test
+    runs-on: ubuntu-latest
+    needs: [test, coverage]
+    
+    steps:
+    - name: 检出代码 | Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 设置Python环境 | Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+    
+    - name: 安装构建工具 | Install build tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install build twine
+    
+    - name: 构建包 | Build package
+      run: |
+        echo "构建Python包... | Building Python package..."
+        python -m build
+    
+    - name: 检查包 | Check package
+      run: |
+        echo "检查构建的包... | Checking built package..."
+        twine check dist/*
+    
+    - name: 上传构建产物 | Upload build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: dist-packages
+        path: dist/
+        retention-days: 30
+  
+  # 发布到测试PyPI | Release to Test PyPI
+  test-release:
+    name: Test Release
+    runs-on: ubuntu-latest
+    needs: [build, security, performance]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+    - name: 检出代码 | Checkout code
+      uses: actions/checkout@v4
+    
+    - name: 下载构建产物 | Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: dist-packages
+        path: dist/
+    
+    - name: 发布到测试PyPI | Publish to Test PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        repository-url: https://test.pypi.org/legacy/
+        skip-existing: true
+  
+  # 通知 | Notifications
+  notify:
+    name: Notify Results
+    runs-on: ubuntu-latest
+    needs: [quality, test, coverage, performance, security, build]
+    if: always()
+    
+    steps:
+    - name: 检查结果并通知 | Check results and notify
+      run: |
+        echo "CI/CD流水线执行完成 | CI/CD pipeline execution completed"
+        echo "质量检查: ${{ needs.quality.result }} | Quality check: ${{ needs.quality.result }}"
+        echo "测试: ${{ needs.test.result }} | Tests: ${{ needs.test.result }}"
+        echo "覆盖率: ${{ needs.coverage.result }} | Coverage: ${{ needs.coverage.result }}"
+        echo "性能测试: ${{ needs.performance.result }} | Performance: ${{ needs.performance.result }}"
+        echo "安全扫描: ${{ needs.security.result }} | Security: ${{ needs.security.result }}"
+        echo "构建: ${{ needs.build.result }} | Build: ${{ needs.build.result }}"
+        
+        if [[ "${{ needs.quality.result }}" == "failure" || "${{ needs.test.result }}" == "failure" ]]; then
+          echo "❌ CI/CD流水线失败 | CI/CD pipeline failed"
+          exit 1
+        else
+          echo "✅ CI/CD流水线成功 | CI/CD pipeline succeeded"
+        fi

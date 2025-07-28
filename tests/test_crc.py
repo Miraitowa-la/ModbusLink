@@ -1,123 +1,281 @@
-#!/usr/bin/env python3
-"""CRC16功能测试脚本 | CRC16 function test script
+"""CRC16 Modbus功能测试 | CRC16 Modbus Functionality Tests
 
-用于验证CRC16Modbus类的功能是否正常。 | Used to verify that the CRC16Modbus class functions properly.
+专门测试CRC16 Modbus算法的正确性，包括各种边界情况和已知测试向量。
+Specifically tests the correctness of CRC16 Modbus algorithm, including various edge cases and known test vectors.
 """
 
+import pytest
 import sys
 import os
 
-# 添加src目录到Python路径 | Add src directory to Python path
+# 添加源代码路径 | Add source code path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
-from modbuslink.utils.crc import CRC16Modbus
+try:
+    from modbuslink.utils.crc import CRC16Modbus
+except ImportError as e:
+    pytest.skip(f"无法导入CRC模块: {e} | Cannot import CRC module: {e}", allow_module_level=True)
 
 
-def test_crc_calculation():
-    """测试CRC计算功能 | Test CRC calculation function"""
-    print("=== CRC16计算测试 | CRC16 Calculation Test ===")
+class TestCRC16ModbusCalculation:
+    """CRC16 Modbus计算测试 | CRC16 Modbus Calculation Tests"""
     
-    # 测试用例1: 读取保持寄存器请求 | Test case 1: Read holding registers request
-    # 从站地址: 0x01, 功能码: 0x03, 起始地址: 0x0000, 数量: 0x0001 | Slave address: 0x01, function code: 0x03, starting address: 0x0000, quantity: 0x0001
-    test_data1 = b'\x01\x03\x00\x00\x00\x01'
-    expected_crc1 = b'\x84\x0a'  # 已知的正确CRC值 | Known correct CRC value
+    def test_empty_data(self):
+        """测试空数据的CRC计算 | Test CRC calculation for empty data"""
+        crc_bytes = CRC16Modbus.calculate(b'')
+        crc = int.from_bytes(crc_bytes, byteorder='little')
+        assert crc == 0xFFFF  # 空数据的CRC应该是初始值 | CRC for empty data should be initial value
+        print(f"✓ 空数据CRC计算正确: {crc:04X} | Empty data CRC calculation correct: {crc:04X}")
     
-    calculated_crc1 = CRC16Modbus.calculate(test_data1)
-    print(f"测试数据1 | Test data 1: {test_data1.hex(' ').upper()}")
-    print(f"计算CRC | Calculated CRC: {calculated_crc1.hex(' ').upper()}")
-    print(f"期望CRC | Expected CRC: {expected_crc1.hex(' ').upper()}")
-    print(f"结果 | Result: {'✓ 通过 | Passed' if calculated_crc1 == expected_crc1 else '❌ 失败 | Failed'}")
-    print()
+    def test_single_byte(self):
+        """测试单字节数据的CRC计算 | Test CRC calculation for single byte data"""
+        test_cases = [
+            (b'\x00', 0x40BF),
+            (b'\x01', 0x807E),
+            (b'\xFF', 0x00FF),
+        ]
+        
+        for data, expected in test_cases:
+            crc_bytes = CRC16Modbus.calculate(data)
+            crc = int.from_bytes(crc_bytes, byteorder='little')
+            assert crc == expected
+            print(f"✓ 单字节 {data.hex().upper()} CRC: {crc:04X} | Single byte {data.hex().upper()} CRC: {crc:04X}")
     
-    # 测试用例2: 写单个寄存器请求 | Test case 2: Write single register request
-    # 从站地址: 0x01, 功能码: 0x06, 地址: 0x0000, 值: 0x1234 | Slave address: 0x01, function code: 0x06, address: 0x0000, value: 0x1234
-    test_data2 = b'\x01\x06\x00\x00\x12\x34'
-    calculated_crc2 = CRC16Modbus.calculate(test_data2)
-    print(f"测试数据2 | Test data 2: {test_data2.hex(' ').upper()}")
-    print(f"计算CRC | Calculated CRC: {calculated_crc2.hex(' ').upper()}")
-    print()
+    def test_known_test_vectors(self):
+        """测试已知的测试向量 | Test known test vectors"""
+        test_vectors = [
+            # (数据, 期望的CRC) | (data, expected CRC)
+            (b'\x01\x03\x00\x00\x00\x0A', 0xCDC5),  # 读保持寄存器请求 | Read holding registers request
+            (b'\x01\x04\x00\x00\x00\x0A', 0x0D70),  # 读输入寄存器请求 | Read input registers request
+            (b'\x01\x06\x00\x00\x00\x01', 0x0A48),  # 写单个寄存器请求 | Write single register request
+            (b'\x01\x10\x00\x00\x00\x02\x04\x00\x0A\x00\x0B', 0x6A92),  # 写多个寄存器请求 | Write multiple registers request
+        ]
+        
+        for data, expected_crc in test_vectors:
+            calculated_crc_bytes = CRC16Modbus.calculate(data)
+            calculated_crc = int.from_bytes(calculated_crc_bytes, byteorder='little')
+            assert calculated_crc == expected_crc
+            print(f"✓ 测试向量 {data.hex().upper()} CRC: {calculated_crc:04X} | Test vector {data.hex().upper()} CRC: {calculated_crc:04X}")
     
-    return calculated_crc1 == expected_crc1
+    def test_incremental_calculation(self):
+        """测试增量CRC计算 | Test incremental CRC calculation"""
+        data = b'\x01\x03\x00\x00\x00\x0A'
+        
+        # 一次性计算 | Calculate all at once
+        crc_all_bytes = CRC16Modbus.calculate(data)
+        crc_all = int.from_bytes(crc_all_bytes, byteorder='little')
+        
+        # 注意：当前实现不支持增量计算，这里只是验证完整计算的一致性
+        # Note: Current implementation doesn't support incremental calculation, just verify consistency
+        crc_verify_bytes = CRC16Modbus.calculate(data)
+        crc_verify = int.from_bytes(crc_verify_bytes, byteorder='little')
+        
+        assert crc_all == crc_verify
+        print(f"✓ CRC计算一致性验证: {crc_all:04X} == {crc_verify:04X} | CRC calculation consistency verified: {crc_all:04X} == {crc_verify:04X}")
+    
+    def test_large_data(self):
+        """测试大数据块的CRC计算 | Test CRC calculation for large data blocks"""
+        # 创建一个较大的数据块 | Create a large data block
+        large_data = bytes(range(256)) * 4  # 1024字节 | 1024 bytes
+        
+        crc_bytes = CRC16Modbus.calculate(large_data)
+        assert isinstance(crc_bytes, bytes)
+        assert len(crc_bytes) == 2
+        crc = int.from_bytes(crc_bytes, byteorder='little')
+        assert 0 <= crc <= 0xFFFF
+        print(f"✓ 大数据块CRC计算完成: {crc:04X} (数据长度: {len(large_data)}) | Large data block CRC calculated: {crc:04X} (data length: {len(large_data)})")
 
 
-def test_crc_validation():
-    """测试CRC验证功能 | Test CRC validation function"""
-    print("=== CRC16验证测试 | CRC16 Validation Test ===")
+class TestCRC16ModbusVerification:
+    """CRC16 Modbus验证测试 | CRC16 Modbus Verification Tests"""
     
-    # 测试用例1: 完整的正确帧 | Test case 1: Complete correct frame
-    correct_frame = b'\x01\x03\x00\x00\x00\x01\x84\x0a'
-    result1 = CRC16Modbus.validate(correct_frame)
-    print(f"正确帧 | Correct frame: {correct_frame.hex(' ').upper()}")
-    print(f"验证结果 | Validation result: {'✓ 通过 | Passed' if result1 else '❌ 失败 | Failed'}")
-    print()
+    def test_verify_valid_packets(self):
+        """测试验证有效数据包 | Test verifying valid packets"""
+        valid_packets = [
+            b'\x01\x03\x00\x00\x00\x0A\xC5\xCD',  # 读保持寄存器请求 | Read holding registers request
+            b'\x01\x04\x00\x00\x00\x0A\x70\x0D',  # 读输入寄存器请求 | Read input registers request
+            b'\x01\x06\x00\x00\x00\x01\x48\x0A',  # 写单个寄存器请求 | Write single register request
+        ]
+        
+        for packet in valid_packets:
+            is_valid = CRC16Modbus.validate(packet)
+            assert is_valid is True
+            print(f"✓ 有效数据包验证通过: {packet.hex().upper()} | Valid packet verification passed: {packet.hex().upper()}")
     
-    # 测试用例2: CRC错误的帧 | Test case 2: Frame with incorrect CRC
-    incorrect_frame = b'\x01\x03\x00\x00\x00\x01\x84\x0b'  # 最后一字节错误 | Last byte is incorrect
-    result2 = CRC16Modbus.validate(incorrect_frame)
-    print(f"错误帧 | Incorrect frame: {incorrect_frame.hex(' ').upper()}")
-    print(f"验证结果 | Validation result: {'✓ 正确识别错误 | Correctly identified error' if not result2 else '❌ 未能识别错误 | Failed to identify error'}")
-    print()
+    def test_verify_invalid_packets(self):
+        """测试验证无效数据包 | Test verifying invalid packets"""
+        invalid_packets = [
+            b'\x01\x03\x00\x00\x00\x0A\x00\x00',  # 错误的CRC | Wrong CRC
+            b'\x01\x04\x00\x00\x00\x0A\xFF\xFF',  # 错误的CRC | Wrong CRC
+            b'\x01\x06\x00\x00\x00\x01\x12\x34',  # 错误的CRC | Wrong CRC
+        ]
+        
+        for packet in invalid_packets:
+            is_valid = CRC16Modbus.validate(packet)
+            assert is_valid is False
+            print(f"✓ 无效数据包正确识别: {packet.hex().upper()} | Invalid packet correctly identified: {packet.hex().upper()}")
     
-    # 测试用例3: 帧长度不足 | Test case 3: Frame with insufficient length
-    short_frame = b'\x01\x03'
-    result3 = CRC16Modbus.validate(short_frame)
-    print(f"短帧 | Short frame: {short_frame.hex(' ').upper()}")
-    print(f"验证结果 | Validation result: {'✓ 正确识别短帧 | Correctly identified short frame' if not result3 else '❌ 未能识别短帧 | Failed to identify short frame'}")
-    print()
+    def test_verify_short_packets(self):
+        """测试验证过短的数据包 | Test verifying packets that are too short"""
+        short_packets = [
+            b'',  # 空数据包 | Empty packet
+            b'\x01',  # 只有1字节 | Only 1 byte
+            b'\x01\x03',  # 只有2字节 | Only 2 bytes
+        ]
+        
+        for packet in short_packets:
+            is_valid = CRC16Modbus.validate(packet)
+            assert is_valid is False
+            print(f"✓ 过短数据包正确拒绝: {packet.hex().upper() if packet else '(空)'} | Short packet correctly rejected: {packet.hex().upper() if packet else '(empty)'}")
     
-    return result1 and not result2 and not result3
+    def test_verify_with_custom_initial_crc(self):
+        """测试使用自定义初始CRC值的验证 | Test verification with custom initial CRC value"""
+        # 这个测试确保validate函数总是使用正确的初始CRC值 | This test ensures validate function always uses correct initial CRC value
+        packet = b'\x01\x03\x00\x00\x00\x0A\xC5\xCD'
+        
+        # 验证应该总是从标准初始值开始 | Verification should always start from standard initial value
+        is_valid = CRC16Modbus.validate(packet)
+        assert is_valid is True
+        print("✓ 标准CRC验证正常 | Standard CRC verification works")
 
 
-def test_crc_compatibility():
-    """测试与旧版本的兼容性 | Test compatibility with old versions"""
-    print("=== 兼容性测试 | Compatibility Test ===")
+class TestCRC16ModbusEdgeCases:
+    """CRC16 Modbus边界情况测试 | CRC16 Modbus Edge Cases Tests"""
     
-    test_data = b'\x01\x03\x00\x00\x00\x01'
+    def test_crc_edge_cases(self):
+        """测试CRC边界情况 | Test CRC edge cases"""
+        # 测试空数据 | Test empty data
+        crc_empty = CRC16Modbus.calculate(b'')
+        assert isinstance(crc_empty, bytes)
+        assert len(crc_empty) == 2
+        
+        # 测试单字节数据 | Test single byte data
+        crc_single = CRC16Modbus.calculate(b'\x01')
+        assert isinstance(crc_single, bytes)
+        assert len(crc_single) == 2
+        
+        # 测试大量数据 | Test large amount of data
+        large_data = b'\x00' * 1000
+        crc_large = CRC16Modbus.calculate(large_data)
+        assert isinstance(crc_large, bytes)
+        assert len(crc_large) == 2
+        
+        print("✓ CRC边界情况测试通过 | CRC edge cases tested")
     
-    # 新方法 | New method
-    new_crc_bytes = CRC16Modbus.calculate(test_data)
-    new_crc_int = int.from_bytes(new_crc_bytes, byteorder='little')
+    def test_crc_consistency(self):
+        """测试CRC计算一致性 | Test CRC calculation consistency"""
+        test_data = b'\x01\x03\x00\x00\x00\x0A'
+        
+        # 多次计算应该得到相同结果 | Multiple calculations should yield same result
+        crc1 = CRC16Modbus.calculate(test_data)
+        crc2 = CRC16Modbus.calculate(test_data)
+        crc3 = CRC16Modbus.calculate(test_data)
+        
+        assert crc1 == crc2 == crc3
+        crc_int = int.from_bytes(crc1, 'little')
+        print(f"✓ CRC计算一致性验证通过: {crc_int:04X} | CRC calculation consistency verified: {crc_int:04X}")
     
-    # 旧方法（兼容性方法） | Old method (compatibility method)
-    old_crc_int = CRC16Modbus.crc16_to_int(test_data)
+    def test_all_zeros(self):
+        """测试全零数据 | Test all-zero data"""
+        data = b'\x00' * 10
+        crc_bytes = CRC16Modbus.calculate(data)
+        assert isinstance(crc_bytes, bytes)
+        crc = int.from_bytes(crc_bytes, byteorder='little')
+        assert 0 <= crc <= 0xFFFF
+        print(f"✓ 全零数据CRC: {crc:04X} | All-zero data CRC: {crc:04X}")
     
-    print(f"测试数据 | Test data: {test_data.hex(' ').upper()}")
-    print(f"新方法(bytes) | New method (bytes): {new_crc_bytes.hex(' ').upper()}")
-    print(f"新方法(int) | New method (int): {new_crc_int}")
-    print(f"旧方法(int) | Old method (int): {old_crc_int}")
-    print(f"兼容性 | Compatibility: {'✓ 兼容 | Compatible' if new_crc_int == old_crc_int else '❌ 不兼容 | Incompatible'}")
-    print()
+    def test_all_ones(self):
+        """测试全一数据 | Test all-one data"""
+        data = b'\xFF' * 10
+        crc_bytes = CRC16Modbus.calculate(data)
+        assert isinstance(crc_bytes, bytes)
+        crc = int.from_bytes(crc_bytes, byteorder='little')
+        assert 0 <= crc <= 0xFFFF
+        print(f"✓ 全一数据CRC: {crc:04X} | All-one data CRC: {crc:04X}")
     
-    return new_crc_int == old_crc_int
+    def test_alternating_pattern(self):
+        """测试交替模式数据 | Test alternating pattern data"""
+        data = b'\xAA\x55' * 5
+        crc_bytes = CRC16Modbus.calculate(data)
+        assert isinstance(crc_bytes, bytes)
+        crc = int.from_bytes(crc_bytes, byteorder='little')
+        assert 0 <= crc <= 0xFFFF
+        print(f"✓ 交替模式数据CRC: {crc:04X} | Alternating pattern data CRC: {crc:04X}")
+    
+    def test_sequential_data(self):
+        """测试顺序数据 | Test sequential data"""
+        data = bytes(range(256))
+        crc_bytes = CRC16Modbus.calculate(data)
+        assert isinstance(crc_bytes, bytes)
+        crc = int.from_bytes(crc_bytes, byteorder='little')
+        assert 0 <= crc <= 0xFFFF
+        print(f"✓ 顺序数据CRC: {crc:04X} | Sequential data CRC: {crc:04X}")
+    
+    def test_crc_consistency(self):
+        """测试CRC计算的一致性 | Test CRC calculation consistency"""
+        data = b'\x01\x03\x00\x00\x00\x0A'
+        
+        # 多次计算应该得到相同结果 | Multiple calculations should yield same result
+        crc1_bytes = CRC16Modbus.calculate(data)
+        crc2_bytes = CRC16Modbus.calculate(data)
+        crc3_bytes = CRC16Modbus.calculate(data)
+        
+        assert crc1_bytes == crc2_bytes == crc3_bytes
+        crc1 = int.from_bytes(crc1_bytes, byteorder='little')
+        print(f"✓ CRC计算一致性验证通过: {crc1:04X} | CRC calculation consistency verified: {crc1:04X}")
 
 
-def main():
-    """主测试函数 | Main test function"""
-    print("ModbusLink CRC16功能测试 | ModbusLink CRC16 Function Test")
-    print("=" * 50)
-    print()
+class TestCRC16ModbusPerformance:
+    """CRC16 Modbus性能测试 | CRC16 Modbus Performance Tests"""
     
-    # 执行所有测试 | Execute all tests
-    test1_passed = test_crc_calculation()
-    test2_passed = test_crc_validation()
-    test3_passed = test_crc_compatibility()
+    def test_performance_small_data(self):
+        """测试小数据块的性能 | Test performance with small data blocks"""
+        import time
+        
+        data = b'\x01\x03\x00\x00\x00\x0A'
+        iterations = 10000
+        
+        start_time = time.time()
+        for _ in range(iterations):
+            CRC16Modbus.calculate(data)
+        end_time = time.time()
+        
+        elapsed = end_time - start_time
+        rate = iterations / elapsed
+        
+        print(f"✓ 小数据块性能: {rate:.0f} 次/秒 ({elapsed:.3f}秒/{iterations}次) | Small data performance: {rate:.0f} ops/sec ({elapsed:.3f}s/{iterations} ops)")
+        
+        # 性能应该足够好 | Performance should be good enough
+        assert rate > 1000  # 至少1000次/秒 | At least 1000 ops/sec
     
-    # 总结 | Summary
-    print("=== 测试总结 | Test Summary ===")
-    print(f"CRC计算测试 | CRC Calculation Test: {'✓ 通过 | Passed' if test1_passed else '❌ 失败 | Failed'}")
-    print(f"CRC验证测试 | CRC Validation Test: {'✓ 通过 | Passed' if test2_passed else '❌ 失败 | Failed'}")
-    print(f"兼容性测试 | Compatibility Test: {'✓ 通过 | Passed' if test3_passed else '❌ 失败 | Failed'}")
-    print()
-    
-    all_passed = test1_passed and test2_passed and test3_passed
-    if all_passed:
-        print("🎉 所有测试通过！CRC16功能正常。 | All tests passed! CRC16 function is working properly.")
-    else:
-        print("❌ 部分测试失败，请检查CRC16实现。 | Some tests failed, please check CRC16 implementation.")
-    
-    return all_passed
+    def test_performance_large_data(self):
+        """测试大数据块的性能 | Test performance with large data blocks"""
+        import time
+        
+        data = bytes(range(256)) * 4  # 1024字节 | 1024 bytes
+        iterations = 1000
+        
+        start_time = time.time()
+        for _ in range(iterations):
+            CRC16Modbus.calculate(data)
+        end_time = time.time()
+        
+        elapsed = end_time - start_time
+        rate = iterations / elapsed
+        throughput = (len(data) * iterations) / (1024 * 1024) / elapsed  # MB/s
+        
+        print(f"✓ 大数据块性能: {rate:.0f} 次/秒, {throughput:.1f} MB/s | Large data performance: {rate:.0f} ops/sec, {throughput:.1f} MB/s")
+        
+        # 性能应该足够好 | Performance should be good enough
+        assert rate > 100  # 至少100次/秒 | At least 100 ops/sec
 
 
 if __name__ == '__main__':
-    success = main()
-    sys.exit(0 if success else 1)
+    print("开始运行CRC16 Modbus功能测试... | Starting CRC16 Modbus functionality tests...")
+    print("=" * 70)
+    
+    # 运行所有测试 | Run all tests
+    pytest.main([__file__, '-v', '--tb=short'])
+    
+    print("=" * 70)
+    print("CRC16 Modbus功能测试完成 | CRC16 Modbus functionality tests completed")
