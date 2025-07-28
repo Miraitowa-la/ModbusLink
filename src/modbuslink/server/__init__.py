@@ -11,4 +11,4 @@ Provides Modbus slave simulator functionality.
 
 from .slave import ModbusSlave
 
-__all__ = ['ModbusSlave']
+__all__ = ["ModbusSlave"]
