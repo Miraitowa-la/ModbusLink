@@ -44,7 +44,18 @@ class AsyncTcpTransport(AsyncBaseTransport):
             host: 目标主机IP地址或域名 | Target host IP address or domain name
             port: 目标端口，默认502（Modbus TCP标准端口） | Target port, default 502 (Modbus TCP standard port)
             timeout: 超时时间（秒），默认10.0秒 | Timeout in seconds, default 10.0 seconds
+            
+        Raises:
+            ValueError: 当参数无效时 | When parameters are invalid
+            TypeError: 当参数类型错误时 | When parameter types are incorrect
         """
+        if not host or not isinstance(host, str):
+            raise ValueError("主机地址不能为空且必须是字符串 | Host address cannot be empty and must be a string")
+        if not isinstance(port, int) or port <= 0 or port > 65535:
+            raise ValueError("端口必须是1-65535之间的整数 | Port must be an integer between 1-65535")
+        if not isinstance(timeout, (int, float)) or timeout <= 0:
+            raise ValueError("超时时间必须是正数 | Timeout must be a positive number")
+            
         self.host = host
         self.port = port
         self.timeout = timeout
