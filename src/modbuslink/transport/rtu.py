@@ -57,7 +57,18 @@ class RtuTransport(BaseTransport):
             parity: 校验位，默认无校验 | Parity, default no parity
             stopbits: 停止位，默认1位 | Stop bits, default 1 bit
             timeout: 超时时间（秒），默认1.0秒 | Timeout in seconds, default 1.0 seconds
+            
+        Raises:
+            ValueError: 当参数无效时 | When parameters are invalid
+            TypeError: 当参数类型错误时 | When parameter types are incorrect
         """
+        if not port or not isinstance(port, str):
+            raise ValueError("串口名称不能为空且必须是字符串 | Port name cannot be empty and must be a string")
+        if not isinstance(baudrate, int) or baudrate <= 0:
+            raise ValueError("波特率必须是正整数 | Baudrate must be a positive integer")
+        if not isinstance(timeout, (int, float)) or timeout <= 0:
+            raise ValueError("超时时间必须是正数 | Timeout must be a positive number")
+            
         self.port = port
         self.baudrate = baudrate
         self.bytesize = bytesize
