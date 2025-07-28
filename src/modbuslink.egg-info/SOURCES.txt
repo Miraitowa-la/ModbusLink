@@ -28,3 +28,4 @@ tests/test_advanced_features.py
 tests/test_async_integration.py
 tests/test_basic.py
 tests/test_crc.py
+tests/test_integration.py

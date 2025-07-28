@@ -3,7 +3,7 @@
 
 Modern, powerful, developer-friendly and highly scalable Python Modbus library"""
 
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 __author__ = "Miraitowa"
 __email__ = "2056978412@qq.com"
 
