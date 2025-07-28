@@ -1,0 +1,679 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Examples &mdash; ModbusLink 0.1.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=fd825880"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="API Reference" href="api_reference.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            ModbusLink
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#basic-examples">Basic Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#simple-tcp-client">Simple TCP Client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#simple-rtu-client">Simple RTU Client</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced-examples">Advanced Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#asynchronous-operations">Asynchronous Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#callback-mechanisms">Callback Mechanisms</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#advanced-data-types">Advanced Data Types</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#slave-simulator-examples">Slave Simulator Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#basic-slave-setup">Basic Slave Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dynamic-data-updates">Dynamic Data Updates</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#error-handling-examples">Error Handling Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#comprehensive-error-handling">Comprehensive Error Handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#logging-configuration">Logging Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#integration-examples">Integration Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#data-acquisition-system">Data Acquisition System</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#process-control-system">Process Control System</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ModbusLink</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Examples</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/examples.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h1>
+<p>This section provides comprehensive examples demonstrating various features of ModbusLink.</p>
+<section id="basic-examples">
+<h2>Basic Examples<a class="headerlink" href="#basic-examples" title="Link to this heading"></a></h2>
+<section id="simple-tcp-client">
+<h3>Simple TCP Client<a class="headerlink" href="#simple-tcp-client" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModbusClient</span><span class="p">,</span> <span class="n">TcpTransport</span>
+
+<span class="c1"># Create TCP transport</span>
+<span class="n">transport</span> <span class="o">=</span> <span class="n">TcpTransport</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">502</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="c1"># Connect to the server</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+
+    <span class="c1"># Read holding registers</span>
+    <span class="n">registers</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Registers: </span><span class="si">{</span><span class="n">registers</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Write single register</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">write_single_register</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">value</span><span class="o">=</span><span class="mi">1234</span>
+    <span class="p">)</span>
+
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="simple-rtu-client">
+<h3>Simple RTU Client<a class="headerlink" href="#simple-rtu-client" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModbusClient</span><span class="p">,</span> <span class="n">RtuTransport</span>
+
+<span class="c1"># Create RTU transport</span>
+<span class="n">transport</span> <span class="o">=</span> <span class="n">RtuTransport</span><span class="p">(</span>
+    <span class="n">port</span><span class="o">=</span><span class="s1">&#39;COM1&#39;</span><span class="p">,</span>
+    <span class="n">baudrate</span><span class="o">=</span><span class="mi">9600</span><span class="p">,</span>
+    <span class="n">bytesize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">parity</span><span class="o">=</span><span class="s1">&#39;N&#39;</span><span class="p">,</span>
+    <span class="n">stopbits</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+    <span class="c1"># Read coils</span>
+    <span class="n">coils</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_coils</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">quantity</span><span class="o">=</span><span class="mi">8</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Coils: </span><span class="si">{</span><span class="n">coils</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Write multiple coils</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">write_multiple_coils</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="advanced-examples">
+<h2>Advanced Examples<a class="headerlink" href="#advanced-examples" title="Link to this heading"></a></h2>
+<section id="asynchronous-operations">
+<h3>Asynchronous Operations<a class="headerlink" href="#asynchronous-operations" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncModbusClient</span><span class="p">,</span> <span class="n">AsyncTcpTransport</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">async_modbus_operations</span><span class="p">():</span>
+    <span class="n">transport</span> <span class="o">=</span> <span class="n">AsyncTcpTransport</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">502</span><span class="p">)</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">AsyncModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+        <span class="c1"># Concurrent read operations</span>
+        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">registers</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Block </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">registers</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Sequential write operations</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">write_single_register</span><span class="p">(</span>
+                <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">address</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+                <span class="n">value</span><span class="o">=</span><span class="n">i</span> <span class="o">*</span> <span class="mi">100</span>
+            <span class="p">)</span>
+
+<span class="c1"># Run the async function</span>
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">async_modbus_operations</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="callback-mechanisms">
+<h3>Callback Mechanisms<a class="headerlink" href="#callback-mechanisms" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncModbusClient</span><span class="p">,</span> <span class="n">AsyncTcpTransport</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">on_data_received</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Data received: </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">on_error</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error occurred: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">callback_example</span><span class="p">():</span>
+    <span class="n">transport</span> <span class="o">=</span> <span class="n">AsyncTcpTransport</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">502</span><span class="p">)</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">AsyncModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+    <span class="c1"># Set callbacks</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">set_data_callback</span><span class="p">(</span><span class="n">on_data_received</span><span class="p">)</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">set_error_callback</span><span class="p">(</span><span class="n">on_error</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+        <span class="c1"># Operations will trigger callbacks</span>
+        <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span>
+            <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span>
+        <span class="p">)</span>
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">callback_example</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="advanced-data-types">
+<h3>Advanced Data Types<a class="headerlink" href="#advanced-data-types" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModbusClient</span><span class="p">,</span> <span class="n">TcpTransport</span>
+
+<span class="n">transport</span> <span class="o">=</span> <span class="n">TcpTransport</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">502</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+    <span class="c1"># Float32 operations</span>
+    <span class="n">temperature</span> <span class="o">=</span> <span class="mf">25.6</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">write_float32</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">start_address</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+        <span class="n">value</span><span class="o">=</span><span class="n">temperature</span>
+    <span class="p">)</span>
+
+    <span class="n">read_temp</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_float32</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">start_address</span><span class="o">=</span><span class="mi">100</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Temperature: </span><span class="si">{</span><span class="n">read_temp</span><span class="si">}</span><span class="s2">°C&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Int32 operations with custom byte/word order</span>
+    <span class="n">counter_value</span> <span class="o">=</span> <span class="o">-</span><span class="mi">123456</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">write_int32</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">start_address</span><span class="o">=</span><span class="mi">102</span><span class="p">,</span>
+        <span class="n">value</span><span class="o">=</span><span class="n">counter_value</span><span class="p">,</span>
+        <span class="n">byte_order</span><span class="o">=</span><span class="s1">&#39;little&#39;</span><span class="p">,</span>
+        <span class="n">word_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span>
+    <span class="p">)</span>
+
+    <span class="n">read_counter</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_int32</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">start_address</span><span class="o">=</span><span class="mi">102</span><span class="p">,</span>
+        <span class="n">byte_order</span><span class="o">=</span><span class="s1">&#39;little&#39;</span><span class="p">,</span>
+        <span class="n">word_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Counter: </span><span class="si">{</span><span class="n">read_counter</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># UInt32 operations</span>
+    <span class="n">timestamp</span> <span class="o">=</span> <span class="mi">1640995200</span>  <span class="c1"># Unix timestamp</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">write_uint32</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">start_address</span><span class="o">=</span><span class="mi">104</span><span class="p">,</span>
+        <span class="n">value</span><span class="o">=</span><span class="n">timestamp</span>
+    <span class="p">)</span>
+
+    <span class="n">read_timestamp</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_uint32</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">start_address</span><span class="o">=</span><span class="mi">104</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Timestamp: </span><span class="si">{</span><span class="n">read_timestamp</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="slave-simulator-examples">
+<h2>Slave Simulator Examples<a class="headerlink" href="#slave-simulator-examples" title="Link to this heading"></a></h2>
+<section id="basic-slave-setup">
+<h3>Basic Slave Setup<a class="headerlink" href="#basic-slave-setup" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModbusSlave</span><span class="p">,</span> <span class="n">DataStore</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="c1"># Create data store with initial values</span>
+<span class="n">data_store</span> <span class="o">=</span> <span class="n">DataStore</span><span class="p">()</span>
+
+<span class="c1"># Initialize holding registers</span>
+<span class="n">data_store</span><span class="o">.</span><span class="n">set_holding_registers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">3000</span><span class="p">,</span> <span class="mi">4000</span><span class="p">,</span> <span class="mi">5000</span><span class="p">])</span>
+
+<span class="c1"># Initialize coils</span>
+<span class="n">data_store</span><span class="o">.</span><span class="n">set_coils</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">])</span>
+
+<span class="c1"># Initialize discrete inputs</span>
+<span class="n">data_store</span><span class="o">.</span><span class="n">set_discrete_inputs</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">])</span>
+
+<span class="c1"># Initialize input registers</span>
+<span class="n">data_store</span><span class="o">.</span><span class="n">set_input_registers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">400</span><span class="p">])</span>
+
+<span class="c1"># Create and start slave</span>
+<span class="n">slave</span> <span class="o">=</span> <span class="n">ModbusSlave</span><span class="p">(</span><span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">data_store</span><span class="o">=</span><span class="n">data_store</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">slave</span><span class="o">.</span><span class="n">start_tcp_server</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">5020</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Slave server started on 127.0.0.1:5020&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Keep the server running</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Stopping slave server...&quot;</span><span class="p">)</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">slave</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="dynamic-data-updates">
+<h3>Dynamic Data Updates<a class="headerlink" href="#dynamic-data-updates" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModbusSlave</span><span class="p">,</span> <span class="n">DataStore</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">update_sensor_data</span><span class="p">(</span><span class="n">data_store</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simulate sensor data updates&quot;&quot;&quot;</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="c1"># Simulate temperature sensor (register 100)</span>
+        <span class="n">temperature</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">20.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">)</span>
+        <span class="n">temp_int</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">temperature</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>  <span class="c1"># Convert to integer</span>
+        <span class="n">data_store</span><span class="o">.</span><span class="n">set_holding_registers</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="p">[</span><span class="n">temp_int</span><span class="p">])</span>
+
+        <span class="c1"># Simulate pressure sensor (register 101)</span>
+        <span class="n">pressure</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">1000.0</span><span class="p">,</span> <span class="mf">1100.0</span><span class="p">)</span>
+        <span class="n">pressure_int</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">pressure</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="n">data_store</span><span class="o">.</span><span class="n">set_holding_registers</span><span class="p">(</span><span class="mi">101</span><span class="p">,</span> <span class="p">[</span><span class="n">pressure_int</span><span class="p">])</span>
+
+        <span class="c1"># Simulate digital inputs</span>
+        <span class="n">digital_states</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">])</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">)]</span>
+        <span class="n">data_store</span><span class="o">.</span><span class="n">set_discrete_inputs</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">digital_states</span><span class="p">)</span>
+
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># Update every 2 seconds</span>
+
+<span class="c1"># Create data store</span>
+<span class="n">data_store</span> <span class="o">=</span> <span class="n">DataStore</span><span class="p">()</span>
+
+<span class="c1"># Start background thread for data updates</span>
+<span class="n">update_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
+    <span class="n">target</span><span class="o">=</span><span class="n">update_sensor_data</span><span class="p">,</span>
+    <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">data_store</span><span class="p">,),</span>
+    <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+<span class="n">update_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<span class="c1"># Create and start slave</span>
+<span class="n">slave</span> <span class="o">=</span> <span class="n">ModbusSlave</span><span class="p">(</span><span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">data_store</span><span class="o">=</span><span class="n">data_store</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">slave</span><span class="p">:</span>
+    <span class="n">slave</span><span class="o">.</span><span class="n">start_tcp_server</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">5020</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dynamic slave server started on 127.0.0.1:5020&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Stopping slave server...&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="error-handling-examples">
+<h2>Error Handling Examples<a class="headerlink" href="#error-handling-examples" title="Link to this heading"></a></h2>
+<section id="comprehensive-error-handling">
+<h3>Comprehensive Error Handling<a class="headerlink" href="#comprehensive-error-handling" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModbusClient</span><span class="p">,</span> <span class="n">TcpTransport</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink.common.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="ne">ConnectionError</span><span class="p">,</span> <span class="ne">TimeoutError</span><span class="p">,</span> <span class="n">CRCError</span><span class="p">,</span>
+    <span class="n">InvalidResponseError</span><span class="p">,</span> <span class="n">ModbusException</span>
+<span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">robust_modbus_client</span><span class="p">():</span>
+    <span class="n">transport</span> <span class="o">=</span> <span class="n">TcpTransport</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">502</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">ModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+    <span class="n">max_retries</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">retry_delay</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+    <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_retries</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+
+            <span class="c1"># Perform operations</span>
+            <span class="n">registers</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span>
+                <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span>
+            <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Successfully read registers: </span><span class="si">{</span><span class="n">registers</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">break</span>
+
+        <span class="k">except</span> <span class="ne">ConnectionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connection failed (attempt </span><span class="si">{</span><span class="n">attempt</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">attempt</span> <span class="o">&lt;</span> <span class="n">max_retries</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">retry_delay</span><span class="p">)</span>
+                <span class="n">retry_delay</span> <span class="o">*=</span> <span class="mi">2</span>  <span class="c1"># Exponential backoff</span>
+
+        <span class="k">except</span> <span class="ne">TimeoutError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Operation timed out (attempt </span><span class="si">{</span><span class="n">attempt</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">attempt</span> <span class="o">&lt;</span> <span class="n">max_retries</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">retry_delay</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="n">CRCError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CRC error detected: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># CRC errors usually indicate communication issues</span>
+            <span class="k">break</span>
+
+        <span class="k">except</span> <span class="n">InvalidResponseError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid response received: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">break</span>
+
+        <span class="k">except</span> <span class="n">ModbusException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Modbus protocol error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Exception code: </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">exception_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">break</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unexpected error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">break</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">client</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+<span class="n">robust_modbus_client</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="logging-configuration">
+<h3>Logging Configuration<a class="headerlink" href="#logging-configuration" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModbusClient</span><span class="p">,</span> <span class="n">TcpTransport</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink.utils.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_logger</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+<span class="c1"># Configure logging</span>
+<span class="n">setup_logger</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;modbuslink&#39;</span><span class="p">,</span>
+    <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+    <span class="n">log_file</span><span class="o">=</span><span class="s1">&#39;modbus_operations.log&#39;</span><span class="p">,</span>
+    <span class="n">console_output</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+
+<span class="c1"># Create client with logging enabled</span>
+<span class="n">transport</span> <span class="o">=</span> <span class="n">TcpTransport</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">502</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+    <span class="c1"># All operations will be logged</span>
+    <span class="n">registers</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span>
+    <span class="p">)</span>
+
+    <span class="n">client</span><span class="o">.</span><span class="n">write_single_register</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">value</span><span class="o">=</span><span class="mi">1234</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="integration-examples">
+<h2>Integration Examples<a class="headerlink" href="#integration-examples" title="Link to this heading"></a></h2>
+<section id="data-acquisition-system">
+<h3>Data Acquisition System<a class="headerlink" href="#data-acquisition-system" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncModbusClient</span><span class="p">,</span> <span class="n">AsyncTcpTransport</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DataAcquisitionSystem</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transport</span> <span class="o">=</span> <span class="n">AsyncTcpTransport</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">AsyncModbusClient</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_buffer</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">start_acquisition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">:</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># Read multiple data points</span>
+                    <span class="n">temperature</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">read_float32</span><span class="p">(</span>
+                        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">100</span>
+                    <span class="p">)</span>
+                    <span class="n">pressure</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">read_float32</span><span class="p">(</span>
+                        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">102</span>
+                    <span class="p">)</span>
+                    <span class="n">flow_rate</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">read_float32</span><span class="p">(</span>
+                        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">104</span>
+                    <span class="p">)</span>
+
+                    <span class="c1"># Create data record</span>
+                    <span class="n">record</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="s1">&#39;timestamp&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+                        <span class="s1">&#39;temperature&#39;</span><span class="p">:</span> <span class="n">temperature</span><span class="p">,</span>
+                        <span class="s1">&#39;pressure&#39;</span><span class="p">:</span> <span class="n">pressure</span><span class="p">,</span>
+                        <span class="s1">&#39;flow_rate&#39;</span><span class="p">:</span> <span class="n">flow_rate</span>
+                    <span class="p">}</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">data_buffer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Data acquired: </span><span class="si">{</span><span class="n">record</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                    <span class="c1"># Save data periodically</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_buffer</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">10</span><span class="p">:</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_data</span><span class="p">()</span>
+
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Acquisition error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">save_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_buffer</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;data_</span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">_%H%M%S&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.json&quot;</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_buffer</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_buffer</span><span class="p">)</span><span class="si">}</span><span class="s2"> records to </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_buffer</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+<span class="c1"># Usage</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="n">daq</span> <span class="o">=</span> <span class="n">DataAcquisitionSystem</span><span class="p">(</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="mi">502</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">daq</span><span class="o">.</span><span class="n">start_acquisition</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="process-control-system">
+<h3>Process Control System<a class="headerlink" href="#process-control-system" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncModbusClient</span><span class="p">,</span> <span class="n">AsyncTcpTransport</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ProcessController</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transport</span> <span class="o">=</span> <span class="n">AsyncTcpTransport</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">AsyncModbusClient</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setpoints</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;temperature&#39;</span><span class="p">:</span> <span class="mf">25.0</span><span class="p">,</span>
+            <span class="s1">&#39;pressure&#39;</span><span class="p">:</span> <span class="mf">1013.25</span>
+        <span class="p">}</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">control_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">:</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># Read process variables</span>
+                    <span class="n">current_temp</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">read_float32</span><span class="p">(</span>
+                        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">100</span>
+                    <span class="p">)</span>
+                    <span class="n">current_pressure</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">read_float32</span><span class="p">(</span>
+                        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">102</span>
+                    <span class="p">)</span>
+
+                    <span class="c1"># Simple proportional control</span>
+                    <span class="n">temp_error</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">setpoints</span><span class="p">[</span><span class="s1">&#39;temperature&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">current_temp</span>
+                    <span class="n">pressure_error</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">setpoints</span><span class="p">[</span><span class="s1">&#39;pressure&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">current_pressure</span>
+
+                    <span class="c1"># Calculate control outputs</span>
+                    <span class="n">heater_output</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">50</span> <span class="o">+</span> <span class="n">temp_error</span> <span class="o">*</span> <span class="mi">10</span><span class="p">))</span>
+                    <span class="n">pump_output</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">50</span> <span class="o">+</span> <span class="n">pressure_error</span> <span class="o">*</span> <span class="mi">5</span><span class="p">))</span>
+
+                    <span class="c1"># Write control outputs</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">write_float32</span><span class="p">(</span>
+                        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">heater_output</span>
+                    <span class="p">)</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">write_float32</span><span class="p">(</span>
+                        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">202</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">pump_output</span>
+                    <span class="p">)</span>
+
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Temp: </span><span class="si">{</span><span class="n">current_temp</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">°C (SP: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">setpoints</span><span class="p">[</span><span class="s1">&#39;temperature&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">°C), &quot;</span>
+                          <span class="sa">f</span><span class="s2">&quot;Heater: </span><span class="si">{</span><span class="n">heater_output</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Pressure: </span><span class="si">{</span><span class="n">current_pressure</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> mbar (SP: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">setpoints</span><span class="p">[</span><span class="s1">&#39;pressure&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> mbar), &quot;</span>
+                          <span class="sa">f</span><span class="s2">&quot;Pump: </span><span class="si">{</span><span class="n">pump_output</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Control error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>  <span class="c1"># 1 second control loop</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_temperature_setpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setpoints</span><span class="p">[</span><span class="s1">&#39;temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_pressure_setpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setpoints</span><span class="p">[</span><span class="s1">&#39;pressure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+<span class="c1"># Usage</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="n">controller</span> <span class="o">=</span> <span class="n">ProcessController</span><span class="p">(</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="mi">502</span><span class="p">)</span>
+
+    <span class="c1"># Start control loop</span>
+    <span class="n">control_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">controller</span><span class="o">.</span><span class="n">control_loop</span><span class="p">())</span>
+
+    <span class="c1"># Simulate setpoint changes</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">controller</span><span class="o">.</span><span class="n">set_temperature_setpoint</span><span class="p">(</span><span class="mf">30.0</span><span class="p">)</span>
+
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">controller</span><span class="o">.</span><span class="n">set_pressure_setpoint</span><span class="p">(</span><span class="mf">1020.0</span><span class="p">)</span>
+
+    <span class="c1"># Run for a while</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+    <span class="n">control_task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api_reference.html" class="btn btn-neutral float-left" title="API Reference" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Miraitowa.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
