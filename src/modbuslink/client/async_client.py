@@ -11,6 +11,7 @@ Provides user-friendly asynchronous Modbus client API.
 
 import struct
 from typing import List, Optional, Callable, Any
+from typing_extensions import Self
 import asyncio
 from ..transport.async_base import AsyncBaseTransport
 from ..common.exceptions import InvalidResponseError
@@ -109,7 +110,7 @@ class AsyncModbusClient:
 
         # 解析线圈数据 | Parse coil data
         coil_data = response_pdu[2:]
-        coils = []
+        coils: list[bool] = []
 
         for byte_idx, byte_val in enumerate(coil_data):
             for bit_idx in range(8):
@@ -180,7 +181,7 @@ class AsyncModbusClient:
 
         # 解析离散输入数据 | Parse discrete input data
         input_data = response_pdu[2:]
-        inputs = []
+        inputs: list[bool] = []
 
         for byte_idx, byte_val in enumerate(input_data):
             for bit_idx in range(8):
@@ -647,11 +648,11 @@ class AsyncModbusClient:
             slave_id, start_address, registers, callback
         )
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> Self:
         """异步上下文管理器入口 | Async context manager entry"""
         await self.transport.open()
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(self, exc_type: Optional[type], exc_val: Optional[BaseException], exc_tb: Optional[Any]) -> None:
         """异步上下文管理器出口 | Async context manager exit"""
         await self.transport.close()

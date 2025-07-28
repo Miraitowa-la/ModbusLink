@@ -16,7 +16,7 @@ import socket
 import serial
 import threading
 import time
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Any
 from ..utils.crc import CRC16Modbus
 from ..utils.logging import get_logger
 
@@ -343,7 +343,7 @@ class ModbusSlave:
                     start_time = time.time()
 
                     while time.time() - start_time < 1.0:  # 1秒超时 | 1 second timeout
-                        if self._rtu_serial.in_waiting > 0:
+                        if self._rtu_serial is not None and self._rtu_serial.in_waiting > 0:
                             chunk = self._rtu_serial.read(self._rtu_serial.in_waiting)
                             data += chunk
                             start_time = time.time()  # 重置超时 | Reset timeout
@@ -385,7 +385,8 @@ class ModbusSlave:
                     response_frame = response_prefix + response_crc
 
                     # 发送响应 | Send response
-                    self._rtu_serial.write(response_frame)
+                    if self._rtu_serial is not None:
+                        self._rtu_serial.write(response_frame)
 
                     self._logger.debug(
                         f"发送RTU响应: {response_pdu.hex()} | Sent RTU response: {response_pdu.hex()}"
@@ -624,7 +625,7 @@ class ModbusSlave:
 
         # 解析线圈数据 | Parse coil data
         coil_data = pdu[6:]
-        coils = []
+        coils: list[bool] = []
 
         for byte_idx, byte_val in enumerate(coil_data):
             for bit_idx in range(8):
@@ -689,10 +690,10 @@ class ModbusSlave:
         """
         return struct.pack(">BB", function_code | 0x80, exception_code)
 
-    def __enter__(self):
+    def __enter__(self) -> 'ModbusSlave':
         """上下文管理器入口 | Context manager entry"""
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: Optional[type], exc_val: Optional[BaseException], exc_tb: Optional[Any]) -> None:
         """上下文管理器出口 | Context manager exit"""
         self.stop()

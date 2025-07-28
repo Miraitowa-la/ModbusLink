@@ -10,7 +10,7 @@ Provides user-friendly synchronous Modbus client API.
 """
 
 import struct
-from typing import List
+from typing import List, Optional, Any
 from ..transport.base import BaseTransport
 from ..common.exceptions import InvalidResponseError
 from ..utils.coder import PayloadCoder
@@ -103,7 +103,7 @@ class ModbusClient:
 
         # 解析线圈数据 | Parse coil data
         coil_data = response_pdu[2:]
-        coils = []
+        coils: list[bool] = []
 
         for byte_idx, byte_val in enumerate(coil_data):
             for bit_idx in range(8):
@@ -163,7 +163,7 @@ class ModbusClient:
 
         # 解析离散输入数据 | Parse discrete input data
         input_data = response_pdu[2:]
-        inputs = []
+        inputs: list[bool] = []
 
         for byte_idx, byte_val in enumerate(input_data):
             for bit_idx in range(8):
@@ -446,12 +446,12 @@ class ModbusClient:
                 "写多个寄存器响应不匹配 | Write multiple registers response mismatch"
             )
 
-    def __enter__(self):
+    def __enter__(self) -> 'ModbusClient':
         """上下文管理器入口 | Context manager entry"""
         self.transport.open()
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: Optional[type], exc_val: Optional[BaseException], exc_tb: Optional[Any]) -> None:
         """上下文管理器出口 | Context manager exit"""
         self.transport.close()
 
@@ -705,7 +705,7 @@ class ModbusClient:
         """
         register_count = (length + 1) // 2  # 每个寄存器2字节 | 2 bytes per register
         registers = self.read_holding_registers(slave_id, start_address, register_count)
-        return PayloadCoder.decode_string(registers, length, encoding)
+        return PayloadCoder.decode_string(registers, PayloadCoder.BIG_ENDIAN, encoding)
 
     def write_string(
         self, slave_id: int, start_address: int, value: str, encoding: str = "utf-8"
@@ -721,7 +721,10 @@ class ModbusClient:
         Example:
             >>> client.write_string(1, 200, "ModbusLink")  # 写入设备名称 | Write device name
         """
-        registers = PayloadCoder.encode_string(value, encoding)
+        # 计算所需的寄存器数量 | Calculate required register count
+        byte_length = len(value.encode(encoding))
+        register_count = (byte_length + 1) // 2  # 向上取整 | Round up
+        registers = PayloadCoder.encode_string(value, register_count, PayloadCoder.BIG_ENDIAN, encoding)
         self.write_multiple_registers(slave_id, start_address, registers)
 
     def __repr__(self) -> str:

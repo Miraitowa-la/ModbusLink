@@ -160,6 +160,8 @@ class AsyncTcpTransport(AsyncBaseTransport):
 
         try:
             # 3. 异步发送请求 | Async send request
+            if self._writer is None:
+                raise ConnectionError("连接未建立 | Connection not established")
             self._writer.write(request_frame)
             await asyncio.wait_for(self._writer.drain(), timeout=self.timeout)
 
@@ -247,6 +249,8 @@ class AsyncTcpTransport(AsyncBaseTransport):
             ConnectionError: 连接错误 | Connection error
         """
         try:
+            if self._reader is None:
+                raise ConnectionError("连接未建立 | Connection not established")
             data = await asyncio.wait_for(
                 self._reader.readexactly(length), timeout=self.timeout
             )
