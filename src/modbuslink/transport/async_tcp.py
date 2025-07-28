@@ -97,7 +97,9 @@ class AsyncTcpTransport(AsyncBaseTransport):
                     f"异步TCP连接已关闭 | Async TCP connection closed: {self.host}:{self.port}"
                 )
             except Exception as e:
-                self._logger.debug(f"关闭异步连接时出现错误（可忽略）| Error during async connection close (ignorable): {e}")
+                self._logger.debug(
+                    f"关闭异步连接时出现错误（可忽略）| Error during async connection close (ignorable): {e}"
+                )
             finally:
                 self._reader = None
                 self._writer = None

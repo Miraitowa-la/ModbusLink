@@ -91,7 +91,9 @@ class TcpTransport(BaseTransport):
                     f"TCP连接已关闭 | TCP connection closed: {self.host}:{self.port}"
                 )
             except socket.error as e:
-                self._logger.debug(f"关闭连接时出现错误（可忽略）| Error during connection close (ignorable): {e}")
+                self._logger.debug(
+                    f"关闭连接时出现错误（可忽略）| Error during connection close (ignorable): {e}"
+                )
             finally:
                 self._socket = None
 

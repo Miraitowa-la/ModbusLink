@@ -19,13 +19,15 @@ except ImportError:
         # 尝试直接从src导入 | Try importing directly from src
         import sys
         import os
-        src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src'))
+
+        src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src"))
         if src_path not in sys.path:
             sys.path.insert(0, src_path)
         from modbuslink.utils.crc import CRC16Modbus
     except ImportError as e:
         pytest.skip(
-            f"无法导入CRC模块: {e} | Cannot import CRC module: {e}", allow_module_level=True
+            f"无法导入CRC模块: {e} | Cannot import CRC module: {e}",
+            allow_module_level=True,
         )
 
 
