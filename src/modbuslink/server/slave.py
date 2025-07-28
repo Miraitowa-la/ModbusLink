@@ -203,16 +203,16 @@ class ModbusSlave:
         if self._tcp_socket:
             try:
                 self._tcp_socket.close()
-            except Exception:
-                pass
+            except Exception as e:
+                self._logger.debug(f"关闭串口时出现错误（可忽略）| Error during serial port close (ignorable): {e}")
             self._tcp_socket = None
 
         # 关闭串口 | Close serial port
         if self._rtu_serial:
             try:
                 self._rtu_serial.close()
-            except Exception:
-                pass
+            except Exception as e:
+                self._logger.debug(f"关闭客户端连接时出现错误（可忽略）| Error during client connection close (ignorable): {e}")
             self._rtu_serial = None
 
         # 等待服务器线程结束 | Wait for server thread to finish
@@ -330,8 +330,8 @@ class ModbusSlave:
         finally:
             try:
                 client_socket.close()
-            except Exception:
-                pass
+            except Exception as e:
+                self._logger.debug(f"关闭客户端套接字时出现错误（可忽略）| Error during client socket close (ignorable): {e}")
 
     def _rtu_server_loop(self) -> None:
         """RTU服务器主循环 | RTU server main loop"""

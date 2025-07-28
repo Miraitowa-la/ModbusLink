@@ -11,12 +11,22 @@ import os
 # 添加源代码路径 | Add source code path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
+# 尝试多种导入方式 | Try multiple import methods
 try:
     from modbuslink.utils.crc import CRC16Modbus
-except ImportError as e:
-    pytest.skip(
-        f"无法导入CRC模块: {e} | Cannot import CRC module: {e}", allow_module_level=True
-    )
+except ImportError:
+    try:
+        # 尝试直接从src导入 | Try importing directly from src
+        import sys
+        import os
+        src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'src'))
+        if src_path not in sys.path:
+            sys.path.insert(0, src_path)
+        from modbuslink.utils.crc import CRC16Modbus
+    except ImportError as e:
+        pytest.skip(
+            f"无法导入CRC模块: {e} | Cannot import CRC module: {e}", allow_module_level=True
+        )
 
 
 class TestCRC16ModbusCalculation:
