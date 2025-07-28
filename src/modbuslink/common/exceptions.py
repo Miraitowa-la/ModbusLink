@@ -9,6 +9,8 @@ Exception Definition Module
 Defines all exception types used in the ModbusLink library.
 """
 
+from typing import Optional
+
 
 class ModbusLinkError(Exception):
     """ModbusLink库的基础异常类
@@ -101,7 +103,9 @@ class ModbusException(ModbusLinkError):
         function_code: 原始功能码 | Original function code
     """
 
-    def __init__(self, exception_code: int, function_code: int, message: str = None):
+    def __init__(
+        self, exception_code: int, function_code: int, message: Optional[str] = None
+    ):
         self.exception_code = exception_code
         self.function_code = function_code
 

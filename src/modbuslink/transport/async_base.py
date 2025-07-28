@@ -10,6 +10,7 @@ Defines the unified interface that all async transport layer implementations mus
 """
 
 from abc import ABC, abstractmethod
+from typing import Optional, Any
 
 
 class AsyncBaseTransport(ABC):
@@ -109,11 +110,16 @@ class AsyncBaseTransport(ABC):
         """
         pass
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> "AsyncBaseTransport":
         """异步上下文管理器入口 | Async Context Manager Entry"""
         await self.open()
         return self
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(
+        self,
+        exc_type: Optional[type],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[Any],
+    ) -> None:
         """异步上下文管理器出口 | Async Context Manager Exit"""
         await self.close()

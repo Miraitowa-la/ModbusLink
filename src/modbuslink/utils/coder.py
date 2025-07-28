@@ -66,9 +66,11 @@ class PayloadCoder:
 
         # 组合字节并解码为浮点数 | Combine bytes and decode to float
         combined_bytes = high_bytes + low_bytes
-        return struct.unpack(
-            ">f" if byte_order == PayloadCoder.BIG_ENDIAN else "<f", combined_bytes
-        )[0]
+        return float(
+            struct.unpack(
+                ">f" if byte_order == PayloadCoder.BIG_ENDIAN else "<f", combined_bytes
+            )[0]
+        )
 
     @staticmethod
     def encode_float32(
@@ -149,7 +151,7 @@ class PayloadCoder:
         if not signed:
             format_char = ">I" if byte_order == PayloadCoder.BIG_ENDIAN else "<I"
 
-        return struct.unpack(format_char, combined_bytes)[0]
+        return int(struct.unpack(format_char, combined_bytes)[0])
 
     @staticmethod
     def encode_int32(
@@ -241,7 +243,7 @@ class PayloadCoder:
         if not signed:
             format_char = ">Q" if byte_order == PayloadCoder.BIG_ENDIAN else "<Q"
 
-        return struct.unpack(format_char, all_bytes)[0]
+        return int(struct.unpack(format_char, all_bytes)[0])
 
     @staticmethod
     def encode_int64(

@@ -32,7 +32,7 @@ class DataStore:
     holding registers and input registers.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """初始化数据存储区 | Initialize data store"""
         # 线圈状态（读写） | Coil status (read/write)
         self.coils: Dict[int, bool] = {}
@@ -343,7 +343,10 @@ class ModbusSlave:
                     start_time = time.time()
 
                     while time.time() - start_time < 1.0:  # 1秒超时 | 1 second timeout
-                        if self._rtu_serial is not None and self._rtu_serial.in_waiting > 0:
+                        if (
+                            self._rtu_serial is not None
+                            and self._rtu_serial.in_waiting > 0
+                        ):
                             chunk = self._rtu_serial.read(self._rtu_serial.in_waiting)
                             data += chunk
                             start_time = time.time()  # 重置超时 | Reset timeout
@@ -690,10 +693,15 @@ class ModbusSlave:
         """
         return struct.pack(">BB", function_code | 0x80, exception_code)
 
-    def __enter__(self) -> 'ModbusSlave':
+    def __enter__(self) -> "ModbusSlave":
         """上下文管理器入口 | Context manager entry"""
         return self
 
-    def __exit__(self, exc_type: Optional[type], exc_val: Optional[BaseException], exc_tb: Optional[Any]) -> None:
+    def __exit__(
+        self,
+        exc_type: Optional[type],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[Any],
+    ) -> None:
         """上下文管理器出口 | Context manager exit"""
         self.stop()

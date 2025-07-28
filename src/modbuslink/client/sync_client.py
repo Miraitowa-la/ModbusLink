@@ -446,12 +446,17 @@ class ModbusClient:
                 "写多个寄存器响应不匹配 | Write multiple registers response mismatch"
             )
 
-    def __enter__(self) -> 'ModbusClient':
+    def __enter__(self) -> "ModbusClient":
         """上下文管理器入口 | Context manager entry"""
         self.transport.open()
         return self
 
-    def __exit__(self, exc_type: Optional[type], exc_val: Optional[BaseException], exc_tb: Optional[Any]) -> None:
+    def __exit__(
+        self,
+        exc_type: Optional[type],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[Any],
+    ) -> None:
         """上下文管理器出口 | Context manager exit"""
         self.transport.close()
 
@@ -724,7 +729,9 @@ class ModbusClient:
         # 计算所需的寄存器数量 | Calculate required register count
         byte_length = len(value.encode(encoding))
         register_count = (byte_length + 1) // 2  # 向上取整 | Round up
-        registers = PayloadCoder.encode_string(value, register_count, PayloadCoder.BIG_ENDIAN, encoding)
+        registers = PayloadCoder.encode_string(
+            value, register_count, PayloadCoder.BIG_ENDIAN, encoding
+        )
         self.write_multiple_registers(slave_id, start_address, registers)
 
     def __repr__(self) -> str:

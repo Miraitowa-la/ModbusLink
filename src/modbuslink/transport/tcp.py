@@ -154,6 +154,8 @@ class TcpTransport(BaseTransport):
 
         try:
             # 3. 发送请求 | Send request
+            if self._socket is None:
+                raise ConnectionError("TCP连接未建立 | TCP connection not established")
             self._socket.sendall(request_frame)
 
             # 4. 接收响应MBAP头（7字节） | Receive response MBAP header (7 bytes)
@@ -238,6 +240,10 @@ class TcpTransport(BaseTransport):
         data = b""
         while len(data) < length:
             try:
+                if self._socket is None:
+                    raise ConnectionError(
+                        "TCP连接未建立 | TCP connection not established"
+                    )
                 chunk = self._socket.recv(length - len(data))
                 if not chunk:
                     raise ConnectionError(

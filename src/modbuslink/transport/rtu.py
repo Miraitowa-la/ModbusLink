@@ -158,6 +158,10 @@ class RtuTransport(BaseTransport):
 
         try:
             # 2. 清空接收缓冲区并发送请求 | Clear receive buffer and send request
+            if self._serial is None:
+                raise ConnectionError(
+                    "串口连接未建立 | Serial connection not established"
+                )
             self._serial.reset_input_buffer()
             self._serial.write(request_adu)
 
@@ -210,14 +214,22 @@ class RtuTransport(BaseTransport):
         Estimate response length based on function code and intelligently receive data.
         """
         # 首先读取最小响应（地址 + 功能码） | First read minimum response (address + function code)
-        response = self._serial.read(2)
+        if self._serial is None:
+            raise ConnectionError("串口连接未建立 | Serial connection not established")
+        response = bytes(self._serial.read(2))
         if len(response) < 2:
             raise TimeoutError("接收响应超时 | Receive response timeout")
 
         # 检查是否为异常响应 | Check if it's an exception response
         if response[1] & 0x80:  # 异常响应 | Exception response
             # 异常响应格式：地址 + 异常功能码 + 异常码 + CRC (共5字节) | Exception response format: address + exception function code + exception code + CRC (total 5 bytes)
-            remaining = self._serial.read(3)  # 异常码 + CRC | Exception code + CRC
+            if self._serial is None:
+                raise ConnectionError(
+                    "串口连接未建立 | Serial connection not established"
+                )
+            remaining = bytes(
+                self._serial.read(3)
+            )  # 异常码 + CRC | Exception code + CRC
             if len(remaining) < 3:
                 raise TimeoutError(
                     "接收异常响应超时 | Receive exception response timeout"
@@ -230,12 +242,20 @@ class RtuTransport(BaseTransport):
             0x02,
         ]:  # 读取线圈/离散输入 | Read coils/discrete inputs
             # 格式：地址 + 功能码 + 字节数 + 数据 + CRC | Format: address + function code + byte count + data + CRC
-            byte_count_data = self._serial.read(1)
+            if self._serial is None:
+                raise ConnectionError(
+                    "串口连接未建立 | Serial connection not established"
+                )
+            byte_count_data = bytes(self._serial.read(1))
             if len(byte_count_data) < 1:
                 raise TimeoutError("接收字节数超时 | Receive byte count timeout")
             byte_count = byte_count_data[0]
-            remaining_data = self._serial.read(
-                byte_count + 2
+            if self._serial is None:
+                raise ConnectionError(
+                    "串口连接未建立 | Serial connection not established"
+                )
+            remaining_data = bytes(
+                self._serial.read(byte_count + 2)
             )  # 数据 + CRC | Data + CRC
             if len(remaining_data) < byte_count + 2:
                 raise TimeoutError("接收数据超时 | Receive data timeout")
@@ -246,12 +266,20 @@ class RtuTransport(BaseTransport):
             0x04,
         ]:  # 读取保持寄存器/输入寄存器 | Read holding registers/input registers
             # 格式：地址 + 功能码 + 字节数 + 数据 + CRC | Format: address + function code + byte count + data + CRC
-            byte_count_data = self._serial.read(1)
+            if self._serial is None:
+                raise ConnectionError(
+                    "串口连接未建立 | Serial connection not established"
+                )
+            byte_count_data = bytes(self._serial.read(1))
             if len(byte_count_data) < 1:
                 raise TimeoutError("接收字节数超时 | Receive byte count timeout")
             byte_count = byte_count_data[0]
-            remaining_data = self._serial.read(
-                byte_count + 2
+            if self._serial is None:
+                raise ConnectionError(
+                    "串口连接未建立 | Serial connection not established"
+                )
+            remaining_data = bytes(
+                self._serial.read(byte_count + 2)
             )  # 数据 + CRC | Data + CRC
             if len(remaining_data) < byte_count + 2:
                 raise TimeoutError("接收数据超时 | Receive data timeout")
@@ -262,7 +290,13 @@ class RtuTransport(BaseTransport):
             0x06,
         ]:  # 写单个线圈/寄存器 | Write single coil/register
             # 格式：地址 + 功能码 + 地址 + 值 + CRC (共8字节) | Format: address + function code + address + value + CRC (total 8 bytes)
-            remaining = self._serial.read(6)  # 地址 + 值 + CRC | Address + value + CRC
+            if self._serial is None:
+                raise ConnectionError(
+                    "串口连接未建立 | Serial connection not established"
+                )
+            remaining = bytes(
+                self._serial.read(6)
+            )  # 地址 + 值 + CRC | Address + value + CRC
             if len(remaining) < 6:
                 raise TimeoutError("接收写响应超时 | Receive write response timeout")
             return response + remaining
@@ -272,8 +306,12 @@ class RtuTransport(BaseTransport):
             0x10,
         ]:  # 写多个线圈/寄存器 | Write multiple coils/registers
             # 格式：地址 + 功能码 + 起始地址 + 数量 + CRC (共8字节) | Format: address + function code + starting address + quantity + CRC (total 8 bytes)
-            remaining = self._serial.read(
-                6
+            if self._serial is None:
+                raise ConnectionError(
+                    "串口连接未建立 | Serial connection not established"
+                )
+            remaining = bytes(
+                self._serial.read(6)
             )  # 起始地址 + 数量 + CRC | Starting address + quantity + CRC
             if len(remaining) < 6:
                 raise TimeoutError("接收写响应超时 | Receive write response timeout")
@@ -281,8 +319,12 @@ class RtuTransport(BaseTransport):
 
         else:
             # 未知功能码，尝试读取更多数据 | Unknown function code, try to read more data
-            remaining = self._serial.read(
-                10
+            if self._serial is None:
+                raise ConnectionError(
+                    "串口连接未建立 | Serial connection not established"
+                )
+            remaining = bytes(
+                self._serial.read(10)
             )  # 最多再读10字节 | Read at most 10 more bytes
             return response + remaining
 

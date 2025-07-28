@@ -10,6 +10,7 @@ Defines the unified interface that all transport layer implementations must foll
 """
 
 from abc import ABC, abstractmethod
+from typing import Optional, Any
 
 
 class BaseTransport(ABC):
@@ -112,11 +113,16 @@ class BaseTransport(ABC):
         """
         pass
 
-    def __enter__(self):
+    def __enter__(self) -> "BaseTransport":
         """上下文管理器入口 | Context Manager Entry"""
         self.open()
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(
+        self,
+        exc_type: Optional[type],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[Any],
+    ) -> None:
         """上下文管理器出口 | Context Manager Exit"""
         self.close()

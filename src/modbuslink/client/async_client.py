@@ -653,6 +653,11 @@ class AsyncModbusClient:
         await self.transport.open()
         return self
 
-    async def __aexit__(self, exc_type: Optional[type], exc_val: Optional[BaseException], exc_tb: Optional[Any]) -> None:
+    async def __aexit__(
+        self,
+        exc_type: Optional[type],
+        exc_val: Optional[BaseException],
+        exc_tb: Optional[Any],
+    ) -> None:
         """异步上下文管理器出口 | Async context manager exit"""
         await self.transport.close()
