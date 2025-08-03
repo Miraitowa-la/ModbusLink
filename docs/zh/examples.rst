@@ -199,100 +199,99 @@
        )
        print(f"时间戳: {read_timestamp}")
 
-从站模拟器示例
---------------
+性能测试示例
+------------
 
-基本从站设置
+批量操作性能
 ~~~~~~~~~~~~
 
 .. code-block:: python
 
-   from modbuslink import ModbusSlave, DataStore
    import time
+   import asyncio
+   from modbuslink import AsyncModbusClient, AsyncTcpTransport
 
-   # 创建带初始值的数据存储
-   data_store = DataStore()
-   
-   # 初始化保持寄存器
-   data_store.set_holding_registers(0, [1000, 2000, 3000, 4000, 5000])
-   
-   # 初始化线圈
-   data_store.set_coils(0, [True, False, True, False, True, False])
-   
-   # 初始化离散输入
-   data_store.set_discrete_inputs(0, [False, True, False, True])
-   
-   # 初始化输入寄存器
-   data_store.set_input_registers(0, [100, 200, 300, 400])
-   
-   # 创建并启动从站
-   slave = ModbusSlave(slave_id=1, data_store=data_store)
-   
-   try:
-       slave.start_tcp_server(host='127.0.0.1', port=5020)
-       print("从站服务器已启动在 127.0.0.1:5020")
+   async def performance_test():
+       transport = AsyncTcpTransport(host='192.168.1.100', port=502)
+       client = AsyncModbusClient(transport)
        
-       # 保持服务器运行
-       while True:
-           time.sleep(1)
+       async with client:
+           # 测试批量读取性能
+           start_time = time.time()
            
-   except KeyboardInterrupt:
-       print("正在停止从站服务器...")
-   finally:
-       slave.stop()
+           # 并发读取多个寄存器块
+           tasks = []
+           for i in range(10):
+               task = client.read_holding_registers(
+                   slave_id=1, 
+                   start_address=i*10, 
+                   quantity=10
+               )
+               tasks.append(task)
+           
+           results = await asyncio.gather(*tasks)
+           end_time = time.time()
+           
+           print(f"读取100个寄存器耗时: {end_time - start_time:.3f}秒")
+           print(f"平均每个寄存器: {(end_time - start_time)*1000/100:.2f}ms")
 
-动态数据更新
-~~~~~~~~~~~~
+   asyncio.run(performance_test())
+
+连接池示例
+~~~~~~~~~~
 
 .. code-block:: python
 
-   from modbuslink import ModbusSlave, DataStore
-   import time
-   import random
-   import threading
+   import asyncio
+   from modbuslink import AsyncModbusClient, AsyncTcpTransport
 
-   def update_sensor_data(data_store):
-       """模拟传感器数据更新"""
-       while True:
-           # 模拟温度传感器（寄存器100）
-           temperature = random.uniform(20.0, 30.0)
-           temp_int = int(temperature * 100)  # 转换为整数
-           data_store.set_holding_registers(100, [temp_int])
+   class ModbusConnectionPool:
+       def __init__(self, host, port, pool_size=5):
+           self.host = host
+           self.port = port
+           self.pool_size = pool_size
+           self.connections = asyncio.Queue(maxsize=pool_size)
            
-           # 模拟压力传感器（寄存器101）
-           pressure = random.uniform(1000.0, 1100.0)
-           pressure_int = int(pressure * 10)
-           data_store.set_holding_registers(101, [pressure_int])
+       async def initialize(self):
+           for _ in range(self.pool_size):
+               transport = AsyncTcpTransport(host=self.host, port=self.port)
+               client = AsyncModbusClient(transport)
+               await client.connect()
+               await self.connections.put(client)
+               
+       async def get_connection(self):
+           return await self.connections.get()
            
-           # 模拟数字输入
-           digital_states = [random.choice([True, False]) for _ in range(8)]
-           data_store.set_discrete_inputs(0, digital_states)
+       async def return_connection(self, client):
+           await self.connections.put(client)
            
-           time.sleep(2)  # 每2秒更新一次
+       async def close_all(self):
+           while not self.connections.empty():
+               client = await self.connections.get()
+               await client.disconnect()
 
-   # 创建数据存储
-   data_store = DataStore()
-   
-   # 启动后台线程进行数据更新
-   update_thread = threading.Thread(
-       target=update_sensor_data, 
-       args=(data_store,), 
-       daemon=True
-   )
-   update_thread.start()
-   
-   # 创建并启动从站
-   slave = ModbusSlave(slave_id=1, data_store=data_store)
-   
-   with slave:
-       slave.start_tcp_server(host='127.0.0.1', port=5020)
-       print("动态从站服务器已启动在 127.0.0.1:5020")
+   # 使用连接池
+   async def use_connection_pool():
+       pool = ModbusConnectionPool('192.168.1.100', 502)
+       await pool.initialize()
        
        try:
-           while True:
-               time.sleep(1)
-       except KeyboardInterrupt:
-           print("正在停止从站服务器...")
+           # 获取连接
+           client = await pool.get_connection()
+           
+           # 执行操作
+           registers = await client.read_holding_registers(
+               slave_id=1, start_address=0, quantity=10
+           )
+           print(f"读取结果: {registers}")
+           
+           # 归还连接
+           await pool.return_connection(client)
+           
+       finally:
+           await pool.close_all()
+
+   asyncio.run(use_connection_pool())
 
 错误处理示例
 ------------

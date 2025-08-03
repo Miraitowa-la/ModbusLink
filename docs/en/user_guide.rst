@@ -357,56 +357,18 @@ Async clients support concurrent operations for improved performance:
            results = await asyncio.gather(*tasks)
            print(f"Concurrent results: {results}")
 
-Slave Simulator
----------------
+Performance Optimization
+------------------------
 
-ModbusLink includes a built-in slave simulator for testing:
+For optimal performance, consider the following recommendations:
 
-Basic Setup
-~~~~~~~~~~~
+1. **Use Async Clients**: For high-concurrency applications, async clients provide better performance.
 
-.. code-block:: python
+2. **Batch Operations**: Use batch read/write operations whenever possible instead of individual operations.
 
-   from modbuslink import ModbusSlave, DataStore
+3. **Connection Reuse**: Keep connections open and reuse them rather than frequent connect/disconnect.
 
-   # Create data store
-   data_store = DataStore()
-   
-   # Initialize data
-   data_store.set_holding_registers(0, [1000, 2000, 3000, 4000, 5000])
-   data_store.set_coils(0, [True, False, True, False, True, False, True, False])
-   data_store.set_input_registers(0, [100, 200, 300, 400, 500])
-   data_store.set_discrete_inputs(0, [False, True, False, True, False, True])
-   
-   # Create slave
-   slave = ModbusSlave(slave_id=1, data_store=data_store)
-   
-   # Start TCP server
-   slave.start_tcp_server(host='127.0.0.1', port=5020)
-
-Data Store Operations
-~~~~~~~~~~~~~~~~~~~~~
-
-.. code-block:: python
-
-   # Direct data manipulation
-   data_store = DataStore()
-   
-   # Set holding registers
-   data_store.set_holding_registers(0, [1000, 2000, 3000])
-   registers = data_store.get_holding_registers(0, 3)
-   
-   # Set coils
-   data_store.set_coils(0, [True, False, True, False])
-   coils = data_store.get_coils(0, 4)
-   
-   # Set input registers (read-only from client perspective)
-   data_store.set_input_registers(0, [100, 200, 300])
-   input_regs = data_store.get_input_registers(0, 3)
-   
-   # Set discrete inputs (read-only from client perspective)
-   data_store.set_discrete_inputs(0, [True, False, True])
-   inputs = data_store.get_discrete_inputs(0, 3)
+4. **Proper Timeouts**: Adjust timeout values based on network conditions.
 
 Error Handling
 --------------
@@ -481,8 +443,8 @@ Best Practices
 
 4. **Use Async for High Performance**: Use async clients for applications requiring high throughput.
 
-5. **Test with Simulator**: Use the built-in slave simulator for development and testing.
+5. **Enable Logging**: Use logging for debugging and monitoring in production.
 
-6. **Enable Logging**: Use logging for debugging and monitoring in production.
+6. **Validate Data**: Always validate data ranges and types before writing to devices.
 
-7. **Validate Data**: Always validate data ranges and types before writing to devices.
+7. **Connection Management**: Properly manage connection lifecycle to avoid frequent connect/disconnect operations.

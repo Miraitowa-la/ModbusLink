@@ -148,9 +148,6 @@ ModbusLink/
 │   │   ├── rtu.py          # RTU传输层实现
 │   │   ├── tcp.py          # TCP传输层实现
 │   │   └── async_tcp.py    # 异步TCP传输层实现
-│   ├── server/              # 服务器模块（第三阶段）
-│   │   ├── __init__.py
-│   │   └── slave.py        # Modbus从站模拟器
 │   ├── utils/               # 工具模块
 │   │   ├── __init__.py
 │   │   ├── crc.py          # CRC16校验工具
@@ -159,45 +156,19 @@ ModbusLink/
 │   └── common/              # 通用模块
 │       ├── __init__.py
 │       └── exceptions.py    # 异常定义
-├── tests/                   # 测试模块
-│   ├── __init__.py
-│   ├── test_basic.py        # 基本功能测试
-│   ├── test_crc.py          # CRC功能测试
-│   ├── test_payload_coder.py # 数据编码测试
-│   └── test_async_integration.py # 异步集成测试
 ├── examples/                # 使用示例
 │   ├── __init__.py
 │   ├── rtu_example.py       # RTU使用示例
 │   ├── tcp_example.py       # TCP使用示例
-│   ├── advanced_example.py  # 高级数据类型示例
-│   ├── async_tcp_example.py # 异步TCP示例
-│   ├── slave_simulator_example.py # 从站模拟器示例
-│   └── stage3_complete_demo.py # 第三阶段完整演示
+│   └── async_tcp_example.py # 异步TCP示例
 ├── pyproject.toml           # 项目配置
 ├── README.md                # 项目说明
 └── LICENSE.txt              # 许可证
 ```
 
-## 测试
+## 开发说明
 
-项目包含完整的测试套件，用于验证所有功能的正确性。
-
-### 运行测试
-
-```bash
-# 运行CRC功能测试
-python tests/test_crc.py
-
-# 运行基本功能测试
-python tests/test_basic.py
-```
-
-### 测试内容
-
-- **CRC功能测试** (`tests/test_crc.py`): 验证CRC16校验算法的正确性
-- **基本功能测试** (`tests/test_basic.py`): 验证模块导入、传输层创建、客户端功能等
-
-所有测试都包含详细的输出信息，帮助开发者了解测试进度和结果。
+项目采用分层架构设计，严格分离传输层、客户端和工具层，提供清晰的接口和良好的扩展性。
 
 ## 第二阶段功能
 
@@ -428,108 +399,22 @@ async def concurrent_operations():
         print(f"并发结果: {results}")
 ```
 
-### Modbus从站模拟器
+### 异步客户端特性总结
 
-#### 基本从站设置
+异步客户端提供了以下主要特性：
 
-```python
-from modbuslink import ModbusSlave, DataStore
-
-# 创建数据存储区
-data_store = DataStore()
-
-# 初始化数据
-data_store.set_holding_registers(0, [1000, 2000, 3000, 4000, 5000])
-data_store.set_coils(0, [True, False, True, False, True, False, True, False])
-data_store.set_input_registers(0, [100, 200, 300, 400, 500])
-data_store.set_discrete_inputs(0, [False, True, False, True, False, True])
-
-# 创建从站
-slave = ModbusSlave(slave_id=1, data_store=data_store)
-
-# 启动TCP服务器
-slave.start_tcp_server(host='127.0.0.1', port=5020)
-print("从站模拟器已启动在 127.0.0.1:5020")
-
-# 使用上下文管理器
-with slave:
-    # 从站在后台运行
-    # 你的客户端代码在这里
-    pass
-
-# 或手动控制
-slave.stop()
-```
-
-#### 数据存储区操作
-
-```python
-# 直接数据操作
-data_store = DataStore()
-
-# 设置保持寄存器
-data_store.set_holding_registers(0, [1000, 2000, 3000])
-registers = data_store.get_holding_registers(0, 3)
-
-# 设置线圈
-data_store.set_coils(0, [True, False, True, False])
-coils = data_store.get_coils(0, 4)
-
-# 设置输入寄存器（从客户端角度只读）
-data_store.set_input_registers(0, [100, 200, 300])
-input_regs = data_store.get_input_registers(0, 3)
-
-# 设置离散输入（从客户端角度只读）
-data_store.set_discrete_inputs(0, [True, False, True])
-inputs = data_store.get_discrete_inputs(0, 3)
-```
-
-### 完整集成示例
-
-```python
-import asyncio
-from modbuslink import (
-    AsyncModbusClient, AsyncTcpTransport,
-    ModbusSlave, DataStore
-)
-
-async def integration_demo():
-    # 设置从站模拟器
-    data_store = DataStore()
-    data_store.set_holding_registers(0, [1000, 2000, 3000, 4000, 5000])
-    
-    slave = ModbusSlave(slave_id=1, data_store=data_store)
-    slave.start_tcp_server(host='127.0.0.1', port=5020)
-    
-    # 设置异步客户端
-    transport = AsyncTcpTransport(host='127.0.0.1', port=5020, timeout=5.0)
-    client = AsyncModbusClient(transport)
-    
-    try:
-        async with client:
-            # 测试基本操作
-            registers = await client.read_holding_registers(slave_id=1, start_address=0, quantity=5)
-            print(f"读取寄存器: {registers}")
-            
-            # 测试写入操作
-            await client.write_single_register(slave_id=1, address=0, value=9999)
-            
-            # 验证写入
-            new_value = await client.read_holding_registers(slave_id=1, start_address=0, quantity=1)
-            print(f"写入后: {new_value[0]}")
-            
-    finally:
-        slave.stop()
-
-asyncio.run(integration_demo())
-```
+- **异步操作**: 所有Modbus操作都支持异步执行
+- **回调机制**: 支持操作完成后的回调通知
+- **并发处理**: 可以同时执行多个Modbus操作
+- **高级数据类型**: 支持32位浮点数、整数等高级数据类型的异步操作
+- **上下文管理**: 支持async with语法自动管理连接
 
 ## 开发计划
 
 - [x] **第一阶段**: 构建坚实可靠的核心基础（同步MVP）
 - [x] **第二阶段**: 提升易用性与开发者体验
-- [x] **第三阶段**: 拥抱现代化：异步、回调与扩展
-- [ ] **第四阶段**: 发布、测试与社区生态
+- [x] **第三阶段**: 拥抱现代化：异步编程支持
+- [ ] **第四阶段**: 发布、优化与社区生态
 
 ## 许可证
 

@@ -175,46 +175,17 @@ ModbusLink 提供内置的高级数据类型支持：
    finally:
        client.disconnect()
 
-使用从站模拟器
---------------
-
-ModbusLink 包含内置的从站模拟器用于测试：
-
-.. code-block:: python
-
-   from modbuslink import ModbusSlave, DataStore
-   import time
-
-   # 创建数据存储区
-   data_store = DataStore()
-   
-   # 初始化一些数据
-   data_store.set_holding_registers(0, [1000, 2000, 3000, 4000, 5000])
-   data_store.set_coils(0, [True, False, True, False, True, False, True, False])
-   
-   # 创建从站
-   slave = ModbusSlave(slave_id=1, data_store=data_store)
-   
-   # 启动 TCP 服务器
-   slave.start_tcp_server(host='127.0.0.1', port=5020)
-   print("从站模拟器已启动在 127.0.0.1:5020")
-   
-   try:
-       # 保持模拟器运行
-       time.sleep(60)  # 运行 60 秒
-   finally:
-       slave.stop()
-
 错误处理
 --------
 
-ModbusLink 为不同的错误条件提供特定的异常：
+ModbusLink 提供全面的错误处理机制：
 
 .. code-block:: python
 
-   from modbuslink import (
-       ModbusClient, TcpTransport,
-       ConnectionError, TimeoutError, ModbusException
+   from modbuslink import ModbusClient, TcpTransport
+   from modbuslink.common.exceptions import (
+       ConnectionError, TimeoutError, CRCError, 
+       InvalidResponseError, ModbusException
    )
 
    transport = TcpTransport(host='192.168.1.100', port=502)
@@ -222,23 +193,32 @@ ModbusLink 为不同的错误条件提供特定的异常：
 
    try:
        client.connect()
-       registers = client.read_holding_registers(slave_id=1, start_address=0, quantity=10)
+       registers = client.read_holding_registers(
+           slave_id=1, start_address=0, quantity=10
+       )
+       print(f"寄存器: {registers}")
        
-   except ConnectionError:
-       print("连接设备失败")
-   except TimeoutError:
-       print("请求超时")
+   except ConnectionError as e:
+       print(f"连接失败: {e}")
+   except TimeoutError as e:
+       print(f"请求超时: {e}")
+   except CRCError as e:
+       print(f"CRC校验失败: {e}")
    except ModbusException as e:
-       print(f"Modbus 错误: {e}")
+       print(f"Modbus协议错误: {e}")
    except Exception as e:
-       print(f"意外错误: {e}")
+       print(f"未知错误: {e}")
    finally:
        client.disconnect()
 
 下一步
 ------
 
-* 阅读 :doc:`user_guide` 获取详细信息
+现在您已经了解了 ModbusLink 的基本用法，可以：
+
+* 查看 :doc:`user_guide` 了解更多高级功能
+* 浏览 :doc:`examples` 获取更多示例代码
+* 参考 :doc:`api_reference` 了解完整的 API 文档
 * 查看 :doc:`examples` 了解更多用例
 * 探索 :doc:`api_reference` 获取完整的 API 文档
 * 学习 :doc:`advanced_topics` 了解专家用法

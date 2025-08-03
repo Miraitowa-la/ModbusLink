@@ -199,100 +199,99 @@ Advanced Data Types
        )
        print(f"Timestamp: {read_timestamp}")
 
-Slave Simulator Examples
-------------------------
+Performance Testing Examples
+----------------------------
 
-Basic Slave Setup
-~~~~~~~~~~~~~~~~~
+Batch Operation Performance
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
-   from modbuslink import ModbusSlave, DataStore
    import time
+   import asyncio
+   from modbuslink import AsyncModbusClient, AsyncTcpTransport
 
-   # Create data store with initial values
-   data_store = DataStore()
-   
-   # Initialize holding registers
-   data_store.set_holding_registers(0, [1000, 2000, 3000, 4000, 5000])
-   
-   # Initialize coils
-   data_store.set_coils(0, [True, False, True, False, True, False])
-   
-   # Initialize discrete inputs
-   data_store.set_discrete_inputs(0, [False, True, False, True])
-   
-   # Initialize input registers
-   data_store.set_input_registers(0, [100, 200, 300, 400])
-   
-   # Create and start slave
-   slave = ModbusSlave(slave_id=1, data_store=data_store)
-   
-   try:
-       slave.start_tcp_server(host='127.0.0.1', port=5020)
-       print("Slave server started on 127.0.0.1:5020")
+   async def performance_test():
+       transport = AsyncTcpTransport(host='192.168.1.100', port=502)
+       client = AsyncModbusClient(transport)
        
-       # Keep the server running
-       while True:
-           time.sleep(1)
+       async with client:
+           # Test batch read performance
+           start_time = time.time()
            
-   except KeyboardInterrupt:
-       print("Stopping slave server...")
-   finally:
-       slave.stop()
+           # Concurrent read of multiple register blocks
+           tasks = []
+           for i in range(10):
+               task = client.read_holding_registers(
+                   slave_id=1, 
+                   start_address=i*10, 
+                   quantity=10
+               )
+               tasks.append(task)
+           
+           results = await asyncio.gather(*tasks)
+           end_time = time.time()
+           
+           print(f"Reading 100 registers took: {end_time - start_time:.3f}s")
+           print(f"Average per register: {(end_time - start_time)*1000/100:.2f}ms")
 
-Dynamic Data Updates
-~~~~~~~~~~~~~~~~~~~~
+   asyncio.run(performance_test())
+
+Connection Pool Example
+~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
-   from modbuslink import ModbusSlave, DataStore
-   import time
-   import random
-   import threading
+   import asyncio
+   from modbuslink import AsyncModbusClient, AsyncTcpTransport
 
-   def update_sensor_data(data_store):
-       """Simulate sensor data updates"""
-       while True:
-           # Simulate temperature sensor (register 100)
-           temperature = random.uniform(20.0, 30.0)
-           temp_int = int(temperature * 100)  # Convert to integer
-           data_store.set_holding_registers(100, [temp_int])
+   class ModbusConnectionPool:
+       def __init__(self, host, port, pool_size=5):
+           self.host = host
+           self.port = port
+           self.pool_size = pool_size
+           self.connections = asyncio.Queue(maxsize=pool_size)
            
-           # Simulate pressure sensor (register 101)
-           pressure = random.uniform(1000.0, 1100.0)
-           pressure_int = int(pressure * 10)
-           data_store.set_holding_registers(101, [pressure_int])
+       async def initialize(self):
+           for _ in range(self.pool_size):
+               transport = AsyncTcpTransport(host=self.host, port=self.port)
+               client = AsyncModbusClient(transport)
+               await client.connect()
+               await self.connections.put(client)
+               
+       async def get_connection(self):
+           return await self.connections.get()
            
-           # Simulate digital inputs
-           digital_states = [random.choice([True, False]) for _ in range(8)]
-           data_store.set_discrete_inputs(0, digital_states)
+       async def return_connection(self, client):
+           await self.connections.put(client)
            
-           time.sleep(2)  # Update every 2 seconds
+       async def close_all(self):
+           while not self.connections.empty():
+               client = await self.connections.get()
+               await client.disconnect()
 
-   # Create data store
-   data_store = DataStore()
-   
-   # Start background thread for data updates
-   update_thread = threading.Thread(
-       target=update_sensor_data, 
-       args=(data_store,), 
-       daemon=True
-   )
-   update_thread.start()
-   
-   # Create and start slave
-   slave = ModbusSlave(slave_id=1, data_store=data_store)
-   
-   with slave:
-       slave.start_tcp_server(host='127.0.0.1', port=5020)
-       print("Dynamic slave server started on 127.0.0.1:5020")
+   # Usage example
+   async def use_connection_pool():
+       pool = ModbusConnectionPool('192.168.1.100', 502)
+       await pool.initialize()
        
        try:
-           while True:
-               time.sleep(1)
-       except KeyboardInterrupt:
-           print("Stopping slave server...")
+           # Get connection
+           client = await pool.get_connection()
+           
+           # Perform operations
+           registers = await client.read_holding_registers(
+               slave_id=1, start_address=0, quantity=10
+           )
+           print(f"Read result: {registers}")
+           
+           # Return connection
+           await pool.return_connection(client)
+           
+       finally:
+           await pool.close_all()
+
+   asyncio.run(use_connection_pool())
 
 Error Handling Examples
 -----------------------

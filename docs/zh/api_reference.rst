@@ -65,24 +65,7 @@ AsyncTcpTransport
    :undoc-members:
    :show-inheritance:
 
-服务器模块
-----------
 
-DataStore
-~~~~~~~~~
-
-.. autoclass:: modbuslink.server.slave.DataStore
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-ModbusSlave
-~~~~~~~~~~~
-
-.. autoclass:: modbuslink.server.slave.ModbusSlave
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 工具模块
 --------

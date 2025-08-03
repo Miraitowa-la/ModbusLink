@@ -175,46 +175,17 @@ ModbusLink provides built-in support for advanced data types:
    finally:
        client.disconnect()
 
-Using the Slave Simulator
---------------------------
-
-ModbusLink includes a built-in slave simulator for testing:
-
-.. code-block:: python
-
-   from modbuslink import ModbusSlave, DataStore
-   import time
-
-   # Create data store
-   data_store = DataStore()
-   
-   # Initialize some data
-   data_store.set_holding_registers(0, [1000, 2000, 3000, 4000, 5000])
-   data_store.set_coils(0, [True, False, True, False, True, False, True, False])
-   
-   # Create slave
-   slave = ModbusSlave(slave_id=1, data_store=data_store)
-   
-   # Start TCP server
-   slave.start_tcp_server(host='127.0.0.1', port=5020)
-   print("Slave simulator started on 127.0.0.1:5020")
-   
-   try:
-       # Keep the simulator running
-       time.sleep(60)  # Run for 60 seconds
-   finally:
-       slave.stop()
-
 Error Handling
 --------------
 
-ModbusLink provides specific exceptions for different error conditions:
+ModbusLink provides comprehensive error handling mechanisms:
 
 .. code-block:: python
 
-   from modbuslink import (
-       ModbusClient, TcpTransport,
-       ConnectionError, TimeoutError, ModbusException
+   from modbuslink import ModbusClient, TcpTransport
+   from modbuslink.common.exceptions import (
+       ConnectionError, TimeoutError, CRCError, 
+       InvalidResponseError, ModbusException
    )
 
    transport = TcpTransport(host='192.168.1.100', port=502)
@@ -222,14 +193,19 @@ ModbusLink provides specific exceptions for different error conditions:
 
    try:
        client.connect()
-       registers = client.read_holding_registers(slave_id=1, start_address=0, quantity=10)
+       registers = client.read_holding_registers(
+           slave_id=1, start_address=0, quantity=10
+       )
+       print(f"Registers: {registers}")
        
-   except ConnectionError:
-       print("Failed to connect to the device")
-   except TimeoutError:
-       print("Request timed out")
+   except ConnectionError as e:
+       print(f"Connection failed: {e}")
+   except TimeoutError as e:
+       print(f"Request timed out: {e}")
+   except CRCError as e:
+       print(f"CRC validation failed: {e}")
    except ModbusException as e:
-       print(f"Modbus error: {e}")
+       print(f"Modbus protocol error: {e}")
    except Exception as e:
        print(f"Unexpected error: {e}")
    finally:
@@ -238,7 +214,8 @@ ModbusLink provides specific exceptions for different error conditions:
 Next Steps
 ----------
 
-* Read the :doc:`user_guide` for detailed information
-* Check out the :doc:`examples` for more use cases
+Now that you understand the basics of ModbusLink, you can:
+
+* Read the :doc:`user_guide` for more advanced features
+* Check out the :doc:`examples` for more sample code
 * Explore the :doc:`api_reference` for complete API documentation
-* Learn about :doc:`advanced_topics` for expert usage
