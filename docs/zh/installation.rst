@@ -4,7 +4,7 @@
 系统要求
 --------
 
-* Python 3.8 或更高版本
+* Python 3.9 或更高版本
 * pyserial >= 3.5 (用于 RTU 传输)
 
 从 PyPI 安装
