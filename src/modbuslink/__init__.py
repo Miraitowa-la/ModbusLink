@@ -4,7 +4,7 @@ ModbusLink - 现代化、功能强大、开发者友好且高度可扩展的Pyth
 Modern, powerful, developer-friendly and highly scalable Python Modbus library
 """
 
-__version__ = "0.1.5"
+__version__ = "0.1.6"
 __author__ = "Miraitowa"
 __email__ = "2056978412@qq.com"
 

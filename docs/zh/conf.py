@@ -16,8 +16,8 @@ copyright = '2024, Miraitowa'
 author = 'Miraitowa'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1.5'
-version = '0.1.5'
+release = '0.1.6'
+version = '0.1.6'
 
 # -- General configuration ---------------------------------------------------
 
