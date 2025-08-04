@@ -14,9 +14,10 @@ ModbusLink 建立在清晰的分层架构之上，分离关注点并促进代码
    │           客户端层                   │
    │  (ModbusClient, AsyncModbusClient)  │
    ├─────────────────────────────────────┤
-   │           传输层                     │
+   │          传输层                     │
    │   (TcpTransport, RtuTransport,      │
-   │    AsyncTcpTransport)               │
+   │    AsciiTransport, AsyncTcpTransport,│
+   │    AsyncRtuTransport, AsyncAsciiTransport)│
    ├─────────────────────────────────────┤
    │           工具层                     │
    │  (CRC16, PayloadCoder, Logger)      │
@@ -73,6 +74,54 @@ RTU 传输处理带有 CRC16 验证的 Modbus RTU 通信：
        host='192.168.1.100',
        port=502,
        timeout=10.0
+   )
+
+ASCII 传输
+~~~~~~~~~~
+
+ASCII 传输处理带有 LRC 校验的 Modbus ASCII 通信：
+
+.. code-block:: python
+
+   from modbuslink import AsciiTransport
+
+   transport = AsciiTransport(
+       port='COM1',
+       baudrate=9600,
+       bytesize=7,
+       parity='E',
+       stopbits=1,
+       timeout=1.0
+   )
+
+异步 RTU 传输
+~~~~~~~~~~~~~
+
+对于高性能 RTU 应用，使用异步 RTU 传输：
+
+.. code-block:: python
+
+   from modbuslink import AsyncRtuTransport
+
+   transport = AsyncRtuTransport(
+       port='COM1',
+       baudrate=9600,
+       timeout=3.0
+   )
+
+异步 ASCII 传输
+~~~~~~~~~~~~~~~
+
+对于高性能 ASCII 应用，使用异步 ASCII 传输：
+
+.. code-block:: python
+
+   from modbuslink import AsyncAsciiTransport
+
+   transport = AsyncAsciiTransport(
+       port='COM1',
+       baudrate=9600,
+       timeout=3.0
    )
 
 客户端层

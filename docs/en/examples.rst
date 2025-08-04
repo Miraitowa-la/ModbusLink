@@ -72,6 +72,39 @@ Simple RTU Client
            values=[True, False, True, False]
        )
 
+Simple ASCII Client
+~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+   from modbuslink import ModbusClient, AsciiTransport
+
+   # Create ASCII transport
+   transport = AsciiTransport(
+       port='COM1',
+       baudrate=9600,
+       bytesize=7,
+       parity='E',
+       stopbits=1
+   )
+   client = ModbusClient(transport)
+
+   with client:
+       # Read holding registers
+       registers = client.read_holding_registers(
+           slave_id=1, 
+           start_address=0, 
+           quantity=4
+       )
+       print(f"Registers: {registers}")
+       
+       # Write single register
+       client.write_single_register(
+           slave_id=1, 
+           address=0, 
+           value=1234
+       )
+
 Advanced Examples
 -----------------
 
@@ -109,6 +142,74 @@ Asynchronous Operations
 
    # Run the async function
    asyncio.run(async_modbus_operations())
+
+Asynchronous RTU Operations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+   import asyncio
+   from modbuslink import AsyncModbusClient, AsyncRtuTransport
+
+   async def async_rtu_operations():
+       transport = AsyncRtuTransport(
+           port='COM1',
+           baudrate=9600,
+           timeout=3.0
+       )
+       client = AsyncModbusClient(transport)
+       
+       async with client:
+           # Async read holding registers
+           registers = await client.read_holding_registers(
+               slave_id=1, 
+               start_address=0, 
+               quantity=10
+           )
+           print(f"Registers: {registers}")
+           
+           # Async write multiple registers
+           await client.write_multiple_registers(
+               slave_id=1, 
+               start_address=0, 
+               values=[100, 200, 300, 400]
+           )
+
+   asyncio.run(async_rtu_operations())
+
+Asynchronous ASCII Operations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+   import asyncio
+   from modbuslink import AsyncModbusClient, AsyncAsciiTransport
+
+   async def async_ascii_operations():
+       transport = AsyncAsciiTransport(
+           port='COM1',
+           baudrate=9600,
+           timeout=3.0
+       )
+       client = AsyncModbusClient(transport)
+       
+       async with client:
+           # Async read coils
+           coils = await client.read_coils(
+               slave_id=1, 
+               start_address=0, 
+               quantity=8
+           )
+           print(f"Coils: {coils}")
+           
+           # Async write single coil
+           await client.write_single_coil(
+               slave_id=1, 
+               address=0, 
+               value=True
+           )
+
+   asyncio.run(async_ascii_operations())
 
 Callback Mechanisms
 ~~~~~~~~~~~~~~~~~~~

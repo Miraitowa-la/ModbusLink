@@ -107,6 +107,52 @@ RTU Connection
    finally:
        client.disconnect()
 
+ASCII Communication
+-------------------
+
+For Modbus ASCII communication over serial:
+
+.. code-block:: python
+
+   from modbuslink import ModbusClient, AsciiTransport
+
+   # Create ASCII transport
+   transport = AsciiTransport(
+       port='COM1',
+       baudrate=9600,
+       bytesize=7,
+       parity='E',
+       stopbits=1,
+       timeout=1.0
+   )
+
+   # Create client
+   client = ModbusClient(transport)
+
+   try:
+       # Connect to the device
+       client.connect()
+       
+       # Read holding registers
+       registers = client.read_holding_registers(
+           slave_id=1,
+           start_address=0,
+           quantity=4
+       )
+       print(f"Registers: {registers}")
+       
+       # Write a single register
+       client.write_single_register(
+           slave_id=1,
+           address=0,
+           value=1234
+       )
+       
+   except Exception as e:
+       print(f"Error: {e}")
+   finally:
+       client.disconnect()
+
 Asynchronous Operations
 -----------------------
 

@@ -65,6 +65,30 @@ AsyncTcpTransport
    :undoc-members:
    :show-inheritance:
 
+AsciiTransport
+~~~~~~~~~~~~~~
+
+.. autoclass:: modbuslink.transport.ascii.AsciiTransport
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+AsyncRtuTransport
+~~~~~~~~~~~~~~~~~
+
+.. autoclass:: modbuslink.transport.async_rtu.AsyncRtuTransport
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+AsyncAsciiTransport
+~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: modbuslink.transport.async_ascii.AsyncAsciiTransport
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 
 Utility Module

@@ -107,6 +107,52 @@ RTU 连接
    finally:
        client.disconnect()
 
+ASCII 通信
+----------
+
+对于通过串口的 Modbus ASCII 通信：
+
+.. code-block:: python
+
+   from modbuslink import ModbusClient, AsciiTransport
+
+   # 创建 ASCII 传输层
+   transport = AsciiTransport(
+       port='COM1',
+       baudrate=9600,
+       bytesize=7,
+       parity='E',
+       stopbits=1,
+       timeout=1.0
+   )
+
+   # 创建客户端
+   client = ModbusClient(transport)
+
+   try:
+       # 连接到设备
+       client.connect()
+       
+       # 读取保持寄存器
+       registers = client.read_holding_registers(
+           slave_id=1,
+           start_address=0,
+           quantity=4
+       )
+       print(f"寄存器: {registers}")
+       
+       # 写单个寄存器
+       client.write_single_register(
+           slave_id=1,
+           address=0,
+           value=1234
+       )
+       
+   except Exception as e:
+       print(f"错误: {e}")
+   finally:
+       client.disconnect()
+
 异步操作
 --------
 

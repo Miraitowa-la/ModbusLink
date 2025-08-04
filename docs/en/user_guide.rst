@@ -16,7 +16,8 @@ ModbusLink is built on a clean, layered architecture that separates concerns and
    ├─────────────────────────────────────┤
    │          Transport Layer            │
    │   (TcpTransport, RtuTransport,      │
-   │    AsyncTcpTransport)               │
+   │    AsciiTransport, AsyncTcpTransport,│
+   │    AsyncRtuTransport, AsyncAsciiTransport)│
    ├─────────────────────────────────────┤
    │           Utility Layer             │
    │  (CRC16, PayloadCoder, Logger)      │
@@ -73,6 +74,54 @@ For high-performance applications, use the async TCP transport:
        host='192.168.1.100',
        port=502,
        timeout=10.0
+   )
+
+ASCII Transport
+~~~~~~~~~~~~~~~
+
+The ASCII transport handles Modbus ASCII communication with LRC validation:
+
+.. code-block:: python
+
+   from modbuslink import AsciiTransport
+
+   transport = AsciiTransport(
+       port='COM1',
+       baudrate=9600,
+       bytesize=7,
+       parity='E',
+       stopbits=1,
+       timeout=1.0
+   )
+
+Async RTU Transport
+~~~~~~~~~~~~~~~~~~~
+
+For high-performance RTU applications, use the async RTU transport:
+
+.. code-block:: python
+
+   from modbuslink import AsyncRtuTransport
+
+   transport = AsyncRtuTransport(
+       port='COM1',
+       baudrate=9600,
+       timeout=3.0
+   )
+
+Async ASCII Transport
+~~~~~~~~~~~~~~~~~~~~~
+
+For high-performance ASCII applications, use the async ASCII transport:
+
+.. code-block:: python
+
+   from modbuslink import AsyncAsciiTransport
+
+   transport = AsyncAsciiTransport(
+       port='COM1',
+       baudrate=9600,
+       timeout=3.0
    )
 
 Client Layer
