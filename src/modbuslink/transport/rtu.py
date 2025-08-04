@@ -37,13 +37,13 @@ class RtuTransport(BaseTransport):
     """
 
     def __init__(
-            self,
-            port: str,
-            baudrate: int = 9600,
-            bytesize: int = serial.EIGHTBITS,
-            parity: str = serial.PARITY_NONE,
-            stopbits: float = serial.STOPBITS_ONE,
-            timeout: float = 1.0,
+        self,
+        port: str,
+        baudrate: int = 9600,
+        bytesize: int = serial.EIGHTBITS,
+        parity: str = serial.PARITY_NONE,
+        stopbits: float = serial.STOPBITS_ONE,
+        timeout: float = 1.0,
     ):
         """
         初始化RTU传输层
