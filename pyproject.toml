@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "modbuslink"
-version = "0.1.6"
+version = "0.1.7"
 description = "现代化、功能强大、开发者友好且高度可扩展的Python Modbus库 | Modern, powerful, developer-friendly and highly scalable Python Modbus library"
 authors = [
     {name = "Miraitowa", email = "2056978412@qq.com"}
@@ -26,7 +26,8 @@ classifiers = [
     "Topic :: Communications"
 ]
 dependencies = [
-    "pyserial>=3.5"
+    "pyserial>=3.5",
+    "pyserial-asyncio>=0.6"
 ]
 
 [project.optional-dependencies]
