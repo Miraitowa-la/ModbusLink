@@ -165,7 +165,7 @@ async def callback_example():
         )
 
     def on_register_write():
-        print(f"   [回调] 寄存器写入完成 | [Callback] Register write completed")
+        print("   [回调] 寄存器写入完成 | [Callback] Register write completed")
 
     def on_float_read(value):
         print(f"   [回调] 读取到浮点数 | [Callback] Read float value: {value}")
@@ -184,7 +184,7 @@ async def callback_example():
             await client.write_single_register(
                 slave_id=1, address=5, value=9999, callback=on_register_write
             )
-            print(f"   主线程写入完成 | Main thread write completed")
+            print("   主线程写入完成 | Main thread write completed")
 
             print("\n3. 带回调的浮点数读取 | Float read with callback...")
             float_val = await client.read_float32(

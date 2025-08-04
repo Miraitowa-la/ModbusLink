@@ -6,7 +6,6 @@ This script builds both English and Chinese versions of the documentation
 and creates a unified index page for easy navigation.
 """
 
-import os
 import sys
 import shutil
 import subprocess

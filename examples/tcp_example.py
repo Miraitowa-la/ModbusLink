@@ -13,7 +13,6 @@ import os
 # 添加src目录到Python路径，以便导入modbuslink模块 | Add src directory to Python path to import modbuslink module
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-import time
 import logging
 from modbuslink import (
     ModbusClient,
