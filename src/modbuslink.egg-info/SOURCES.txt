@@ -13,7 +13,10 @@ src/modbuslink/client/sync_client.py
 src/modbuslink/common/__init__.py
 src/modbuslink/common/exceptions.py
 src/modbuslink/transport/__init__.py
+src/modbuslink/transport/ascii.py
+src/modbuslink/transport/async_ascii.py
 src/modbuslink/transport/async_base.py
+src/modbuslink/transport/async_rtu.py
 src/modbuslink/transport/async_tcp.py
 src/modbuslink/transport/base.py
 src/modbuslink/transport/rtu.py
