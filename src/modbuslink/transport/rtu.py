@@ -1,11 +1,8 @@
-"""ModbusLink RTU传输层实现
-
-
-RTU Transport Layer Implementation
-
+"""
+ModbusLink RTU传输层实现
 实现基于串口的Modbus RTU协议传输，包括CRC16校验。
 
-
+RTU Transport Layer Implementation
 Implements Modbus RTU protocol transport based on serial port, including CRC16 validation.
 """
 
@@ -25,15 +22,14 @@ from ..utils.logging import get_logger
 
 
 class RtuTransport(BaseTransport):
-    """Modbus RTU传输层实现
-
-
-    Modbus RTU Transport Layer Implementation
-
+    """
+    Modbus RTU传输层实现
     处理基于串口的Modbus RTU通信，包括：
 
 
+    Modbus RTU Transport Layer Implementation
     Handles Modbus RTU communication based on serial port, including:
+
     - 串口连接管理 | Serial port connection management
     - CRC16校验码的计算和验证 | CRC16 checksum calculation and validation
     - ADU（应用数据单元）的构建和解析 | ADU (Application Data Unit) construction and parsing
@@ -41,16 +37,16 @@ class RtuTransport(BaseTransport):
     """
 
     def __init__(
-        self,
-        port: str,
-        baudrate: int = 9600,
-        bytesize: int = serial.EIGHTBITS,
-        parity: str = serial.PARITY_NONE,
-        stopbits: float = serial.STOPBITS_ONE,
-        timeout: float = 1.0,
+            self,
+            port: str,
+            baudrate: int = 9600,
+            bytesize: int = serial.EIGHTBITS,
+            parity: str = serial.PARITY_NONE,
+            stopbits: float = serial.STOPBITS_ONE,
+            timeout: float = 1.0,
     ):
-        """初始化RTU传输层
-
+        """
+        初始化RTU传输层
 
         Initialize RTU transport layer
 
@@ -86,8 +82,8 @@ class RtuTransport(BaseTransport):
         self._logger = get_logger("transport.rtu")
 
     def open(self) -> None:
-        """打开串口连接
-
+        """
+        打开串口连接
 
         Open serial port connection"""
         try:
@@ -113,8 +109,8 @@ class RtuTransport(BaseTransport):
             raise ConnectionError(f"串口连接失败 | Serial port connection failed: {e}")
 
     def close(self) -> None:
-        """关闭串口连接
-
+        """
+        关闭串口连接
 
         Close serial port connection"""
         if self._serial and self._serial.is_open:
@@ -122,22 +118,20 @@ class RtuTransport(BaseTransport):
             self._logger.info(f"RTU连接已关闭 | RTU connection closed: {self.port}")
 
     def is_open(self) -> bool:
-        """检查串口连接状态
-
+        """
+        检查串口连接状态
 
         Check serial port connection status"""
         return self._serial is not None and self._serial.is_open
 
     def send_and_receive(self, slave_id: int, pdu: bytes) -> bytes:
-        """发送PDU并接收响应
-
-
-        Send PDU and receive response
-
+        """
+        发送PDU并接收响应
         实现RTU协议的完整通信流程：
 
-
+        Send PDU and receive response
         Implements complete RTU protocol communication flow:
+
         1. 构建ADU（地址 + PDU + CRC） | Build ADU (Address + PDU + CRC)
         2. 发送请求 | Send request
         3. 接收响应 | Receive response
@@ -203,14 +197,11 @@ class RtuTransport(BaseTransport):
             )
 
     def _receive_response(self, expected_slave_id: int, function_code: int) -> bytes:
-        """接收完整的响应帧
-
-
-        Receive complete response frame
-
+        """
+        接收完整的响应帧
         根据功能码预估响应长度，智能接收数据。
 
-
+        Receive complete response frame
         Estimate response length based on function code and intelligently receive data.
         """
         # 首先读取最小响应（地址 + 功能码） | First read minimum response (address + function code)
@@ -329,9 +320,6 @@ class RtuTransport(BaseTransport):
             return response + remaining
 
     def __repr__(self) -> str:
-        """字符串表示
-
-
-        String representation"""
+        """字符串表示 | String representation"""
         status = "已连接 | Connected" if self.is_open() else "未连接 | Disconnected"
         return f"RtuTransport({self.port}@{self.baudrate}bps, {status})"

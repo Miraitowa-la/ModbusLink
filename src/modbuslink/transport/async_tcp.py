@@ -1,11 +1,8 @@
-"""ModbusLink 异步TCP传输层实现
-
-
-Async TCP Transport Layer Implementation
-
+"""
+ModbusLink 异步TCP传输层实现
 实现基于asyncio的异步Modbus TCP协议传输，包括MBAP头处理。
 
-
+Async TCP Transport Layer Implementation
 Implements async Modbus TCP protocol transport based on asyncio, including MBAP header processing.
 """
 
@@ -19,15 +16,13 @@ from ..utils.logging import get_logger
 
 
 class AsyncTcpTransport(AsyncBaseTransport):
-    """异步Modbus TCP传输层实现
-
-
-    Async Modbus TCP Transport Layer Implementation
-
+    """
+    异步Modbus TCP传输层实现
     处理基于asyncio的异步Modbus TCP通信，包括：
 
-
+    Async Modbus TCP Transport Layer Implementation
     Handles async Modbus TCP communication based on asyncio, including:
+
     - 异步TCP socket连接管理 | Async TCP socket connection management
     - MBAP头的构建和解析 | MBAP header construction and parsing
     - 事务标识符管理 | Transaction identifier management
@@ -35,8 +30,8 @@ class AsyncTcpTransport(AsyncBaseTransport):
     """
 
     def __init__(self, host: str, port: int = 502, timeout: float = 10.0):
-        """初始化异步TCP传输层
-
+        """
+        初始化异步TCP传输层
 
         Initialize async TCP transport layer
 
@@ -112,15 +107,14 @@ class AsyncTcpTransport(AsyncBaseTransport):
         return not self._writer.is_closing()
 
     async def send_and_receive(self, slave_id: int, pdu: bytes) -> bytes:
-        """异步发送PDU并接收响应
-
-
-        Async send PDU and receive response
-
+        """
+        异步发送PDU并接收响应
         实现异步TCP协议的完整通信流程：
 
 
+        Async send PDU and receive response
         Implements complete async TCP protocol communication flow:
+
         1. 构建MBAP头 | Build MBAP header
         2. 异步发送请求（MBAP头 + PDU） | Async send request (MBAP header + PDU)
         3. 异步接收响应MBAP头 | Async receive response MBAP header
@@ -235,8 +229,8 @@ class AsyncTcpTransport(AsyncBaseTransport):
             )
 
     async def _receive_exact(self, length: int) -> bytes:
-        """异步精确接收指定长度的数据
-
+        """
+        异步精确接收指定长度的数据
 
         Async receive exact length of data
 

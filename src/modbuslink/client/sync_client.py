@@ -1,11 +1,8 @@
-"""ModbusLink 同步客户端实现
-
-
-ModbusLink Synchronous Client Implementation
-
+"""
+ModbusLink 同步客户端实现
 提供用户友好的同步Modbus客户端API。
 
-
+ModbusLink Synchronous Client Implementation
 Provides user-friendly synchronous Modbus client API.
 """
 
@@ -18,30 +15,23 @@ from ..utils.logging import get_logger
 
 
 class ModbusClient:
-    """同步Modbus客户端
+    """
+    同步Modbus客户端
+    提供简洁、用户友好的Modbus操作接口。通过依赖注入的方式接收传输层实例，支持RTU和TCP等不同传输方式。
+    所有方法都使用Python原生数据类型（int, list等），将底层的字节操作完全封装。
 
 
     Synchronous Modbus Client
-
-    提供简洁、用户友好的Modbus操作接口。通过依赖注入的方式
-    接收传输层实例，支持RTU和TCP等不同传输方式。
-
-
     Provides a concise, user-friendly Modbus operation interface. Receives
     transport layer instances through dependency injection, supporting different
     transport methods such as RTU and TCP.
-
-    所有方法都使用Python原生数据类型（int, list等），
-    将底层的字节操作完全封装。
-
-
     All methods use Python native data types (int, list, etc.),
     completely encapsulating underlying byte operations.
     """
 
     def __init__(self, transport: BaseTransport):
-        """初始化Modbus客户端
-
+        """
+        初始化Modbus客户端
 
         Initialize Modbus Client
 
@@ -54,7 +44,8 @@ class ModbusClient:
     def read_coils(
         self, slave_id: int, start_address: int, quantity: int
     ) -> List[bool]:
-        """读取线圈状态（功能码0x01） | Read Coil Status (Function Code 0x01)
+        """
+        读取线圈状态（功能码0x01） | Read Coil Status (Function Code 0x01)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -63,7 +54,6 @@ class ModbusClient:
 
         Returns:
             线圈状态列表，True表示ON，False表示OFF
-
 
             List of coil status, True for ON, False for OFF
 
@@ -118,7 +108,8 @@ class ModbusClient:
     def read_discrete_inputs(
         self, slave_id: int, start_address: int, quantity: int
     ) -> List[bool]:
-        """读取离散输入状态（功能码0x02） | Read Discrete Input Status (Function Code 0x02)
+        """
+        读取离散输入状态（功能码0x02） | Read Discrete Input Status (Function Code 0x02)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -127,7 +118,6 @@ class ModbusClient:
 
         Returns:
             离散输入状态列表，True表示ON，False表示OFF
-
 
             List of discrete input status, True for ON, False for OFF
         """
@@ -178,7 +168,8 @@ class ModbusClient:
     def read_holding_registers(
         self, slave_id: int, start_address: int, quantity: int
     ) -> List[int]:
-        """读取保持寄存器（功能码0x03） | Read Holding Registers (Function Code 0x03)
+        """
+        读取保持寄存器（功能码0x03） | Read Holding Registers (Function Code 0x03)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -187,7 +178,6 @@ class ModbusClient:
 
         Returns:
             寄存器值列表，每个值为16位无符号整数（0-65535）
-
 
             List of register values, each value is a 16-bit unsigned integer (0-65535)
 
@@ -244,7 +234,8 @@ class ModbusClient:
     def read_input_registers(
         self, slave_id: int, start_address: int, quantity: int
     ) -> List[int]:
-        """读取输入寄存器（功能码0x04） | Read Input Registers (Function Code 0x04)
+        """
+        读取输入寄存器（功能码0x04） | Read Input Registers (Function Code 0x04)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -253,7 +244,6 @@ class ModbusClient:
 
         Returns:
             寄存器值列表，每个值为16位无符号整数（0-65535）
-
 
             List of register values, each value is a 16-bit unsigned integer (0-65535)
         """
@@ -304,7 +294,8 @@ class ModbusClient:
         return registers
 
     def write_single_coil(self, slave_id: int, address: int, value: bool) -> None:
-        """写单个线圈（功能码0x05） | Write Single Coil (Function Code 0x05)
+        """
+        写单个线圈（功能码0x05） | Write Single Coil (Function Code 0x05)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -328,7 +319,8 @@ class ModbusClient:
             )
 
     def write_single_register(self, slave_id: int, address: int, value: int) -> None:
-        """写单个寄存器（功能码0x06） | Write Single Register (Function Code 0x06)
+        """
+        写单个寄存器（功能码0x06） | Write Single Register (Function Code 0x06)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -358,7 +350,8 @@ class ModbusClient:
     def write_multiple_coils(
         self, slave_id: int, start_address: int, values: List[bool]
     ) -> None:
-        """写多个线圈（功能码0x0F） | Write Multiple Coils (Function Code 0x0F)
+        """
+        写多个线圈（功能码0x0F） | Write Multiple Coils (Function Code 0x0F)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -404,7 +397,8 @@ class ModbusClient:
     def write_multiple_registers(
         self, slave_id: int, start_address: int, values: List[int]
     ) -> None:
-        """写多个寄存器（功能码0x10） | Write Multiple Registers (Function Code 0x10)
+        """
+        写多个寄存器（功能码0x10） | Write Multiple Registers (Function Code 0x10)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -469,7 +463,8 @@ class ModbusClient:
         byte_order: str = "big",
         word_order: str = "high",
     ) -> float:
-        """读取32位浮点数（占用2个连续寄存器） | Read 32-bit float (occupies 2 consecutive registers)
+        """
+        读取32位浮点数（占用2个连续寄存器） | Read 32-bit float (occupies 2 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -478,10 +473,7 @@ class ModbusClient:
             word_order: 字序，'high'或'low' | Word order, 'high' or 'low'
 
         Returns:
-            32位浮点数值
-
-
-            32-bit float value
+            32位浮点数值 | 32-bit float value
 
         Example:
             >>> temperature = client.read_float32(1, 100)  # 读取温度传感器值 | Read temperature sensor value
@@ -497,7 +489,8 @@ class ModbusClient:
         byte_order: str = "big",
         word_order: str = "high",
     ) -> None:
-        """写入32位浮点数（占用2个连续寄存器） | Write 32-bit float (occupies 2 consecutive registers)
+        """
+        写入32位浮点数（占用2个连续寄存器） | Write 32-bit float (occupies 2 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -519,7 +512,8 @@ class ModbusClient:
         byte_order: str = "big",
         word_order: str = "high",
     ) -> int:
-        """读取32位有符号整数（占用2个连续寄存器） | Read 32-bit signed integer (occupies 2 consecutive registers)
+        """
+        读取32位有符号整数（占用2个连续寄存器） | Read 32-bit signed integer (occupies 2 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -528,10 +522,7 @@ class ModbusClient:
             word_order: 字序，'high'或'low' | Word order, 'high' or 'low'
 
         Returns:
-            32位有符号整数值
-
-
-            32-bit signed integer value
+            32位有符号整数值 | 32-bit signed integer value
         """
         registers = self.read_holding_registers(slave_id, start_address, 2)
         return PayloadCoder.decode_int32(registers, byte_order, word_order)
@@ -544,7 +535,8 @@ class ModbusClient:
         byte_order: str = "big",
         word_order: str = "high",
     ) -> None:
-        """写入32位有符号整数（占用2个连续寄存器） | Write 32-bit signed integer (occupies 2 consecutive registers)
+        """
+        写入32位有符号整数（占用2个连续寄存器） | Write 32-bit signed integer (occupies 2 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -563,7 +555,8 @@ class ModbusClient:
         byte_order: str = "big",
         word_order: str = "high",
     ) -> int:
-        """读取32位无符号整数（占用2个连续寄存器） | Read 32-bit unsigned integer (occupies 2 consecutive registers)
+        """
+        读取32位无符号整数（占用2个连续寄存器） | Read 32-bit unsigned integer (occupies 2 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -572,10 +565,7 @@ class ModbusClient:
             word_order: 字序，'high'或'low' | Word order, 'high' or 'low'
 
         Returns:
-            32位无符号整数值
-
-
-            32-bit unsigned integer value
+            32位无符号整数值 | 32-bit unsigned integer value
         """
         registers = self.read_holding_registers(slave_id, start_address, 2)
         return PayloadCoder.decode_uint32(registers, byte_order, word_order)
@@ -588,7 +578,8 @@ class ModbusClient:
         byte_order: str = "big",
         word_order: str = "high",
     ) -> None:
-        """写入32位无符号整数（占用2个连续寄存器） | Write 32-bit unsigned integer (occupies 2 consecutive registers)
+        """
+        写入32位无符号整数（占用2个连续寄存器） | Write 32-bit unsigned integer (occupies 2 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -607,7 +598,8 @@ class ModbusClient:
         byte_order: str = "big",
         word_order: str = "high",
     ) -> int:
-        """读取64位有符号整数（占用4个连续寄存器） | Read 64-bit signed integer (occupies 4 consecutive registers)
+        """
+        读取64位有符号整数（占用4个连续寄存器） | Read 64-bit signed integer (occupies 4 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -616,10 +608,7 @@ class ModbusClient:
             word_order: 字序，'high'或'low' | Word order, 'high' or 'low'
 
         Returns:
-            64位有符号整数值
-
-
-            64-bit signed integer value
+            64位有符号整数值 | 64-bit signed integer value
         """
         registers = self.read_holding_registers(slave_id, start_address, 4)
         return PayloadCoder.decode_int64(registers, byte_order, word_order)
@@ -632,7 +621,8 @@ class ModbusClient:
         byte_order: str = "big",
         word_order: str = "high",
     ) -> None:
-        """写入64位有符号整数（占用4个连续寄存器） | Write 64-bit signed integer (occupies 4 consecutive registers)
+        """
+        写入64位有符号整数（占用4个连续寄存器） | Write 64-bit signed integer (occupies 4 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -651,7 +641,8 @@ class ModbusClient:
         byte_order: str = "big",
         word_order: str = "high",
     ) -> int:
-        """读取64位无符号整数（占用4个连续寄存器） | Read 64-bit unsigned integer (occupies 4 consecutive registers)
+        """
+        读取64位无符号整数（占用4个连续寄存器） | Read 64-bit unsigned integer (occupies 4 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -660,10 +651,7 @@ class ModbusClient:
             word_order: 字序，'high'或'low' | Word order, 'high' or 'low'
 
         Returns:
-            64位无符号整数值
-
-
-            64-bit unsigned integer value
+            64位无符号整数值 | 64-bit unsigned integer value
         """
         registers = self.read_holding_registers(slave_id, start_address, 4)
         return PayloadCoder.decode_uint64(registers, byte_order, word_order)
@@ -676,7 +664,8 @@ class ModbusClient:
         byte_order: str = "big",
         word_order: str = "high",
     ) -> None:
-        """写入64位无符号整数（占用4个连续寄存器） | Write 64-bit unsigned integer (occupies 4 consecutive registers)
+        """
+        写入64位无符号整数（占用4个连续寄存器） | Write 64-bit unsigned integer (occupies 4 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -691,7 +680,8 @@ class ModbusClient:
     def read_string(
         self, slave_id: int, start_address: int, length: int, encoding: str = "utf-8"
     ) -> str:
-        """读取字符串（从连续寄存器中） | Read string (from consecutive registers)
+        """
+        读取字符串（从连续寄存器中） | Read string (from consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -700,10 +690,7 @@ class ModbusClient:
             encoding: 字符编码，默认'utf-8' | Character encoding, default 'utf-8'
 
         Returns:
-            解码后的字符串
-
-
-            Decoded string
+            解码后的字符串 | Decoded string
 
         Example:
             >>> device_name = client.read_string(1, 200, 16)  # 读取设备名称 | Read device name
@@ -715,7 +702,8 @@ class ModbusClient:
     def write_string(
         self, slave_id: int, start_address: int, value: str, encoding: str = "utf-8"
     ) -> None:
-        """写入字符串（到连续寄存器中） | Write string (to consecutive registers)
+        """
+        写入字符串（到连续寄存器中） | Write string (to consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address

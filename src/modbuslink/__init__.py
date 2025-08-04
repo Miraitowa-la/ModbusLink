@@ -1,7 +1,8 @@
-"""ModbusLink - 现代化、功能强大、开发者友好且高度可扩展的Python Modbus库
+"""
+ModbusLink - 现代化、功能强大、开发者友好且高度可扩展的Python Modbus库
 
-
-Modern, powerful, developer-friendly and highly scalable Python Modbus library"""
+Modern, powerful, developer-friendly and highly scalable Python Modbus library
+"""
 
 __version__ = "0.1.5"
 __author__ = "Miraitowa"

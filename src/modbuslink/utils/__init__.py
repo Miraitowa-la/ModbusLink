@@ -1,11 +1,7 @@
-"""ModbusLink 工具模块
-
-
-Utils Module
+"""
+ModbusLink 工具模块 | Utils Module
 
 提供CRC校验、数据编解码、日志管理等工具功能。
-
-
 Provides utilities for CRC validation, data encoding/decoding, logging management, etc.
 """
 

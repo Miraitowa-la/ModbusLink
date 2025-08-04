@@ -1,11 +1,8 @@
-"""ModbusLink TCP传输层实现
-
-
-TCP Transport Layer Implementation
-
+"""
+ModbusLink TCP传输层实现
 实现基于TCP/IP的Modbus TCP协议传输，包括MBAP头处理。
 
-
+TCP Transport Layer Implementation
 Implements Modbus TCP protocol transport based on TCP/IP, including MBAP header processing.
 """
 
@@ -19,15 +16,14 @@ from ..utils.logging import get_logger
 
 
 class TcpTransport(BaseTransport):
-    """Modbus TCP传输层实现
-
-
-    Modbus TCP Transport Layer Implementation
-
+    """
+    Modbus TCP传输层实现
     处理基于TCP/IP的Modbus TCP通信，包括：
 
 
+    Modbus TCP Transport Layer Implementation
     Handles Modbus TCP communication based on TCP/IP, including:
+
     - TCP socket连接管理 | TCP socket connection management
     - MBAP头的构建和解析 | MBAP header construction and parsing
     - 事务标识符管理 | Transaction identifier management
@@ -35,8 +31,8 @@ class TcpTransport(BaseTransport):
     """
 
     def __init__(self, host: str, port: int = 502, timeout: float = 10.0):
-        """初始化TCP传输层
-
+        """
+        初始化TCP传输层
 
         Initialize TCP transport layer
 
@@ -110,15 +106,14 @@ class TcpTransport(BaseTransport):
             return False
 
     def send_and_receive(self, slave_id: int, pdu: bytes) -> bytes:
-        """发送PDU并接收响应
-
-
-        Send PDU and receive response
-
+        """
+        发送PDU并接收响应
         实现TCP协议的完整通信流程：
 
 
+        Send PDU and receive response
         Implements complete TCP protocol communication flow:
+
         1. 构建MBAP头 | Build MBAP header
         2. 发送请求（MBAP头 + PDU） | Send request (MBAP header + PDU)
         3. 接收响应MBAP头 | Receive response MBAP header
@@ -224,8 +219,8 @@ class TcpTransport(BaseTransport):
             raise ConnectionError(f"TCP通信错误 | TCP communication error: {e}")
 
     def _receive_exact(self, length: int) -> bytes:
-        """精确接收指定长度的数据
-
+        """
+        精确接收指定长度的数据
 
         Receive exact length of data
 

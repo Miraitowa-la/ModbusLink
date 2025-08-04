@@ -1,4 +1,5 @@
-"""ModbusLink 高级数据编解码器模块 | ModbusLink Advanced Data Encoder/Decoder Module
+"""
+ModbusLink 高级数据编解码器模块 | ModbusLink Advanced Data Encoder/Decoder Module
 
 提供各种数据类型的编解码功能，支持不同的字节序和字序配置。
 Provides encoding/decoding functionality for various data types with support for different byte order and word order configurations.
@@ -9,7 +10,8 @@ from typing import List
 
 
 class PayloadCoder:
-    """高级数据编解码器类 | Advanced Data Encoder/Decoder Class
+    """
+    高级数据编解码器类 | Advanced Data Encoder/Decoder Class
 
     提供各种数据类型与Modbus寄存器之间的转换功能。
     支持不同的字节序（大端/小端）和字序（高字在前/低字在前）配置。
@@ -32,7 +34,8 @@ class PayloadCoder:
         byte_order: str = BIG_ENDIAN,
         word_order: str = HIGH_WORD_FIRST,
     ) -> float:
-        """将两个16位寄存器解码为32位浮点数 | Decode two 16-bit registers to a 32-bit float
+        """
+        将两个16位寄存器解码为32位浮点数 | Decode two 16-bit registers to a 32-bit float
 
         Args:
             registers: 包含两个16位寄存器值的列表 | List containing two 16-bit register values
@@ -76,7 +79,8 @@ class PayloadCoder:
     def encode_float32(
         value: float, byte_order: str = BIG_ENDIAN, word_order: str = HIGH_WORD_FIRST
     ) -> List[int]:
-        """将32位浮点数编码为两个16位寄存器 | Encode a 32-bit float to two 16-bit registers
+        """
+        将32位浮点数编码为两个16位寄存器 | Encode a 32-bit float to two 16-bit registers
 
         Args:
             value: 要编码的浮点数 | Float value to encode
@@ -112,7 +116,8 @@ class PayloadCoder:
         word_order: str = HIGH_WORD_FIRST,
         signed: bool = True,
     ) -> int:
-        """将两个16位寄存器解码为32位整数 | Decode two 16-bit registers to a 32-bit integer
+        """
+        将两个16位寄存器解码为32位整数 | Decode two 16-bit registers to a 32-bit integer
 
         Args:
             registers: 包含两个16位寄存器值的列表 | List containing two 16-bit register values
@@ -160,7 +165,8 @@ class PayloadCoder:
         word_order: str = HIGH_WORD_FIRST,
         signed: bool = True,
     ) -> List[int]:
-        """将32位整数编码为两个16位寄存器 | Encode a 32-bit integer to two 16-bit registers
+        """
+        将32位整数编码为两个16位寄存器 | Encode a 32-bit integer to two 16-bit registers
 
         Args:
             value: 要编码的整数值 | Integer value to encode
@@ -199,7 +205,8 @@ class PayloadCoder:
         word_order: str = HIGH_WORD_FIRST,
         signed: bool = True,
     ) -> int:
-        """将四个16位寄存器解码为64位整数 | Decode four 16-bit registers to a 64-bit integer
+        """
+        将四个16位寄存器解码为64位整数 | Decode four 16-bit registers to a 64-bit integer
 
         Args:
             registers: 包含四个16位寄存器值的列表 | List containing four 16-bit register values
@@ -210,12 +217,10 @@ class PayloadCoder:
         Returns:
             int: 解码后的整数值
 
-
             Decoded integer value
 
         Raises:
             ValueError: 当寄存器数量不为4时
-
 
             When register count is not 4
         """
@@ -252,7 +257,8 @@ class PayloadCoder:
         word_order: str = HIGH_WORD_FIRST,
         signed: bool = True,
     ) -> List[int]:
-        """将64位整数编码为四个16位寄存器 | Encode a 64-bit integer to four 16-bit registers
+        """
+        将64位整数编码为四个16位寄存器 | Encode a 64-bit integer to four 16-bit registers
 
         Args:
             value: 要编码的整数值 | Integer value to encode
@@ -262,7 +268,6 @@ class PayloadCoder:
 
         Returns:
             List[int]: 包含四个16位寄存器值的列表
-
 
             List containing four 16-bit register values
         """
@@ -292,7 +297,8 @@ class PayloadCoder:
     def decode_string(
         registers: List[int], byte_order: str = BIG_ENDIAN, encoding: str = "utf-8"
     ) -> str:
-        """将寄存器解码为字符串 | Decode registers to a string
+        """
+        将寄存器解码为字符串 | Decode registers to a string
 
         Args:
             registers: 包含字符串数据的寄存器列表 | List of registers containing string data
@@ -301,7 +307,6 @@ class PayloadCoder:
 
         Returns:
             str: 解码后的字符串（去除尾部空字符）
-
 
             Decoded string (with trailing null characters removed)
         """
@@ -329,7 +334,8 @@ class PayloadCoder:
         byte_order: str = BIG_ENDIAN,
         encoding: str = "utf-8",
     ) -> List[int]:
-        """将字符串编码为寄存器 | Encode a string to registers
+        """
+        将字符串编码为寄存器 | Encode a string to registers
 
         Args:
             value: 要编码的字符串 | String to encode
@@ -340,12 +346,10 @@ class PayloadCoder:
         Returns:
             List[int]: 包含字符串数据的寄存器列表
 
-
             List of registers containing string data
 
         Raises:
             ValueError: 当字符串太长无法适应指定寄存器数量时
-
 
             When string is too long for specified register count
         """
@@ -382,10 +386,10 @@ class PayloadCoder:
         byte_order: str = BIG_ENDIAN,
         word_order: str = HIGH_WORD_FIRST,
     ) -> int:
-        """将两个16位寄存器解码为32位无符号整数 | Decode two 16-bit registers to a 32-bit unsigned integer
+        """
+        将两个16位寄存器解码为32位无符号整数 | Decode two 16-bit registers to a 32-bit unsigned integer
 
         这是decode_int32的便捷方法，signed=False
-
 
         This is a convenience method for decode_int32 with signed=False
         """
@@ -401,7 +405,6 @@ class PayloadCoder:
 
         这是encode_int32的便捷方法，signed=False
 
-
         This is a convenience method for encode_int32 with signed=False
         """
         return PayloadCoder.encode_int32(value, byte_order, word_order, signed=False)
@@ -412,10 +415,10 @@ class PayloadCoder:
         byte_order: str = BIG_ENDIAN,
         word_order: str = HIGH_WORD_FIRST,
     ) -> int:
-        """将四个16位寄存器解码为64位无符号整数 | Decode four 16-bit registers to a 64-bit unsigned integer
+        """
+        将四个16位寄存器解码为64位无符号整数 | Decode four 16-bit registers to a 64-bit unsigned integer
 
         这是decode_int64的便捷方法，signed=False
-
 
         This is a convenience method for decode_int64 with signed=False
         """
@@ -427,10 +430,10 @@ class PayloadCoder:
     def encode_uint64(
         value: int, byte_order: str = BIG_ENDIAN, word_order: str = HIGH_WORD_FIRST
     ) -> List[int]:
-        """将64位无符号整数编码为四个16位寄存器 | Encode a 64-bit unsigned integer to four 16-bit registers
+        """
+        将64位无符号整数编码为四个16位寄存器 | Encode a 64-bit unsigned integer to four 16-bit registers
 
         这是encode_int64的便捷方法，signed=False
-
 
         This is a convenience method for encode_int64 with signed=False
         """

@@ -1,11 +1,8 @@
-"""ModbusLink 日志系统
-
-
-Logging System
-
+"""
+ModbusLink 日志系统
 提供统一的日志配置和管理功能。
 
-
+Logging System
 Provides unified logging configuration and management functionality.
 """
 
@@ -15,14 +12,11 @@ from typing import Optional
 
 
 class ModbusLogger:
-    """ModbusLink日志管理器
-
-
-    ModbusLink Logger Manager
-
+    """
+    ModbusLink日志管理器
     提供统一的日志配置和格式化功能。
 
-
+    ModbusLink Logger Manager
     Provides unified logging configuration and formatting functionality.
     """
 
@@ -37,8 +31,8 @@ class ModbusLogger:
         enable_debug: bool = False,
         log_file: Optional[str] = None,
     ) -> None:
-        """设置ModbusLink的日志配置
-
+        """
+        设置ModbusLink的日志配置
 
         Setup ModbusLink logging configuration
 
@@ -92,8 +86,8 @@ class ModbusLogger:
 
     @staticmethod
     def get_logger(name: str) -> logging.Logger:
-        """获取指定名称的日志器
-
+        """
+        获取指定名称的日志器
 
         Get logger with specified name
 
@@ -107,14 +101,12 @@ class ModbusLogger:
 
     @staticmethod
     def enable_protocol_debug() -> None:
-        """启用协议级别的调试日志
-
-
-        Enable protocol-level debug logging
-
+        """
+        启用协议级别的调试日志
         显示原始的十六进制数据包，用于调试通信问题。
 
 
+        Enable protocol-level debug logging
         Shows raw hexadecimal packets for debugging communication issues.
         """
         # 设置传输层日志级别为DEBUG | Set transport layer log level to DEBUG
@@ -131,8 +123,8 @@ class ModbusLogger:
 
     @staticmethod
     def disable_protocol_debug() -> None:
-        """禁用协议级别的调试日志
-
+        """
+        禁用协议级别的调试日志
 
         Disable protocol-level debug logging"""
         # 恢复传输层日志级别 | Restore transport layer log level
@@ -149,8 +141,8 @@ class ModbusLogger:
 
 
 def get_logger(name: str) -> logging.Logger:
-    """便捷函数：获取ModbusLink日志器
-
+    """
+    便捷函数：获取ModbusLink日志器
 
     Convenience function: get ModbusLink logger
 

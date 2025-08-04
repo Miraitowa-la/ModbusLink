@@ -1,11 +1,8 @@
-"""ModbusLink 异步客户端实现
-
-
-ModbusLink Asynchronous Client Implementation
-
+"""
+ModbusLink 异步客户端实现
 提供用户友好的异步Modbus客户端API。
 
-
+ModbusLink Asynchronous Client Implementation
 Provides user-friendly asynchronous Modbus client API.
 """
 
@@ -20,30 +17,22 @@ from ..utils.logging import get_logger
 
 
 class AsyncModbusClient:
-    """异步Modbus客户端
-
+    """
+    异步Modbus客户端
+    提供简洁、用户友好的异步Modbus操作接口。通过依赖注入的方式接收异步传输层实例，支持异步TCP等传输方式。
+    所有方法都使用Python原生数据类型（int, list等），将底层的字节操作完全封装，并支持回调机制。
 
     Asynchronous Modbus Client
-
-    提供简洁、用户友好的异步Modbus操作接口。通过依赖注入的方式
-    接收异步传输层实例，支持异步TCP等传输方式。
-
-
     Provides a concise, user-friendly asynchronous Modbus operation interface. Receives
     async transport layer instances through dependency injection, supporting async
     transport methods such as async TCP.
-
-    所有方法都使用Python原生数据类型（int, list等），
-    将底层的字节操作完全封装，并支持回调机制。
-
-
     All methods use Python native data types (int, list, etc.),
     completely encapsulating underlying byte operations, and support callback mechanisms.
     """
 
     def __init__(self, transport: AsyncBaseTransport):
-        """初始化异步Modbus客户端
-
+        """
+        初始化异步Modbus客户端
 
         Initialize Async Modbus Client
 
@@ -60,7 +49,8 @@ class AsyncModbusClient:
         quantity: int,
         callback: Optional[Callable[[List[bool]], None]] = None,
     ) -> List[bool]:
-        """异步读取线圈状态（功能码0x01） | Async Read Coil Status (Function Code 0x01)
+        """
+        异步读取线圈状态（功能码0x01） | Async Read Coil Status (Function Code 0x01)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -70,7 +60,6 @@ class AsyncModbusClient:
 
         Returns:
             线圈状态列表，True表示ON，False表示OFF
-
 
             List of coil status, True for ON, False for OFF
 
@@ -135,7 +124,8 @@ class AsyncModbusClient:
         quantity: int,
         callback: Optional[Callable[[List[bool]], None]] = None,
     ) -> List[bool]:
-        """异步读取离散输入状态（功能码0x02） | Async Read Discrete Input Status (Function Code 0x02)
+        """
+        异步读取离散输入状态（功能码0x02） | Async Read Discrete Input Status (Function Code 0x02)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -145,7 +135,6 @@ class AsyncModbusClient:
 
         Returns:
             离散输入状态列表，True表示ON，False表示OFF
-
 
             List of discrete input status, True for ON, False for OFF
         """
@@ -206,7 +195,8 @@ class AsyncModbusClient:
         quantity: int,
         callback: Optional[Callable[[List[int]], None]] = None,
     ) -> List[int]:
-        """异步读取保持寄存器（功能码0x03） | Async Read Holding Registers (Function Code 0x03)
+        """
+        异步读取保持寄存器（功能码0x03） | Async Read Holding Registers (Function Code 0x03)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -216,7 +206,6 @@ class AsyncModbusClient:
 
         Returns:
             寄存器值列表，每个值为16位无符号整数（0-65535）
-
 
             List of register values, each value is a 16-bit unsigned integer (0-65535)
 
@@ -281,7 +270,8 @@ class AsyncModbusClient:
         quantity: int,
         callback: Optional[Callable[[List[int]], None]] = None,
     ) -> List[int]:
-        """异步读取输入寄存器（功能码0x04） | Async Read Input Registers (Function Code 0x04)
+        """
+        异步读取输入寄存器（功能码0x04） | Async Read Input Registers (Function Code 0x04)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -291,7 +281,6 @@ class AsyncModbusClient:
 
         Returns:
             寄存器值列表，每个值为16位无符号整数（0-65535）
-
 
             List of register values, each value is a 16-bit unsigned integer (0-65535)
         """
@@ -352,7 +341,8 @@ class AsyncModbusClient:
         value: bool,
         callback: Optional[Callable[[], None]] = None,
     ) -> None:
-        """异步写单个线圈（功能码0x05） | Async Write Single Coil (Function Code 0x05)
+        """
+        异步写单个线圈（功能码0x05） | Async Write Single Coil (Function Code 0x05)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -387,7 +377,8 @@ class AsyncModbusClient:
         value: int,
         callback: Optional[Callable[[], None]] = None,
     ) -> None:
-        """异步写单个寄存器（功能码0x06） | Async Write Single Register (Function Code 0x06)
+        """
+        异步写单个寄存器（功能码0x06） | Async Write Single Register (Function Code 0x06)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -426,7 +417,8 @@ class AsyncModbusClient:
         values: List[bool],
         callback: Optional[Callable[[], None]] = None,
     ) -> None:
-        """异步写多个线圈（功能码0x0F） | Async Write Multiple Coils (Function Code 0x0F)
+        """
+        异步写多个线圈（功能码0x0F） | Async Write Multiple Coils (Function Code 0x0F)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -481,7 +473,8 @@ class AsyncModbusClient:
         values: List[int],
         callback: Optional[Callable[[], None]] = None,
     ) -> None:
-        """异步写多个寄存器（功能码0x10） | Async Write Multiple Registers (Function Code 0x10)
+        """
+        异步写多个寄存器（功能码0x10） | Async Write Multiple Registers (Function Code 0x10)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -550,7 +543,8 @@ class AsyncModbusClient:
         word_order: str = "high",
         callback: Optional[Callable[[float], None]] = None,
     ) -> float:
-        """异步读取32位浮点数（占用2个连续寄存器） | Async Read 32-bit float (occupies 2 consecutive registers)
+        """
+        异步读取32位浮点数（占用2个连续寄存器） | Async Read 32-bit float (occupies 2 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -580,7 +574,8 @@ class AsyncModbusClient:
         word_order: str = "high",
         callback: Optional[Callable[[], None]] = None,
     ) -> None:
-        """异步写入32位浮点数（占用2个连续寄存器） | Async Write 32-bit float (occupies 2 consecutive registers)
+        """
+        异步写入32位浮点数（占用2个连续寄存器） | Async Write 32-bit float (occupies 2 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -603,7 +598,8 @@ class AsyncModbusClient:
         word_order: str = "high",
         callback: Optional[Callable[[int], None]] = None,
     ) -> int:
-        """异步读取32位有符号整数（占用2个连续寄存器） | Async Read 32-bit signed integer (occupies 2 consecutive registers)
+        """
+        异步读取32位有符号整数（占用2个连续寄存器） | Async Read 32-bit signed integer (occupies 2 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -633,7 +629,8 @@ class AsyncModbusClient:
         word_order: str = "high",
         callback: Optional[Callable[[], None]] = None,
     ) -> None:
-        """异步写入32位有符号整数（占用2个连续寄存器） | Async Write 32-bit signed integer (occupies 2 consecutive registers)
+        """
+        异步写入32位有符号整数（占用2个连续寄存器） | Async Write 32-bit signed integer (occupies 2 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address

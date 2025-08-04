@@ -1,33 +1,28 @@
-"""ModbusLink CRC16校验工具模块
-
-
-ModbusLink CRC16 Checksum Utility Module
-
+"""
+ModbusLink CRC16校验工具模块
 提供Modbus RTU协议所需的CRC16校验功能。
 
-
+ModbusLink CRC16 Checksum Utility Module
 Provides CRC16 checksum functionality required by Modbus RTU protocol.
 """
 
 
 class CRC16Modbus:
-    """Modbus CRC16校验工具类
-
-
-    Modbus CRC16 Checksum Utility Class
-
+    """
+    Modbus CRC16校验工具类
     实现Modbus RTU协议中使用的CRC16校验算法。
     使用多项式0xA001 (反向0x8005)。
 
 
+    Modbus CRC16 Checksum Utility Class
     Implements the CRC16 checksum algorithm used in Modbus RTU protocol.
     Uses polynomial 0xA001 (reverse of 0x8005).
     """
 
     @staticmethod
     def calculate(data: bytes) -> bytes:
-        """计算CRC16校验码
-
+        """
+        计算CRC16校验码
 
         Calculate CRC16 Checksum
 
@@ -35,10 +30,7 @@ class CRC16Modbus:
             data: 需要计算校验码的数据帧（地址+PDU） | Data frame for checksum calculation (address+PDU)
 
         Returns:
-            2字节的CRC校验码 (little-endian bytes)
-
-
-            2-byte CRC checksum (little-endian bytes)
+            2字节的CRC校验码 (little-endian bytes) | 2-byte CRC checksum (little-endian bytes)
 
         Example:
             >>> data = b'\x01\x03\x00\x00\x00\x01'
@@ -62,8 +54,8 @@ class CRC16Modbus:
 
     @staticmethod
     def validate(frame_with_crc: bytes) -> bool:
-        """验证包含CRC的完整数据帧
-
+        """
+        验证包含CRC的完整数据帧
 
         Validate Complete Data Frame with CRC
 
@@ -71,10 +63,7 @@ class CRC16Modbus:
             frame_with_crc: 包含CRC校验码的完整数据帧 | Complete data frame containing CRC checksum
 
         Returns:
-            如果CRC校验正确返回True，否则返回False
-
-
-            True if CRC verification is correct, False otherwise
+            如果CRC校验正确返回True，否则返回False | True if CRC verification is correct, False otherwise
 
         Example:
             >>> frame = b'\x01\x03\x00\x00\x00\x01\x84\x0a'
@@ -98,15 +87,13 @@ class CRC16Modbus:
 
     @staticmethod
     def crc16_to_int(data: bytes) -> int:
-        """计算CRC16校验码并返回整数值
-
-
-        Calculate CRC16 Checksum and Return Integer Value
-
+        """
+        计算CRC16校验码并返回整数值
         这是一个兼容性方法，用于与旧代码保持兼容。
         推荐使用calculate()方法。
 
 
+        Calculate CRC16 Checksum and Return Integer Value
         This is a compatibility method for maintaining compatibility with old code.
         It is recommended to use the calculate() method.
 
