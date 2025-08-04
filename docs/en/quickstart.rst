@@ -107,8 +107,8 @@ RTU Connection
    finally:
        client.disconnect()
 
-ASCII Communication
--------------------
+ASCII Connection
+~~~~~~~~~~~~~~~~~~~
 
 For Modbus ASCII communication over serial:
 

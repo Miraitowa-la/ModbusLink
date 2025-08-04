@@ -107,8 +107,8 @@ RTU 连接
    finally:
        client.disconnect()
 
-ASCII 通信
-----------
+ASCII 连接
+~~~~~~~~~
 
 对于通过串口的 Modbus ASCII 通信：
 
