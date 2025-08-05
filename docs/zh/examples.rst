@@ -570,6 +570,450 @@
 
    asyncio.run(main())
 
+服务器示例
+----------
+
+基础TCP服务器
+~~~~~~~~~~~~~
+
+.. code-block:: python
+
+   from modbuslink import AsyncTcpModbusServer, ModbusDataStore
+   import asyncio
+   import logging
+
+   async def main():
+       # 设置日志
+       logging.basicConfig(level=logging.INFO)
+       
+       # 创建数据存储
+       data_store = ModbusDataStore(
+           coils_size=1000,
+           discrete_inputs_size=1000,
+           holding_registers_size=1000,
+           input_registers_size=1000
+       )
+       
+       # 设置初始数据
+       data_store.write_coils(0, [True, False, True, False, True, False, True, False])
+       data_store.write_holding_registers(0, [100, 200, 300, 400, 500])
+       data_store.write_input_registers(0, [250, 251, 252, 253, 254])
+       data_store.write_discrete_inputs(0, [False, True, False, True, False, True, False, True])
+       
+       # 创建TCP服务器
+       server = AsyncTcpModbusServer(
+           host="localhost",
+           port=5020,
+           data_store=data_store,
+           slave_id=1,
+           max_connections=5
+       )
+       
+       print("启动TCP服务器: localhost:5020")
+       print("从站地址: 1")
+       
+       try:
+           # 启动服务器
+           await server.start()
+           print("TCP服务器启动成功!")
+           
+           # 永久运行
+           await server.serve_forever()
+           
+       except KeyboardInterrupt:
+           print("\n收到停止信号")
+       finally:
+           print("正在停止服务器...")
+           await server.stop()
+           print("服务器已停止")
+
+   asyncio.run(main())
+
+RTU服务器示例
+~~~~~~~~~~~~~
+
+.. code-block:: python
+
+   from modbuslink import AsyncRtuModbusServer, ModbusDataStore
+   import asyncio
+   import random
+   import math
+
+   async def simulate_industrial_data(data_store):
+       """模拟工业设备数据"""
+       cycle = 0
+       
+       while True:
+           try:
+               cycle += 1
+               
+               # 模拟温度传感器数据
+               base_temps = [248, 179, 318, 447, 682]
+               temp_variations = [base + random.randint(-5, 5) + int(3 * math.sin(cycle * 0.1)) for base in base_temps]
+               data_store.write_input_registers(0, temp_variations)
+               
+               # 模拟压力传感器数据
+               base_pressures = [1015, 1027, 996, 1043, 1004]
+               pressure_variations = [base + random.randint(-3, 3) + int(2 * math.cos(cycle * 0.15)) for base in base_pressures]
+               data_store.write_input_registers(10, pressure_variations)
+               
+               # 模拟电机转速变化
+               current_speeds = data_store.read_holding_registers(0, 5)
+               new_speeds = [speed + random.randint(-50, 50) for speed in current_speeds]
+               new_speeds = [max(500, min(4000, speed)) for speed in new_speeds]
+               data_store.write_holding_registers(0, new_speeds)
+               
+               if cycle % 20 == 0:
+                   print(f"工业数据更新 #{cycle}")
+                   print(f"  温度: {temp_variations}")
+                   print(f"  压力: {pressure_variations}")
+                   print(f"  电机转速: {new_speeds}")
+               
+               await asyncio.sleep(2.0)
+               
+           except Exception as e:
+               print(f"数据模拟错误: {e}")
+               await asyncio.sleep(2.0)
+
+   async def main():
+       # 创建数据存储
+       data_store = ModbusDataStore(
+           coils_size=1000,
+           discrete_inputs_size=1000,
+           holding_registers_size=1000,
+           input_registers_size=1000
+       )
+       
+       # 初始化工业设备数据
+       data_store.write_coils(0, [True, False, True, True, False, False, True, False])  # 电机状态
+       data_store.write_coils(8, [False, True, False, True, True, False, False, True])  # 阀门状态
+       data_store.write_holding_registers(0, [1500, 2800, 3600, 1200, 750])  # 电机参数
+       data_store.write_input_registers(0, [248, 179, 318, 447, 682])  # 温度传感器
+       data_store.write_discrete_inputs(0, [True, False, True, True, False, True, False, True])  # 限位开关
+       
+       # 创建RTU服务器
+       server = AsyncRtuModbusServer(
+           port="COM3",  # 根据实际情况修改
+           baudrate=9600,
+           data_store=data_store,
+           slave_id=1,
+           parity="N",
+           stopbits=1,
+           bytesize=8,
+           timeout=1.0
+       )
+       
+       print("RTU服务器配置:")
+       print("  串口: COM3")
+       print("  波特率: 9600")
+       print("  数据位: 8, 停止位: 1, 校验位: 无")
+       print("  从站地址: 1")
+       
+       try:
+           # 启动服务器
+           await server.start()
+           print("RTU服务器启动成功!")
+           
+           # 启动数据模拟任务
+           simulation_task = asyncio.create_task(simulate_industrial_data(data_store))
+           server_task = asyncio.create_task(server.serve_forever())
+           
+           # 等待任务完成
+           await asyncio.gather(simulation_task, server_task)
+           
+       except KeyboardInterrupt:
+           print("\n收到停止信号")
+       except Exception as e:
+           print(f"\n服务器运行错误: {e}")
+       finally:
+           print("正在停止服务器...")
+           await server.stop()
+           print("服务器已停止")
+
+   asyncio.run(main())
+
+ASCII服务器示例
+~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+   from modbuslink import AsyncAsciiModbusServer, ModbusDataStore
+   import asyncio
+   import random
+   import math
+
+   async def simulate_laboratory_experiment(data_store):
+       """模拟实验室实验过程"""
+       experiment_time = 0
+       
+       while True:
+           try:
+               experiment_time += 1
+               
+               # 模拟温度控制过程
+               target_temps = data_store.read_holding_registers(0, 5)
+               current_temps = data_store.read_input_registers(0, 5)
+               
+               # 温度逐渐趋向目标值
+               new_temps = []
+               for i, (current, target) in enumerate(zip(current_temps, target_temps)):
+                   diff = target - current
+                   change = diff * 0.1 + random.randint(-2, 2) + math.sin(experiment_time * 0.05) * 1
+                   new_temp = current + change
+                   new_temps.append(int(max(0, min(500, new_temp))))
+               
+               data_store.write_input_registers(0, new_temps)
+               
+               # 模拟湿度变化
+               base_humidity = [45, 52, 38, 48, 55]
+               humidity_variations = [base + random.randint(-5, 5) + int(2 * math.cos(experiment_time * 0.08)) for base in base_humidity]
+               humidity_variations = [max(0, min(100, h)) for h in humidity_variations]
+               data_store.write_input_registers(10, humidity_variations)
+               
+               # 模拟pH值变化
+               base_ph = [700, 650, 720, 680, 710]
+               ph_variations = [base + random.randint(-10, 10) + int(3 * math.sin(experiment_time * 0.03)) for base in base_ph]
+               ph_variations = [max(0, min(1400, ph)) for ph in ph_variations]
+               data_store.write_input_registers(20, ph_variations)
+               
+               if experiment_time % 15 == 0:
+                   print(f"实验过程模拟 #{experiment_time}")
+                   print(f"  温度: {new_temps}")
+                   print(f"  湿度: {humidity_variations}%")
+                   print(f"  pH: {[ph/100.0 for ph in ph_variations]}")
+               
+               await asyncio.sleep(3.0)
+               
+           except Exception as e:
+               print(f"实验模拟错误: {e}")
+               await asyncio.sleep(3.0)
+
+   async def main():
+       # 创建数据存储
+       data_store = ModbusDataStore(
+           coils_size=1000,
+           discrete_inputs_size=1000,
+           holding_registers_size=1000,
+           input_registers_size=1000
+       )
+       
+       # 初始化实验室设备数据
+       data_store.write_coils(0, [False, True, False, True, False, False, True, False])  # 加热器控制
+       data_store.write_coils(8, [True, True, False, False, True, True, False, False])  # 风扇控制
+       data_store.write_holding_registers(0, [250, 300, 180, 220, 350])  # 目标温度
+       data_store.write_input_registers(0, [248, 298, 178, 218, 348])  # 实际温度
+       data_store.write_discrete_inputs(0, [False, True, False, False, True, True, False, True])  # 门开关状态
+       
+       # 创建ASCII服务器
+       server = AsyncAsciiModbusServer(
+           port="COM4",  # 根据实际情况修改
+           baudrate=9600,
+           data_store=data_store,
+           slave_id=2,
+           parity="E",
+           stopbits=1,
+           bytesize=7,
+           timeout=2.0
+       )
+       
+       print("ASCII服务器配置:")
+       print("  串口: COM4")
+       print("  波特率: 9600")
+       print("  数据位: 7, 停止位: 1, 校验位: 偶校验")
+       print("  从站地址: 2")
+       
+       try:
+           # 启动服务器
+           await server.start()
+           print("ASCII服务器启动成功!")
+           
+           # 启动实验模拟任务
+           simulation_task = asyncio.create_task(simulate_laboratory_experiment(data_store))
+           server_task = asyncio.create_task(server.serve_forever())
+           
+           # 等待任务完成
+           await asyncio.gather(simulation_task, server_task)
+           
+       except KeyboardInterrupt:
+           print("\n收到停止信号")
+       except Exception as e:
+           print(f"\n服务器运行错误: {e}")
+       finally:
+           print("正在停止服务器...")
+           await server.stop()
+           print("服务器已停止")
+
+   asyncio.run(main())
+
+多服务器示例
+~~~~~~~~~~~~
+
+.. code-block:: python
+
+   from modbuslink import (
+       AsyncTcpModbusServer,
+       AsyncRtuModbusServer, 
+       AsyncAsciiModbusServer,
+       ModbusDataStore
+   )
+   import asyncio
+   import random
+
+   class MultiServerManager:
+       """多服务器管理器"""
+       
+       def __init__(self):
+           self.servers = {}
+           self.data_stores = {}
+           self.running = False
+       
+       async def setup_servers(self):
+           """设置所有服务器"""
+           # TCP服务器
+           tcp_data_store = ModbusDataStore(coils_size=1000, discrete_inputs_size=1000,
+                                          holding_registers_size=1000, input_registers_size=1000)
+           tcp_data_store.write_coils(0, [True, False, True, False] * 10)
+           tcp_data_store.write_holding_registers(0, list(range(100, 150)))
+           
+           tcp_server = AsyncTcpModbusServer(
+               host="localhost", port=5020, data_store=tcp_data_store, slave_id=1
+           )
+           
+           self.servers["tcp"] = tcp_server
+           self.data_stores["tcp"] = tcp_data_store
+           
+           # RTU服务器
+           rtu_data_store = ModbusDataStore(coils_size=1000, discrete_inputs_size=1000,
+                                          holding_registers_size=1000, input_registers_size=1000)
+           rtu_data_store.write_coils(0, [False, True, False, True] * 8)
+           rtu_data_store.write_holding_registers(0, [1500, 2800, 3600, 1200, 750])
+           
+           rtu_server = AsyncRtuModbusServer(
+               port="COM3", baudrate=9600, data_store=rtu_data_store, slave_id=2
+           )
+           
+           self.servers["rtu"] = rtu_server
+           self.data_stores["rtu"] = rtu_data_store
+           
+           # ASCII服务器
+           ascii_data_store = ModbusDataStore(coils_size=1000, discrete_inputs_size=1000,
+                                            holding_registers_size=1000, input_registers_size=1000)
+           ascii_data_store.write_coils(0, [True, True, False, False] * 8)
+           ascii_data_store.write_holding_registers(0, [250, 300, 180, 220, 350])
+           
+           ascii_server = AsyncAsciiModbusServer(
+               port="COM4", baudrate=9600, data_store=ascii_data_store, slave_id=3,
+               parity="E", stopbits=1, bytesize=7
+           )
+           
+           self.servers["ascii"] = ascii_server
+           self.data_stores["ascii"] = ascii_data_store
+       
+       async def start_all_servers(self):
+           """启动所有服务器"""
+           print("启动所有服务器...")
+           
+           for server_type, server in self.servers.items():
+               try:
+                   await server.start()
+                   print(f"{server_type.upper()}服务器启动成功")
+               except Exception as e:
+                   print(f"{server_type.upper()}服务器启动失败: {e}")
+           
+           self.running = True
+       
+       async def stop_all_servers(self):
+           """停止所有服务器"""
+           print("停止所有服务器...")
+           
+           for server_type, server in self.servers.items():
+               try:
+                   await server.stop()
+                   print(f"{server_type.upper()}服务器已停止")
+               except Exception as e:
+                   print(f"{server_type.upper()}服务器停止失败: {e}")
+           
+           self.running = False
+       
+       async def simulate_data_changes(self):
+           """模拟数据变化"""
+           cycle = 0
+           
+           while self.running:
+               try:
+                   cycle += 1
+                   
+                   # 更新各服务器数据
+                   for server_type, store in self.data_stores.items():
+                       if server_type == "tcp":
+                           # 网络监控数据
+                           traffic_data = [random.randint(100, 1000) for _ in range(10)]
+                           store.write_input_registers(50, traffic_data)
+                       elif server_type == "rtu":
+                           # 工业过程数据
+                           temp_data = [random.randint(200, 400) for _ in range(5)]
+                           store.write_input_registers(0, temp_data)
+                       elif server_type == "ascii":
+                           # 实验室数据
+                           lab_data = [random.randint(180, 350) for _ in range(5)]
+                           store.write_input_registers(0, lab_data)
+                       
+                       # 更新计数器
+                       store.write_holding_registers(999, [cycle])
+                   
+                   if cycle % 20 == 0:
+                       print(f"数据模拟周期 #{cycle}")
+                   
+                   await asyncio.sleep(2.0)
+                   
+               except Exception as e:
+                   print(f"数据模拟错误: {e}")
+                   await asyncio.sleep(2.0)
+       
+       async def serve_forever(self):
+           """永久运行"""
+           # 启动数据模拟任务
+           simulation_task = asyncio.create_task(self.simulate_data_changes())
+           
+           # 启动所有服务器的serve_forever任务
+           server_tasks = []
+           for server_type, server in self.servers.items():
+               try:
+                   if await server.is_running():
+                       server_tasks.append(asyncio.create_task(server.serve_forever()))
+               except Exception as e:
+                   print(f"{server_type.upper()}服务器serve_forever启动失败: {e}")
+           
+           # 等待所有任务完成
+           all_tasks = [simulation_task] + server_tasks
+           await asyncio.gather(*all_tasks, return_exceptions=True)
+
+   async def main():
+       manager = MultiServerManager()
+       
+       try:
+           # 配置和启动服务器
+           await manager.setup_servers()
+           await manager.start_all_servers()
+           
+           print("\n连接信息:")
+           print("  TCP服务器: localhost:5020 (从站地址 1)")
+           print("  RTU服务器: COM3@9600,8,N,1 (从站地址 2)")
+           print("  ASCII服务器: COM4@9600,7,E,1 (从站地址 3)")
+           print("\n按 Ctrl+C 停止所有服务器")
+           
+           # 永久运行
+           await manager.serve_forever()
+           
+       except KeyboardInterrupt:
+           print("\n收到停止信号")
+       except Exception as e:
+           print(f"\n多服务器运行错误: {e}")
+       finally:
+           await manager.stop_all_servers()
+
+   asyncio.run(main())
+
 过程控制系统
 ~~~~~~~~~~~~
 

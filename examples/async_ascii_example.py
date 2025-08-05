@@ -15,7 +15,7 @@ from modbuslink import (
     AsyncAsciiTransport,
     ConnectionError,
     TimeoutError,
-    LRCError,
+    CRCError,
     ModbusException,
 )
 
@@ -473,8 +473,8 @@ async def main():
         print("  - 串口线缆是否正常 | Serial cable is working properly")
         print("  - 波特率等参数是否与设备匹配 | Baud rate and other parameters match the device")
         print("  - 设备是否配置为ASCII模式 | Device is configured for ASCII mode")
-    except LRCError as e:
-        print(f"\n❌ LRC校验错误 | LRC verification error: {e}")
+    except CRCError as e:
+        print(f"\n❌ CRC校验错误 | CRC verification error: {e}")
         print("请检查 | Please check:")
         print("  - 串口线缆是否有干扰 | Serial cable has interference")
         print("  - 波特率是否正确 | Baud rate is correct")

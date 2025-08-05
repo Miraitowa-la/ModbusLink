@@ -9,13 +9,14 @@ A modern, powerful, and developer-friendly Python Modbus library with comprehens
 
 ## Features
 
-- **🏗️ Layered Architecture**: Clean separation of transport, client, and utility layers
+- **🏗️ Layered Architecture**: Clean separation of transport, client, server, and utility layers
 - **🔌 Multiple Transports**: TCP, RTU, and ASCII with both sync and async support
 - **⚡ High Performance**: Asynchronous operations with concurrent request handling
 - **🛠️ Developer Friendly**: Intuitive APIs with comprehensive error handling
 - **📊 Advanced Data Types**: Built-in support for float32, int32, strings, and more
 - **🔍 Debugging Support**: Comprehensive logging with protocol-level debugging
 - **🎯 Type Safe**: Full type hints for better IDE support
+- **🖥️ Server Support**: Complete Modbus server implementation with TCP, RTU, and ASCII support
 
 ## Quick Start
 
@@ -115,6 +116,119 @@ async def main():
 asyncio.run(main())
 ```
 
+### Modbus Servers
+
+#### TCP Server
+
+```python
+from modbuslink import AsyncTcpModbusServer, ModbusDataStore
+import asyncio
+
+async def main():
+    # Create data store
+    data_store = ModbusDataStore(
+        coils_size=1000,
+        discrete_inputs_size=1000,
+        holding_registers_size=1000,
+        input_registers_size=1000
+    )
+    
+    # Set initial data
+    data_store.write_coils(0, [True, False, True, False])
+    data_store.write_holding_registers(0, [100, 200, 300, 400])
+    
+    # Create TCP server
+    server = AsyncTcpModbusServer(
+        host="localhost",
+        port=5020,
+        data_store=data_store,
+        slave_id=1
+    )
+    
+    try:
+        await server.start()
+        print("TCP server started successfully!")
+        await server.serve_forever()
+    except KeyboardInterrupt:
+        print("Stopping server...")
+    finally:
+        await server.stop()
+
+asyncio.run(main())
+```
+
+#### RTU Server
+
+```python
+from modbuslink import AsyncRtuModbusServer, ModbusDataStore
+import asyncio
+
+async def main():
+    # Create data store
+    data_store = ModbusDataStore(
+        coils_size=1000,
+        discrete_inputs_size=1000,
+        holding_registers_size=1000,
+        input_registers_size=1000
+    )
+    
+    # Create RTU server
+    server = AsyncRtuModbusServer(
+        port="COM3",  # or '/dev/ttyUSB0' on Linux
+        baudrate=9600,
+        data_store=data_store,
+        slave_id=1
+    )
+    
+    try:
+        await server.start()
+        print("RTU server started successfully!")
+        await server.serve_forever()
+    except KeyboardInterrupt:
+        print("Stopping server...")
+    finally:
+        await server.stop()
+
+asyncio.run(main())
+```
+
+#### ASCII Server
+
+```python
+from modbuslink import AsyncAsciiModbusServer, ModbusDataStore
+import asyncio
+
+async def main():
+    # Create data store
+    data_store = ModbusDataStore(
+        coils_size=1000,
+        discrete_inputs_size=1000,
+        holding_registers_size=1000,
+        input_registers_size=1000
+    )
+    
+    # Create ASCII server
+    server = AsyncAsciiModbusServer(
+        port="COM4",
+        baudrate=9600,
+        data_store=data_store,
+        slave_id=2,
+        parity="E",
+        bytesize=7
+    )
+    
+    try:
+        await server.start()
+        print("ASCII server started successfully!")
+        await server.serve_forever()
+    except KeyboardInterrupt:
+        print("Stopping server...")
+    finally:
+        await server.stop()
+
+asyncio.run(main())
+```
+
 ### Advanced Data Types
 
 ```python
@@ -206,6 +320,12 @@ ModbusLink/
 │   ├── client/              # Client implementations
 │   │   ├── sync_client.py   # Synchronous client
 │   │   └── async_client.py  # Asynchronous client
+│   ├── server/              # Server implementations
+│   │   ├── data_store.py    # Data store
+│   │   ├── async_base_server.py  # Async server base class
+│   │   ├── async_tcp_server.py   # Async TCP server
+│   │   ├── async_rtu_server.py   # Async RTU server
+│   │   └── async_ascii_server.py # Async ASCII server
 │   ├── transport/           # Transport layer implementations
 │   │   ├── tcp.py          # TCP transport
 │   │   ├── rtu.py          # RTU transport
@@ -225,7 +345,11 @@ ModbusLink/
 │   ├── sync_rtu_example.py
 │   ├── async_rtu_example.py
 │   ├── sync_ascii_example.py
-│   └── async_ascii_example.py
+│   ├── async_ascii_example.py
+│   ├── async_tcp_server_example.py    # TCP server example
+│   ├── async_rtu_server_example.py    # RTU server example
+│   ├── async_ascii_server_example.py  # ASCII server example
+│   └── multi_server_example.py        # Multi-server example
 └── docs/                   # Documentation
 ```
 
@@ -235,7 +359,9 @@ Check out the [examples](examples/) directory for comprehensive usage examples:
 
 - **Synchronous Examples**: Basic sync operations for TCP, RTU, and ASCII
 - **Asynchronous Examples**: High-performance async operations with concurrency
+- **Server Examples**: TCP, RTU, and ASCII server implementations
 - **Advanced Features**: Data types, error handling, and debugging
+- **Multi-Server**: Running multiple server types simultaneously
 
 ## Requirements
 

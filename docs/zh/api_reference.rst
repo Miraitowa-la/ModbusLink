@@ -89,7 +89,48 @@ AsyncAsciiTransport
    :undoc-members:
    :show-inheritance:
 
+服务器模块
+----------
 
+ModbusDataStore
+~~~~~~~~~~~~~~~
+
+.. autoclass:: modbuslink.server.data_store.ModbusDataStore
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+AsyncBaseModbusServer
+~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: modbuslink.server.async_base_server.AsyncBaseModbusServer
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+AsyncTcpModbusServer
+~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: modbuslink.server.async_tcp_server.AsyncTcpModbusServer
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+AsyncRtuModbusServer
+~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: modbuslink.server.async_rtu_server.AsyncRtuModbusServer
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+AsyncAsciiModbusServer
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: modbuslink.server.async_ascii_server.AsyncAsciiModbusServer
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 工具模块
 --------
@@ -283,26 +324,99 @@ ModbusException
 
    asyncio.run(main())
 
-从站模拟器使用
-~~~~~~~~~~~~~~
+服务器使用
+~~~~~~~~~~
 
 .. code-block:: python
 
-   from modbuslink import ModbusSlave, DataStore
+   from modbuslink import AsyncTcpModbusServer, ModbusDataStore
+   import asyncio
 
-   # 创建和配置数据存储
-   data_store = DataStore()
-   data_store.set_holding_registers(0, [1000, 2000, 3000])
-   data_store.set_coils(0, [True, False, True, False])
+   async def main():
+       # 创建和配置数据存储
+       data_store = ModbusDataStore(
+           coils_size=1000,
+           discrete_inputs_size=1000,
+           holding_registers_size=1000,
+           input_registers_size=1000
+       )
+       
+       # 设置初始数据
+       data_store.write_holding_registers(0, [1000, 2000, 3000])
+       data_store.write_coils(0, [True, False, True, False])
 
-   # 创建和启动从站
-   slave = ModbusSlave(slave_id=1, data_store=data_store)
-   slave.start_tcp_server(host='127.0.0.1', port=5020)
+       # 创建TCP服务器
+       server = AsyncTcpModbusServer(
+           host='localhost',
+           port=5020,
+           data_store=data_store,
+           slave_id=1
+       )
 
-   # 使用上下文管理器
-   with slave:
-       # 从站在后台运行
-       pass
+       # 启动服务器
+       await server.start()
+       print("服务器已启动")
+       
+       try:
+           await server.serve_forever()
+       except KeyboardInterrupt:
+           print("停止服务器")
+       finally:
+           await server.stop()
+
+   asyncio.run(main())
+
+RTU服务器使用
+~~~~~~~~~~~~~
+
+.. code-block:: python
+
+   from modbuslink import AsyncRtuModbusServer, ModbusDataStore
+   import asyncio
+
+   async def main():
+       data_store = ModbusDataStore()
+       
+       server = AsyncRtuModbusServer(
+           port="COM3",
+           baudrate=9600,
+           data_store=data_store,
+           slave_id=1,
+           parity="N",
+           stopbits=1,
+           bytesize=8
+       )
+
+       await server.start()
+       await server.serve_forever()
+
+   asyncio.run(main())
+
+ASCII服务器使用
+~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+   from modbuslink import AsyncAsciiModbusServer, ModbusDataStore
+   import asyncio
+
+   async def main():
+       data_store = ModbusDataStore()
+       
+       server = AsyncAsciiModbusServer(
+           port="COM4",
+           baudrate=9600,
+           data_store=data_store,
+           slave_id=2,
+           parity="E",
+           stopbits=1,
+           bytesize=7
+       )
+
+       await server.start()
+       await server.serve_forever()
+
+   asyncio.run(main())
 
 高级数据类型
 ~~~~~~~~~~~~

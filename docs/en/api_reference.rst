@@ -89,7 +89,48 @@ AsyncAsciiTransport
    :undoc-members:
    :show-inheritance:
 
+Server Module
+-------------
 
+ModbusDataStore
+~~~~~~~~~~~~~~~
+
+.. autoclass:: modbuslink.server.data_store.ModbusDataStore
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+AsyncBaseModbusServer
+~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: modbuslink.server.async_base_server.AsyncBaseModbusServer
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+AsyncTcpModbusServer
+~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: modbuslink.server.async_tcp_server.AsyncTcpModbusServer
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+AsyncRtuModbusServer
+~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: modbuslink.server.async_rtu_server.AsyncRtuModbusServer
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+AsyncAsciiModbusServer
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. autoclass:: modbuslink.server.async_ascii_server.AsyncAsciiModbusServer
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Utility Module
 --------------
@@ -283,26 +324,99 @@ Async Client Usage
 
    asyncio.run(main())
 
-Slave Simulator Usage
-~~~~~~~~~~~~~~~~~~~~~
+Server Usage
+~~~~~~~~~~~~
 
 .. code-block:: python
 
-   from modbuslink import ModbusSlave, DataStore
+   from modbuslink import AsyncTcpModbusServer, ModbusDataStore
+   import asyncio
 
-   # Create and configure data store
-   data_store = DataStore()
-   data_store.set_holding_registers(0, [1000, 2000, 3000])
-   data_store.set_coils(0, [True, False, True, False])
+   async def main():
+       # Create and configure data store
+       data_store = ModbusDataStore(
+           coils_size=1000,
+           discrete_inputs_size=1000,
+           holding_registers_size=1000,
+           input_registers_size=1000
+       )
+       
+       # Set initial data
+       data_store.write_holding_registers(0, [1000, 2000, 3000])
+       data_store.write_coils(0, [True, False, True, False])
 
-   # Create and start slave
-   slave = ModbusSlave(slave_id=1, data_store=data_store)
-   slave.start_tcp_server(host='127.0.0.1', port=5020)
+       # Create TCP server
+       server = AsyncTcpModbusServer(
+           host='localhost',
+           port=5020,
+           data_store=data_store,
+           slave_id=1
+       )
 
-   # Use context manager
-   with slave:
-       # Slave runs in background
-       pass
+       # Start server
+       await server.start()
+       print("Server started")
+       
+       try:
+           await server.serve_forever()
+       except KeyboardInterrupt:
+           print("Stopping server")
+       finally:
+           await server.stop()
+
+   asyncio.run(main())
+
+RTU Server Usage
+~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+   from modbuslink import AsyncRtuModbusServer, ModbusDataStore
+   import asyncio
+
+   async def main():
+       data_store = ModbusDataStore()
+       
+       server = AsyncRtuModbusServer(
+           port="COM3",
+           baudrate=9600,
+           data_store=data_store,
+           slave_id=1,
+           parity="N",
+           stopbits=1,
+           bytesize=8
+       )
+
+       await server.start()
+       await server.serve_forever()
+
+   asyncio.run(main())
+
+ASCII Server Usage
+~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+   from modbuslink import AsyncAsciiModbusServer, ModbusDataStore
+   import asyncio
+
+   async def main():
+       data_store = ModbusDataStore()
+       
+       server = AsyncAsciiModbusServer(
+           port="COM4",
+           baudrate=9600,
+           data_store=data_store,
+           slave_id=2,
+           parity="E",
+           stopbits=1,
+           bytesize=7
+       )
+
+       await server.start()
+       await server.serve_forever()
+
+   asyncio.run(main())
 
 Advanced Data Types
 ~~~~~~~~~~~~~~~~~~~

@@ -9,13 +9,14 @@
 
 ## 特性
 
-- **🏗️ 分层架构**: 传输层、客户端和工具层的清晰分离
+- **🏗️ 分层架构**: 传输层、客户端、服务器和工具层的清晰分离
 - **🔌 多种传输方式**: TCP、RTU和ASCII，支持同步和异步操作
 - **⚡ 高性能**: 异步操作支持并发请求处理
 - **🛠️ 开发者友好**: 直观的API和全面的错误处理
 - **📊 高级数据类型**: 内置支持float32、int32、字符串等
 - **🔍 调试支持**: 全面的日志记录和协议级调试
 - **🎯 类型安全**: 完整的类型提示，更好的IDE支持
+- **🖥️ 服务器支持**: 完整的Modbus服务器实现，支持TCP、RTU和ASCII
 
 ## 快速开始
 
@@ -115,6 +116,119 @@ async def main():
 asyncio.run(main())
 ```
 
+### Modbus服务器
+
+#### TCP服务器
+
+```python
+from modbuslink import AsyncTcpModbusServer, ModbusDataStore
+import asyncio
+
+async def main():
+    # 创建数据存储 | Create data store
+    data_store = ModbusDataStore(
+        coils_size=1000,
+        discrete_inputs_size=1000,
+        holding_registers_size=1000,
+        input_registers_size=1000
+    )
+    
+    # 设置初始数据 | Set initial data
+    data_store.write_coils(0, [True, False, True, False])
+    data_store.write_holding_registers(0, [100, 200, 300, 400])
+    
+    # 创建TCP服务器 | Create TCP server
+    server = AsyncTcpModbusServer(
+        host="localhost",
+        port=5020,
+        data_store=data_store,
+        slave_id=1
+    )
+    
+    try:
+        await server.start()
+        print("TCP服务器启动成功! | TCP server started successfully!")
+        await server.serve_forever()
+    except KeyboardInterrupt:
+        print("停止服务器... | Stopping server...")
+    finally:
+        await server.stop()
+
+asyncio.run(main())
+```
+
+#### RTU服务器
+
+```python
+from modbuslink import AsyncRtuModbusServer, ModbusDataStore
+import asyncio
+
+async def main():
+    # 创建数据存储 | Create data store
+    data_store = ModbusDataStore(
+        coils_size=1000,
+        discrete_inputs_size=1000,
+        holding_registers_size=1000,
+        input_registers_size=1000
+    )
+    
+    # 创建RTU服务器 | Create RTU server
+    server = AsyncRtuModbusServer(
+        port="COM3",  # Linux下使用 '/dev/ttyUSB0' | Use '/dev/ttyUSB0' on Linux
+        baudrate=9600,
+        data_store=data_store,
+        slave_id=1
+    )
+    
+    try:
+        await server.start()
+        print("RTU服务器启动成功! | RTU server started successfully!")
+        await server.serve_forever()
+    except KeyboardInterrupt:
+        print("停止服务器... | Stopping server...")
+    finally:
+        await server.stop()
+
+asyncio.run(main())
+```
+
+#### ASCII服务器
+
+```python
+from modbuslink import AsyncAsciiModbusServer, ModbusDataStore
+import asyncio
+
+async def main():
+    # 创建数据存储 | Create data store
+    data_store = ModbusDataStore(
+        coils_size=1000,
+        discrete_inputs_size=1000,
+        holding_registers_size=1000,
+        input_registers_size=1000
+    )
+    
+    # 创建ASCII服务器 | Create ASCII server
+    server = AsyncAsciiModbusServer(
+        port="COM4",
+        baudrate=9600,
+        data_store=data_store,
+        slave_id=2,
+        parity="E",
+        bytesize=7
+    )
+    
+    try:
+        await server.start()
+        print("ASCII服务器启动成功! | ASCII server started successfully!")
+        await server.serve_forever()
+    except KeyboardInterrupt:
+        print("停止服务器... | Stopping server...")
+    finally:
+        await server.stop()
+
+asyncio.run(main())
+```
+
 ### 高级数据类型
 
 ```python
@@ -206,6 +320,12 @@ ModbusLink/
 │   ├── client/              # 客户端实现
 │   │   ├── sync_client.py   # 同步客户端
 │   │   └── async_client.py  # 异步客户端
+│   ├── server/              # 服务器实现
+│   │   ├── data_store.py    # 数据存储
+│   │   ├── async_base_server.py  # 异步服务器基类
+│   │   ├── async_tcp_server.py   # 异步TCP服务器
+│   │   ├── async_rtu_server.py   # 异步RTU服务器
+│   │   └── async_ascii_server.py # 异步ASCII服务器
 │   ├── transport/           # 传输层实现
 │   │   ├── tcp.py          # TCP传输层
 │   │   ├── rtu.py          # RTU传输层
@@ -225,7 +345,11 @@ ModbusLink/
 │   ├── sync_rtu_example.py
 │   ├── async_rtu_example.py
 │   ├── sync_ascii_example.py
-│   └── async_ascii_example.py
+│   ├── async_ascii_example.py
+│   ├── async_tcp_server_example.py    # TCP服务器示例
+│   ├── async_rtu_server_example.py    # RTU服务器示例
+│   ├── async_ascii_server_example.py  # ASCII服务器示例
+│   └── multi_server_example.py        # 多服务器示例
 └── docs/                   # 文档
 ```
 
@@ -235,7 +359,9 @@ ModbusLink/
 
 - **同步示例**: TCP、RTU和ASCII的基本同步操作
 - **异步示例**: 高性能异步操作和并发处理
+- **服务器示例**: TCP、RTU和ASCII服务器实现
 - **高级功能**: 数据类型、错误处理和调试
+- **多服务器**: 同时运行多种类型的服务器
 
 ## 系统要求
 
