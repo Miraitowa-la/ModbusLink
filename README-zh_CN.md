@@ -2,6 +2,9 @@
 
 [English](README.md) | 中文版
 
+[![PyPI Downloads](https://static.pepy.tech/badge/modbuslink)](https://pepy.tech/projects/modbuslink)
+[![PyPI version](https://badge.fury.io/py/modbuslink.svg)](https://badge.fury.io/py/modbuslink)
+
 一个现代化、强大且开发者友好的Python Modbus库，提供全面的传输层支持。
 
 ## 特性

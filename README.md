@@ -2,6 +2,9 @@
 
 English | [中文版](README-zh_CN.md)
 
+[![PyPI Downloads](https://static.pepy.tech/badge/modbuslink)](https://pepy.tech/projects/modbuslink)
+[![PyPI version](https://badge.fury.io/py/modbuslink.svg)](https://badge.fury.io/py/modbuslink)
+
 A modern, powerful, and developer-friendly Python Modbus library with comprehensive transport layer support.
 
 ## Features
