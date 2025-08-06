@@ -1,5 +1,6 @@
 pyserial>=3.5
 pyserial-asyncio>=0.6
+typing_extensions>=4.0.0
 
 [dev]
 pytest>=7.0

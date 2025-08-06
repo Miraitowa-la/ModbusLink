@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: modbuslink
-Version: 0.1.9
+Version: 0.2.0
 Summary: 现代化、功能强大、开发者友好且高度可扩展的Python Modbus库 | Modern, powerful, developer-friendly and highly scalable Python Modbus library
 Author-email: Miraitowa <2056978412@qq.com>
 Project-URL: Homepage, https://github.com/Miraitowa-la/ModbusLink
@@ -23,6 +23,7 @@ Description-Content-Type: text/markdown
 License-File: LICENSE.txt
 Requires-Dist: pyserial>=3.5
 Requires-Dist: pyserial-asyncio>=0.6
+Requires-Dist: typing_extensions>=4.0.0
 Provides-Extra: dev
 Requires-Dist: pytest>=7.0; extra == "dev"
 Requires-Dist: pytest-mock>=3.0; extra == "dev"

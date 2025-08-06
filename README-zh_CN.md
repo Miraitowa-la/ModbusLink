@@ -366,7 +366,9 @@ ModbusLink/
 ## 系统要求
 
 - Python 3.8+
-- pyserial >= 3.5 (RTU/ASCII传输层需要)
+- pyserial >= 3.5
+- pyserial-asyncio >= 0.6
+- typing_extensions >= 4.0.0
 
 ## 许可证
 

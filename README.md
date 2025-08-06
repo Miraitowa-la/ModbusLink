@@ -366,7 +366,9 @@ Check out the [examples](examples/) directory for comprehensive usage examples:
 ## Requirements
 
 - Python 3.8+
-- pyserial >= 3.5 (for RTU/ASCII transports)
+- pyserial >= 3.5
+- pyserial-asyncio >= 0.6
+- typing_extensions >= 4.0.0
 
 ## License
 
