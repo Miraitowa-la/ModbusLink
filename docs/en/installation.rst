@@ -23,7 +23,7 @@ You can also install ModbusLink from the source code:
 
 .. code-block:: bash
 
-   git clone https://github.com/Miraitowa/ModbusLink.git
+   git clone https://github.com/Miraitowa-la/ModbusLink.git
    cd ModbusLink
    pip install -e .
 
@@ -34,7 +34,7 @@ For development, install with additional dependencies:
 
 .. code-block:: bash
 
-   git clone https://github.com/Miraitowa/ModbusLink.git
+   git clone https://github.com/Miraitowa-la/ModbusLink.git
    cd ModbusLink
    pip install -e ".[dev]"
 

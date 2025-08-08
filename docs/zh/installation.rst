@@ -23,7 +23,7 @@
 
 .. code-block:: bash
 
-   git clone https://github.com/Miraitowa/ModbusLink.git
+   git clone https://github.com/Miraitowa-la/ModbusLink.git
    cd ModbusLink
    pip install -e .
 
@@ -34,7 +34,7 @@
 
 .. code-block:: bash
 
-   git clone https://github.com/Miraitowa/ModbusLink.git
+   git clone https://github.com/Miraitowa-la/ModbusLink.git
    cd ModbusLink
    pip install -e ".[dev]"
 

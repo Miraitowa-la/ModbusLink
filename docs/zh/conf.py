@@ -12,12 +12,12 @@ sys.path.insert(0, os.path.abspath('../../src'))
 # -- Project information -----------------------------------------------------
 
 project = 'ModbusLink'
-copyright = '2024, Miraitowa'
+copyright = '2025, Miraitowa'
 author = 'Miraitowa'
 
 # The full version, including alpha/beta/rc tags
-release = '0.2.0'
-version = '0.2.0'
+release = '1.0.0'
+version = '1.0.0'
 
 # -- General configuration ---------------------------------------------------
 
@@ -199,7 +199,7 @@ epub_copyright = copyright
 
 # The unique identifier of the text. This can be a ISBN number
 # or the project homepage.
-epub_identifier = 'https://github.com/Miraitowa/ModbusLink'
+epub_identifier = 'https://github.com/Miraitowa-la/ModbusLink'
 
 # A unique identification for the text.
 epub_uid = 'ModbusLink'

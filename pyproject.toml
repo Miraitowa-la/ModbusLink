@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "modbuslink"
-version = "0.2.0"
+version = "1.0.0"
 description = "现代化、功能强大、开发者友好且高度可扩展的Python Modbus库 | Modern, powerful, developer-friendly and highly scalable Python Modbus library"
 authors = [
-    {name = "Miraitowa", email = "2056978412@qq.com"}
+    { name = "Miraitowa", email = "2056978412@qq.com" }
 ]
 readme = "README.md"
 requires-python = ">=3.9"
@@ -25,6 +25,9 @@ classifiers = [
     "Topic :: System :: Hardware",
     "Topic :: Communications"
 ]
+
+keywords = ["modbus", "industrial", "automation", "communication", "protocol", "tcp", "rtu", "ascii", "serial", "plc", "scada", "iot"]
+
 dependencies = [
     "pyserial>=3.5",
     "pyserial-asyncio>=0.6",
@@ -48,13 +51,16 @@ Issues = "https://github.com/Miraitowa-la/ModbusLink/issues"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-dir]
+"" = "src"
+
 [tool.black]
 line-length = 88
-target-version = ['py38']
+target-version = ['py39']
 
 [tool.ruff]
 line-length = 88
-target-version = "py38"
+target-version = "py39"
 
 [tool.mypy]
 python_version = "3.9"
