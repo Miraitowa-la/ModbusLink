@@ -1,0 +1,213 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>安装指南 &mdash; ModbusLink 1.1.1 文档</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=b98c2dc9"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=beaddf03"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="快速开始" href="quickstart.html" />
+    <link rel="prev" title="ModbusLink 文档" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            ModbusLink
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">目录:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">安装指南</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id2">系统要求</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pypi">从 PyPI 安装</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">从源码安装</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">开发环境安装</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">验证安装</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id6">可选依赖</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id7">故障排除</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id8">常见问题</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">快速开始</a></li>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">用户指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API 参考</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">示例</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ModbusLink</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">安装指南</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/installation.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>安装指南<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<section id="id2">
+<h2>系统要求<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Python 3.9 或更高版本</p></li>
+<li><p>pyserial &gt;= 3.5 (用于 RTU 传输)</p></li>
+</ul>
+</section>
+<section id="pypi">
+<h2>从 PyPI 安装<a class="headerlink" href="#pypi" title="Link to this heading"></a></h2>
+<p>安装 ModbusLink 最简单的方法是使用 pip：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>modbuslink
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h2>从源码安装<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>您也可以从源代码安装 ModbusLink：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/Miraitowa-la/ModbusLink.git
+<span class="nb">cd</span><span class="w"> </span>ModbusLink
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</pre></div>
+</div>
+</section>
+<section id="id4">
+<h2>开发环境安装<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<p>对于开发，请安装额外的依赖项：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/Miraitowa-la/ModbusLink.git
+<span class="nb">cd</span><span class="w"> </span>ModbusLink
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev]&quot;</span>
+</pre></div>
+</div>
+<p>这将安装用于测试和文档的额外包：</p>
+<ul class="simple">
+<li><p>pytest</p></li>
+<li><p>pytest-asyncio</p></li>
+<li><p>pytest-mock</p></li>
+<li><p>sphinx</p></li>
+<li><p>sphinx-rtd-theme</p></li>
+<li><p>black</p></li>
+<li><p>ruff</p></li>
+<li><p>mypy</p></li>
+</ul>
+</section>
+<section id="id5">
+<h2>验证安装<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<p>要验证 ModbusLink 是否正确安装，请运行：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">modbuslink</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">modbuslink</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id6">
+<h2>可选依赖<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<p>用于串口 RTU 通信：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pyserial
+</pre></div>
+</div>
+<p>用于构建文档：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>sphinx<span class="w"> </span>sphinx-rtd-theme
+</pre></div>
+</div>
+<p>用于测试：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pytest<span class="w"> </span>pytest-asyncio<span class="w"> </span>pytest-mock
+</pre></div>
+</div>
+</section>
+<section id="id7">
+<h2>故障排除<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<section id="id8">
+<h3>常见问题<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<p><strong>ImportError: No module named ‘serial’</strong></p>
+<p>当 pyserial 未安装时会出现此错误。使用以下命令安装：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pyserial
+</pre></div>
+</div>
+<p><strong>串口权限被拒绝 (Linux/macOS)</strong></p>
+<p>将您的用户添加到 dialout 组：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>dialout<span class="w"> </span><span class="nv">$USER</span>
+</pre></div>
+</div>
+<p>然后注销并重新登录。</p>
+<p><strong>Windows 串口访问问题</strong></p>
+<p>确保串口未被其他应用程序使用，并且您已安装正确的驱动程序。</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
+        <a href="index.html" class="btn btn-neutral float-left" title="ModbusLink 文档" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="quickstart.html" class="btn btn-neutral float-right" title="快速开始" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, Miraitowa。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
