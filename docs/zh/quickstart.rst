@@ -1,270 +1,189 @@
 快速开始
 ========
 
-本指南将帮助您快速开始使用 ModbusLink。
+.. contents:: 本页内容
+   :local:
+   :depth: 2
 
-基本概念
+欢迎使用ModbusLink！本指南将带您在 **5分钟内** 掌握ModbusLink的核心功能。
+
+.. tip::
+   
+   在开始之前，请确保ModbusLink已正确安装。如果没有，请参考 :doc:`installation` 。
+
+核心概念
 --------
 
-ModbusLink 遵循分层架构：
+ModbusLink采用简洁的分层架构，只需两个步骤：
 
-* **传输层**: 处理底层通信 (RTU, TCP)
-* **客户端层**: 提供高级 Modbus 操作
-* **工具层**: 包含辅助函数和数据转换器
+1. **创建传输层** - 处理底层通信（TCP、RTU、ASCII）
+2. **创建客户端** - 提供高级Modbus操作
 
-同步操作
---------
-
-TCP 连接
-~~~~~~~~
+30秒快速体验
+============
 
 .. code-block:: python
 
    from modbuslink import ModbusClient, TcpTransport
 
-   # 创建 TCP 传输层
-   transport = TcpTransport(
-       host='192.168.1.100',
-       port=502,
-       timeout=10.0
-   )
-
-   # 创建客户端
+   # 连接到Modbus TCP设备
+   transport = TcpTransport(host='192.168.1.100', port=502)
    client = ModbusClient(transport)
 
-   try:
-       # 连接到设备
-       client.connect()
+   with client:
+       # 读取温度传感器（float32格式）
+       temp = client.read_float32(slave_id=1, start_address=100)
+       print(f"当前温度: {temp:.1f}°C")
        
-       # 从地址 0 开始读取 10 个保持寄存器
-       registers = client.read_holding_registers(
-           slave_id=1,
-           start_address=0,
-           quantity=10
-       )
-       print(f"保持寄存器: {registers}")
-       
-       # 写单个寄存器
-       client.write_single_register(
-           slave_id=1,
-           address=0,
-           value=1234
-       )
-       
-       # 写多个寄存器
-       client.write_multiple_registers(
-           slave_id=1,
-           start_address=10,
-           values=[100, 200, 300, 400]
-       )
-       
-   except Exception as e:
-       print(f"错误: {e}")
-   finally:
-       client.disconnect()
+       # 控制水泵开关
+       client.write_single_coil(slave_id=1, address=0, value=True)
+       print("水泵已启动！")
 
-RTU 连接
-~~~~~~~~
+主流传输方式
+============
+
+TCP传输（以太网）
+------------------
+
+**适用场景**: PLC、HMI、以太网模块
+
+.. code-block:: python
+
+   from modbuslink import ModbusClient, TcpTransport
+
+   transport = TcpTransport(
+       host='192.168.1.10',    # PLC IP地址
+       port=502,               # 标准Modbus TCP端口
+       timeout=5.0             # 5秒超时
+   )
+   client = ModbusClient(transport)
+   
+   with client:
+       # 读取生产计数器
+       counter = client.read_int32(slave_id=1, start_address=1000)
+       print(f"生产计数: {counter}")
+       
+       # 更新设定值
+       client.write_float32(slave_id=1, start_address=3000, value=75.5)
+
+RTU传输（串口）
+------------------
+
+**适用场景**: 现场仪表、传感器、传统设备
 
 .. code-block:: python
 
    from modbuslink import ModbusClient, RtuTransport
 
-   # 创建 RTU 传输层
    transport = RtuTransport(
-       port='COM1',  # Linux 上使用 '/dev/ttyUSB0'
+       port='COM3',            # Windows: COM3, Linux: /dev/ttyUSB0
        baudrate=9600,
-       bytesize=8,
        parity='N',
        stopbits=1,
-       timeout=1.0
+       timeout=2.0
    )
-
-   # 创建客户端
    client = ModbusClient(transport)
-
-   try:
-       # 连接到设备
-       client.connect()
-       
-       # 读取线圈
-       coils = client.read_coils(
-           slave_id=1,
-           start_address=0,
-           quantity=8
-       )
-       print(f"线圈: {coils}")
-       
-       # 写单个线圈
-       client.write_single_coil(
-           slave_id=1,
-           address=0,
-           value=True
-       )
-       
-   except Exception as e:
-       print(f"错误: {e}")
-   finally:
-       client.disconnect()
-
-ASCII 连接
-~~~~~~~~~
-
-对于通过串口的 Modbus ASCII 通信：
-
-.. code-block:: python
-
-   from modbuslink import ModbusClient, AsciiTransport
-
-   # 创建 ASCII 传输层
-   transport = AsciiTransport(
-       port='COM1',
-       baudrate=9600,
-       bytesize=7,
-       parity='E',
-       stopbits=1,
-       timeout=1.0
-   )
-
-   # 创建客户端
-   client = ModbusClient(transport)
-
-   try:
-       # 连接到设备
-       client.connect()
-       
-       # 读取保持寄存器
-       registers = client.read_holding_registers(
-           slave_id=1,
-           start_address=0,
-           quantity=4
-       )
-       print(f"寄存器: {registers}")
-       
-       # 写单个寄存器
-       client.write_single_register(
-           slave_id=1,
-           address=0,
-           value=1234
-       )
-       
-   except Exception as e:
-       print(f"错误: {e}")
-   finally:
-       client.disconnect()
-
-异步操作
---------
-
-ModbusLink 支持 async/await 用于高性能应用：
-
-.. code-block:: python
-
-   from modbuslink import AsyncModbusClient, AsyncTcpTransport
-   import asyncio
-
-   async def main():
-       # 创建异步 TCP 传输层
-       transport = AsyncTcpTransport(
-           host='192.168.1.100',
-           port=502,
-           timeout=10.0
-       )
-
-       # 创建异步客户端
-       client = AsyncModbusClient(transport)
-
-       async with client:
-           # 读取保持寄存器
-           registers = await client.read_holding_registers(
-               slave_id=1,
-               start_address=0,
-               quantity=10
-           )
-           print(f"寄存器: {registers}")
-           
-           # 并发写多个寄存器
-           tasks = [
-               client.write_single_register(slave_id=1, address=i, value=i*10)
-               for i in range(5)
-           ]
-           await asyncio.gather(*tasks)
-
-   # 运行异步函数
-   asyncio.run(main())
+   
+   with client:
+       # 读取流量计
+       flow_rate = client.read_float32(slave_id=5, start_address=0)
+       print(f"流量: {flow_rate:.2f} L/min")
 
 高级数据类型
-------------
+============
 
-ModbusLink 提供内置的高级数据类型支持：
+ModbusLink提供内置的高级数据类型支持：
 
 .. code-block:: python
 
-   from modbuslink import ModbusClient, TcpTransport
-
-   transport = TcpTransport(host='192.168.1.100', port=502)
-   client = ModbusClient(transport)
-
-   try:
-       client.connect()
-       
-       # 读写 32 位浮点数
-       client.write_float32(slave_id=1, start_address=100, value=3.14159)
+   with client:
+       # 32位浮点数 (IEEE 754)
        temperature = client.read_float32(slave_id=1, start_address=100)
-       print(f"温度: {temperature}°C")
+       client.write_float32(slave_id=1, start_address=100, value=25.6)
        
-       # 读写 32 位整数
-       client.write_int32(slave_id=1, start_address=102, value=-123456)
-       counter = client.read_int32(slave_id=1, start_address=102)
-       print(f"计数器: {counter}")
+       # 32位整数
+       counter = client.read_int32(slave_id=1, start_address=200)
+       client.write_int32(slave_id=1, start_address=200, value=12345)
        
-   finally:
-       client.disconnect()
+       # 字符串（UTF-8编码）
+       device_name = client.read_string(slave_id=1, start_address=400, length=16)
+       client.write_string(slave_id=1, start_address=400, value="PLC-001")
+
+高性能异步操作
+==============
+
+对于需要处理多个设备的应用，使用异步操作：
+
+.. code-block:: python
+
+   import asyncio
+   from modbuslink import AsyncModbusClient, AsyncTcpTransport
+
+   async def read_multiple_plcs():
+       # 创建到不同PLC的连接
+       plc1 = AsyncModbusClient(AsyncTcpTransport('192.168.1.10', 502))
+       plc2 = AsyncModbusClient(AsyncTcpTransport('192.168.1.11', 502))
+       
+       async with plc1, plc2:
+           # 并发读取
+           results = await asyncio.gather(
+               plc1.read_holding_registers(1, 0, 10),
+               plc2.read_holding_registers(1, 0, 10)
+           )
+           print(f"PLC1: {results[0]}, PLC2: {results[1]}")
+
+   asyncio.run(read_multiple_plcs())
+
+本地测试环境
+============
+
+如果您没有实际的Modbus设备，可以使用ModbusLink内置的服务器模拟器：
+
+.. code-block:: python
+
+   # 运行模拟服务器
+   import asyncio
+   from modbuslink import AsyncTcpModbusServer, ModbusDataStore
+
+   async def run_test_server():
+       data_store = ModbusDataStore()
+       server = AsyncTcpModbusServer(
+           data_store=data_store,
+           host='127.0.0.1',
+           port=5020
+       )
+       print("模拟服务器已启动，监听127.0.0.1:5020")
+       await server.serve_forever()
+
+   asyncio.run(run_test_server())
 
 错误处理
---------
-
-ModbusLink 提供全面的错误处理机制：
+========
 
 .. code-block:: python
 
-   from modbuslink import ModbusClient, TcpTransport
-   from modbuslink.common.exceptions import (
-       ConnectionError, TimeoutError, CRCError, 
-       InvalidResponseError, ModbusException
+   from modbuslink import (
+       ModbusClient, TcpTransport,
+       ConnectionError, TimeoutError
    )
 
-   transport = TcpTransport(host='192.168.1.100', port=502)
-   client = ModbusClient(transport)
-
    try:
-       client.connect()
-       registers = client.read_holding_registers(
-           slave_id=1, start_address=0, quantity=10
-       )
-       print(f"寄存器: {registers}")
-       
-   except ConnectionError as e:
-       print(f"连接失败: {e}")
-   except TimeoutError as e:
-       print(f"请求超时: {e}")
-   except CRCError as e:
-       print(f"CRC校验失败: {e}")
-   except ModbusException as e:
-       print(f"Modbus协议错误: {e}")
-   except Exception as e:
-       print(f"未知错误: {e}")
-   finally:
-       client.disconnect()
+       with client:
+           registers = client.read_holding_registers(1, 0, 10)
+   except ConnectionError:
+       print("连接失败，检查网络和IP地址")
+   except TimeoutError:
+       print("超时，检查设备状态")
 
 下一步
-------
+======
 
-现在您已经了解了 ModbusLink 的基本用法，可以：
+武气学习完成！接下来您可以：
 
-* 查看 :doc:`user_guide` 了解更多高级功能
-* 浏览 :doc:`examples` 获取更多示例代码
-* 参考 :doc:`api_reference` 了解完整的 API 文档
-* 查看 :doc:`examples` 了解更多用例
-* 探索 :doc:`api_reference` 获取完整的 API 文档
-* 学习 :doc:`advanced_topics` 了解专家用法
+1. 📖 阅读 :doc:`user_guide` 全面了解所有功能
+2. 🏗️ 了解 :doc:`architecture` 架构设计
+3. 💡 查看 :doc:`examples` 更多实际示例
+4. 📚 参考 :doc:`api_reference` 详细API文档
+5. ⚡ 学习 :doc:`performance` 性能优化技巧
+
+如遇到问题，请查看 :doc:`troubleshooting` 或在GitHub提交Issue。

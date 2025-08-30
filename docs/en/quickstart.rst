@@ -1,267 +1,189 @@
 Quick Start
 ===========
 
-This guide will help you get started with ModbusLink quickly.
+.. contents:: Table of Contents
+   :local:
+   :depth: 2
+
+Welcome to ModbusLink! This guide will help you master ModbusLink's core features in **5 minutes**.
+
+.. tip::
+   
+   Before starting, ensure ModbusLink is properly installed. If not, please refer to :doc:`installation`.
 
 Basic Concepts
 --------------
 
-ModbusLink follows a layered architecture:
+ModbusLink uses a simple layered architecture with just two steps:
 
-* **Transport Layer**: Handles the low-level communication (RTU, TCP)
-* **Client Layer**: Provides high-level Modbus operations
-* **Utility Layer**: Contains helper functions and data converters
+1. **Create Transport Layer** - Handle low-level communication (TCP, RTU, ASCII)
+2. **Create Client** - Provide high-level Modbus operations
 
-Synchronous Operations
-----------------------
-
-TCP Connection
-~~~~~~~~~~~~~~
+30-Second Demo
+==============
 
 .. code-block:: python
 
    from modbuslink import ModbusClient, TcpTransport
 
-   # Create TCP transport
-   transport = TcpTransport(
-       host='192.168.1.100',
-       port=502,
-       timeout=10.0
-   )
-
-   # Create client
+   # Connect to Modbus TCP device
+   transport = TcpTransport(host='192.168.1.100', port=502)
    client = ModbusClient(transport)
 
-   try:
-       # Connect to the device
-       client.connect()
+   with client:
+       # Read temperature sensor (float32 format)
+       temp = client.read_float32(slave_id=1, start_address=100)
+       print(f"Current temperature: {temp:.1f}°C")
        
-       # Read 10 holding registers starting from address 0
-       registers = client.read_holding_registers(
-           slave_id=1,
-           start_address=0,
-           quantity=10
-       )
-       print(f"Holding registers: {registers}")
-       
-       # Write a single register
-       client.write_single_register(
-           slave_id=1,
-           address=0,
-           value=1234
-       )
-       
-       # Write multiple registers
-       client.write_multiple_registers(
-           slave_id=1,
-           start_address=10,
-           values=[100, 200, 300, 400]
-       )
-       
-   except Exception as e:
-       print(f"Error: {e}")
-   finally:
-       client.disconnect()
+       # Control pump switch
+       client.write_single_coil(slave_id=1, address=0, value=True)
+       print("Pump started!")
 
-RTU Connection
-~~~~~~~~~~~~~~
+Main Transport Methods
+======================
+
+TCP Transport (Ethernet)
+------------------------
+
+**Use Cases**: PLCs, HMIs, Ethernet modules
+
+.. code-block:: python
+
+   from modbuslink import ModbusClient, TcpTransport
+
+   transport = TcpTransport(
+       host='192.168.1.10',    # PLC IP address
+       port=502,               # Standard Modbus TCP port
+       timeout=5.0             # 5-second timeout
+   )
+   client = ModbusClient(transport)
+   
+   with client:
+       # Read production counter
+       counter = client.read_int32(slave_id=1, start_address=1000)
+       print(f"Production count: {counter}")
+       
+       # Update setpoint
+       client.write_float32(slave_id=1, start_address=3000, value=75.5)
+
+RTU Transport (Serial)
+----------------------
+
+**Use Cases**: Field instruments, sensors, legacy devices
 
 .. code-block:: python
 
    from modbuslink import ModbusClient, RtuTransport
 
-   # Create RTU transport
    transport = RtuTransport(
-       port='COM1',  # or '/dev/ttyUSB0' on Linux
+       port='COM3',            # Windows: COM3, Linux: /dev/ttyUSB0
        baudrate=9600,
-       bytesize=8,
        parity='N',
        stopbits=1,
-       timeout=1.0
+       timeout=2.0
    )
-
-   # Create client
    client = ModbusClient(transport)
-
-   try:
-       # Connect to the device
-       client.connect()
-       
-       # Read coils
-       coils = client.read_coils(
-           slave_id=1,
-           start_address=0,
-           quantity=8
-       )
-       print(f"Coils: {coils}")
-       
-       # Write a single coil
-       client.write_single_coil(
-           slave_id=1,
-           address=0,
-           value=True
-       )
-       
-   except Exception as e:
-       print(f"Error: {e}")
-   finally:
-       client.disconnect()
-
-ASCII Connection
-~~~~~~~~~~~~~~~~~~~
-
-For Modbus ASCII communication over serial:
-
-.. code-block:: python
-
-   from modbuslink import ModbusClient, AsciiTransport
-
-   # Create ASCII transport
-   transport = AsciiTransport(
-       port='COM1',
-       baudrate=9600,
-       bytesize=7,
-       parity='E',
-       stopbits=1,
-       timeout=1.0
-   )
-
-   # Create client
-   client = ModbusClient(transport)
-
-   try:
-       # Connect to the device
-       client.connect()
-       
-       # Read holding registers
-       registers = client.read_holding_registers(
-           slave_id=1,
-           start_address=0,
-           quantity=4
-       )
-       print(f"Registers: {registers}")
-       
-       # Write a single register
-       client.write_single_register(
-           slave_id=1,
-           address=0,
-           value=1234
-       )
-       
-   except Exception as e:
-       print(f"Error: {e}")
-   finally:
-       client.disconnect()
-
-Asynchronous Operations
------------------------
-
-ModbusLink supports async/await for high-performance applications:
-
-.. code-block:: python
-
-   from modbuslink import AsyncModbusClient, AsyncTcpTransport
-   import asyncio
-
-   async def main():
-       # Create async TCP transport
-       transport = AsyncTcpTransport(
-           host='192.168.1.100',
-           port=502,
-           timeout=10.0
-       )
-
-       # Create async client
-       client = AsyncModbusClient(transport)
-
-       async with client:
-           # Read holding registers
-           registers = await client.read_holding_registers(
-               slave_id=1,
-               start_address=0,
-               quantity=10
-           )
-           print(f"Registers: {registers}")
-           
-           # Write multiple registers concurrently
-           tasks = [
-               client.write_single_register(slave_id=1, address=i, value=i*10)
-               for i in range(5)
-           ]
-           await asyncio.gather(*tasks)
-
-   # Run the async function
-   asyncio.run(main())
+   
+   with client:
+       # Read flow meter
+       flow_rate = client.read_float32(slave_id=5, start_address=0)
+       print(f"Flow rate: {flow_rate:.2f} L/min")
 
 Advanced Data Types
--------------------
+===================
 
 ModbusLink provides built-in support for advanced data types:
 
 .. code-block:: python
 
-   from modbuslink import ModbusClient, TcpTransport
-
-   transport = TcpTransport(host='192.168.1.100', port=502)
-   client = ModbusClient(transport)
-
-   try:
-       client.connect()
-       
-       # Read/write 32-bit float
-       client.write_float32(slave_id=1, start_address=100, value=3.14159)
+   with client:
+       # 32-bit floating point (IEEE 754)
        temperature = client.read_float32(slave_id=1, start_address=100)
-       print(f"Temperature: {temperature}°C")
+       client.write_float32(slave_id=1, start_address=100, value=25.6)
        
-       # Read/write 32-bit integer
-       client.write_int32(slave_id=1, start_address=102, value=-123456)
-       counter = client.read_int32(slave_id=1, start_address=102)
-       print(f"Counter: {counter}")
+       # 32-bit integers
+       counter = client.read_int32(slave_id=1, start_address=200)
+       client.write_int32(slave_id=1, start_address=200, value=12345)
        
-   finally:
-       client.disconnect()
+       # Strings (UTF-8 encoding)
+       device_name = client.read_string(slave_id=1, start_address=400, length=16)
+       client.write_string(slave_id=1, start_address=400, value="PLC-001")
 
-Error Handling
---------------
+High-Performance Async Operations
+=================================
 
-ModbusLink provides comprehensive error handling mechanisms:
+For applications handling multiple devices, use async operations:
 
 .. code-block:: python
 
-   from modbuslink import ModbusClient, TcpTransport
-   from modbuslink.common.exceptions import (
-       ConnectionError, TimeoutError, CRCError, 
-       InvalidResponseError, ModbusException
+   import asyncio
+   from modbuslink import AsyncModbusClient, AsyncTcpTransport
+
+   async def read_multiple_plcs():
+       # Create connections to different PLCs
+       plc1 = AsyncModbusClient(AsyncTcpTransport('192.168.1.10', 502))
+       plc2 = AsyncModbusClient(AsyncTcpTransport('192.168.1.11', 502))
+       
+       async with plc1, plc2:
+           # Concurrent reading
+           results = await asyncio.gather(
+               plc1.read_holding_registers(1, 0, 10),
+               plc2.read_holding_registers(1, 0, 10)
+           )
+           print(f"PLC1: {results[0]}, PLC2: {results[1]}")
+
+   asyncio.run(read_multiple_plcs())
+
+Local Testing Environment
+=========================
+
+If you don't have actual Modbus devices, you can use ModbusLink's built-in server simulator:
+
+.. code-block:: python
+
+   # Run simulation server
+   import asyncio
+   from modbuslink import AsyncTcpModbusServer, ModbusDataStore
+
+   async def run_test_server():
+       data_store = ModbusDataStore()
+       server = AsyncTcpModbusServer(
+           data_store=data_store,
+           host='127.0.0.1',
+           port=5020
+       )
+       print("Simulation server started, listening on 127.0.0.1:5020")
+       await server.serve_forever()
+
+   asyncio.run(run_test_server())
+
+Error Handling
+==============
+
+.. code-block:: python
+
+   from modbuslink import (
+       ModbusClient, TcpTransport,
+       ConnectionError, TimeoutError
    )
 
-   transport = TcpTransport(host='192.168.1.100', port=502)
-   client = ModbusClient(transport)
-
    try:
-       client.connect()
-       registers = client.read_holding_registers(
-           slave_id=1, start_address=0, quantity=10
-       )
-       print(f"Registers: {registers}")
-       
-   except ConnectionError as e:
-       print(f"Connection failed: {e}")
-   except TimeoutError as e:
-       print(f"Request timed out: {e}")
-   except CRCError as e:
-       print(f"CRC validation failed: {e}")
-   except ModbusException as e:
-       print(f"Modbus protocol error: {e}")
-   except Exception as e:
-       print(f"Unexpected error: {e}")
-   finally:
-       client.disconnect()
+       with client:
+           registers = client.read_holding_registers(1, 0, 10)
+   except ConnectionError:
+       print("Connection failed, check network and IP address")
+   except TimeoutError:
+       print("Timeout, check device status")
 
 Next Steps
-----------
+==========
 
-Now that you understand the basics of ModbusLink, you can:
+Congratulations on completing the tutorial! Next you can:
 
-* Read the :doc:`user_guide` for more advanced features
-* Check out the :doc:`examples` for more sample code
-* Explore the :doc:`api_reference` for complete API documentation
+1. 📖 Read :doc:`user_guide` to understand all features comprehensively
+2. 🏗️ Learn :doc:`architecture` design
+3. 💡 Check :doc:`examples` for more real examples
+4. 📚 Reference :doc:`api_reference` for detailed API documentation
+5. ⚡ Study :doc:`performance` optimization techniques
+
+If you encounter issues, please check :doc:`troubleshooting` or submit an issue on GitHub.
