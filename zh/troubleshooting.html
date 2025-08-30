@@ -1,0 +1,752 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>故障排除指南 &mdash; ModbusLink 1.2.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=d1fcaa3c"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=beaddf03"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="API 参考" href="api_reference.html" />
+    <link rel="prev" title="最佳实践指南" href="best_practices.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            ModbusLink
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">快速入门</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">快速开始</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id4">30秒快速体验</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id5">主流传输方式</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id6">高级数据类型</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id7">高性能异步操作</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id8">本地测试环境</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id9">错误处理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id10">下一步</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">架构设计</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">用户指南</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">示例和实践</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="examples.html">示例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html">最佳实践指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id3">连接管理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id6">错误处理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id9">性能优化</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id12">数据验证</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id15">监控和诊断</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id17">配置管理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id18">生产环境最佳实践</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id21">测试策略</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id24">总结</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">故障排除指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#id3">连接问题</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#tcp">TCP连接问题</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id4">网络连接失败</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">连接超时</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id6">串口连接问题</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id7">串口被占用</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">串口权限问题</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#id11">协议错误</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#crc">CRC校验错误</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id12">无效响应错误</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#id13">性能问题</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id14">读取速度慢</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id15">内存使用过高</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#id16">数据问题</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id17">数据类型转换错误</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id18">字符串编码问题</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#id19">调试和监控</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id20">启用详细日志</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id21">协议包分析</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id22">性能监控</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#id23">常见错误汇总</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id24">错误代码对照表</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#id25">预防措施</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id26">代码最佳实践</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#id27">获取帮助</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API 参考</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ModbusLink</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">故障排除指南</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/troubleshooting.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>故障排除指南<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<p>本指南将帮您快速诊断和解决使用ModbusLink时遇到的常见问题。</p>
+</section>
+<section id="id3">
+<h1>连接问题<a class="headerlink" href="#id3" title="Link to this heading"></a></h1>
+<section id="tcp">
+<h2>TCP连接问题<a class="headerlink" href="#tcp" title="Link to this heading"></a></h2>
+<section id="id4">
+<h3>网络连接失败<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<p><strong>问题现象</strong>：
+<code class="docutils literal notranslate"><span class="pre">ConnectionError:</span> <span class="pre">[Errno</span> <span class="pre">10061]</span> <span class="pre">Connection</span> <span class="pre">refused</span></code> 或类似网络错误</p>
+<p><strong>解决步骤</strong>：</p>
+<ol class="arabic">
+<li><p><strong>检查网络连接</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">socket</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_tcp_connection</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">settimeout</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">connect_ex</span><span class="p">((</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+<span class="c1"># 测试连接</span>
+<span class="k">if</span> <span class="n">test_tcp_connection</span><span class="p">(</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="mi">502</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✅ 网络连接正常&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;❌ 网络连接失败&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>检查设备状态</strong>
+- 确认Modbus设备已开启
+- 验证IP地址和端口号正确
+- 检查防火墙设置</p></li>
+<li><p><strong>网络诊断</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Windows/Linux</span>
+ping<span class="w"> </span><span class="m">192</span>.168.1.100
+telnet<span class="w"> </span><span class="m">192</span>.168.1.100<span class="w"> </span><span class="m">502</span>
+
+<span class="c1"># 或使用nmap检查端口</span>
+nmap<span class="w"> </span>-p<span class="w"> </span><span class="m">502</span><span class="w"> </span><span class="m">192</span>.168.1.100
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="id5">
+<h3>连接超时<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<p><strong>问题现象</strong>：
+<code class="docutils literal notranslate"><span class="pre">TimeoutError:</span> <span class="pre">Connection</span> <span class="pre">timeout</span> <span class="pre">after</span> <span class="pre">10.0</span> <span class="pre">seconds</span></code></p>
+<p><strong>解决方案</strong>：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModbusClient</span><span class="p">,</span> <span class="n">TcpTransport</span>
+
+<span class="c1"># 调整超时设置</span>
+<span class="n">transport</span> <span class="o">=</span> <span class="n">TcpTransport</span><span class="p">(</span>
+    <span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span>
+    <span class="n">port</span><span class="o">=</span><span class="mi">502</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span>          <span class="c1"># 增加超时时间</span>
+    <span class="n">connect_timeout</span><span class="o">=</span><span class="mf">10.0</span>   <span class="c1"># 连接超时</span>
+<span class="p">)</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">ModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+<span class="c1"># 实现重试机制</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">connect_with_retry</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">max_retries</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_retries</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;连接尝试 </span><span class="si">{</span><span class="n">attempt</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> 失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">attempt</span> <span class="o">&lt;</span> <span class="n">max_retries</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>  <span class="c1"># 等待2秒后重试</span>
+    <span class="k">return</span> <span class="kc">False</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id6">
+<h2>串口连接问题<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<section id="id7">
+<h3>串口被占用<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<p><strong>问题现象</strong>：
+<code class="docutils literal notranslate"><span class="pre">SerialException:</span> <span class="pre">[Errno</span> <span class="pre">16]</span> <span class="pre">Device</span> <span class="pre">or</span> <span class="pre">resource</span> <span class="pre">busy</span></code></p>
+<p><strong>解决步骤</strong>：</p>
+<ol class="arabic">
+<li><p><strong>检查串口占用</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">serial.tools.list_ports</span>
+
+<span class="c1"># 列出所有串口</span>
+<span class="n">ports</span> <span class="o">=</span> <span class="n">serial</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">list_ports</span><span class="o">.</span><span class="n">comports</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">port</span> <span class="ow">in</span> <span class="n">ports</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;端口: </span><span class="si">{</span><span class="n">port</span><span class="o">.</span><span class="n">device</span><span class="si">}</span><span class="s2">, 描述: </span><span class="si">{</span><span class="n">port</span><span class="o">.</span><span class="n">description</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;硬件ID: </span><span class="si">{</span><span class="n">port</span><span class="o">.</span><span class="n">hwid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;正在使用: </span><span class="si">{</span><span class="n">port</span><span class="o">.</span><span class="n">device</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="p">[</span><span class="n">p</span><span class="o">.</span><span class="n">device</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">serial</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">list_ports</span><span class="o">.</span><span class="n">comports</span><span class="p">()]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>释放串口资源</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Linux - 查看占用进程</span>
+sudo<span class="w"> </span>lsof<span class="w"> </span>/dev/ttyUSB0
+
+<span class="c1"># 终止占用进程</span>
+sudo<span class="w"> </span><span class="nb">kill</span><span class="w"> </span>-9<span class="w"> </span>&lt;PID&gt;
+</pre></div>
+</div>
+</li>
+<li><p><strong>正确关闭串口</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModbusClient</span><span class="p">,</span> <span class="n">RtuTransport</span>
+
+<span class="n">transport</span> <span class="o">=</span> <span class="n">RtuTransport</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="s1">&#39;COM3&#39;</span><span class="p">,</span> <span class="n">baudrate</span><span class="o">=</span><span class="mi">9600</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">client</span><span class="p">:</span>  <span class="c1"># 自动管理连接</span>
+        <span class="n">registers</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;错误: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="c1"># 连接会自动关闭</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="id8">
+<h3>串口权限问题<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<p><a href="#id9"><span class="problematic" id="id10">**</span></a>问题现象**（Linux/macOS）：
+<code class="docutils literal notranslate"><span class="pre">SerialException:</span> <span class="pre">[Errno</span> <span class="pre">13]</span> <span class="pre">Permission</span> <span class="pre">denied</span></code></p>
+<p><strong>解决方案</strong>：</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Ubuntu/Debian</span>
+sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>dialout<span class="w"> </span><span class="nv">$USER</span>
+newgrp<span class="w"> </span>dialout<span class="w">  </span><span class="c1"># 立即生效</span>
+
+<span class="c1"># CentOS/RHEL</span>
+sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>uucp<span class="w"> </span><span class="nv">$USER</span>
+
+<span class="c1"># 或临时修改权限</span>
+sudo<span class="w"> </span>chmod<span class="w"> </span><span class="m">666</span><span class="w"> </span>/dev/ttyUSB0
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="id11">
+<h1>协议错误<a class="headerlink" href="#id11" title="Link to this heading"></a></h1>
+<section id="crc">
+<h2>CRC校验错误<a class="headerlink" href="#crc" title="Link to this heading"></a></h2>
+<p><strong>问题现象</strong>：
+<code class="docutils literal notranslate"><span class="pre">CRCError:</span> <span class="pre">CRC</span> <span class="pre">check</span> <span class="pre">failed.</span> <span class="pre">Expected:</span> <span class="pre">0x1234,</span> <span class="pre">Got:</span> <span class="pre">0x5678</span></code></p>
+<p><strong>诊断和解决</strong>：</p>
+<ol class="arabic">
+<li><p><strong>检查连接质量</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 降低波特率提高稳定性</span>
+<span class="n">transport</span> <span class="o">=</span> <span class="n">RtuTransport</span><span class="p">(</span>
+    <span class="n">port</span><span class="o">=</span><span class="s1">&#39;COM3&#39;</span><span class="p">,</span>
+    <span class="n">baudrate</span><span class="o">=</span><span class="mi">4800</span><span class="p">,</span>    <span class="c1"># 从9600降到4800</span>
+    <span class="n">timeout</span><span class="o">=</span><span class="mf">3.0</span>       <span class="c1"># 增加超时时间</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>检查电缆和接线</strong>
+- 确认RS485/RS232线缆质量
+- 检查屏蔽接地
+- 验证终端电阻（RS485）</p></li>
+<li><p><strong>调试CRC计算</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink.utils.crc</span><span class="w"> </span><span class="kn">import</span> <span class="n">CRC16Modbus</span>
+
+<span class="c1"># 手动验证CRC</span>
+<span class="n">data</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x01\x03\x00\x00\x00\x05</span><span class="s1">&#39;</span>
+<span class="n">crc</span> <span class="o">=</span> <span class="n">CRC16Modbus</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;计算得到的CRC: 0x</span><span class="si">{</span><span class="n">crc</span><span class="si">:</span><span class="s2">04X</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="id12">
+<h2>无效响应错误<a class="headerlink" href="#id12" title="Link to this heading"></a></h2>
+<p><strong>问题现象</strong>：
+<code class="docutils literal notranslate"><span class="pre">InvalidResponseError:</span> <span class="pre">Invalid</span> <span class="pre">function</span> <span class="pre">code</span> <span class="pre">in</span> <span class="pre">response</span></code></p>
+<p><strong>常见原因和解决方案</strong>：</p>
+<ol class="arabic">
+<li><p><strong>设备不支持该功能码</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 检查设备支持的功能码</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="c1"># 尝试读取保持寄存器</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">InvalidResponseError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;设备可能不支持功能码0x03: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># 尝试其他功能码</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_input_registers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;设备支持功能码0x04&quot;</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;设备可能不支持标准Modbus功能码&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>从站地址错误</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 扫描可用的从站地址</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">scan_slave_ids</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mi">247</span><span class="p">):</span>
+    <span class="n">active_slaves</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">slave_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="n">slave_id</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">active_slaves</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">slave_id</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;发现活动从站: </span><span class="si">{</span><span class="n">slave_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+    <span class="k">return</span> <span class="n">active_slaves</span>
+
+<span class="c1"># 使用示例</span>
+<span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+    <span class="n">slaves</span> <span class="o">=</span> <span class="n">scan_slave_ids</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;活动从站列表: </span><span class="si">{</span><span class="n">slaves</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+</section>
+<section id="id13">
+<h1>性能问题<a class="headerlink" href="#id13" title="Link to this heading"></a></h1>
+<section id="id14">
+<h2>读取速度慢<a class="headerlink" href="#id14" title="Link to this heading"></a></h2>
+<p><strong>优化策略</strong>：</p>
+<ol class="arabic">
+<li><p><strong>批量读取</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 低效方式：逐个读取</span>
+<span class="n">values</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+<span class="c1"># 高效方式：批量读取</span>
+<span class="n">values</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>使用异步操作</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncModbusClient</span><span class="p">,</span> <span class="n">AsyncTcpTransport</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">parallel_reads</span><span class="p">():</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">AsyncModbusClient</span><span class="p">(</span><span class="n">AsyncTcpTransport</span><span class="p">(</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="mi">502</span><span class="p">))</span>
+
+    <span class="k">async</span> <span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+        <span class="c1"># 并行读取多个地址段</span>
+        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">sum</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="p">[])</span>  <span class="c1"># 合并结果</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>连接复用</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 避免频繁连接/断开</span>
+<span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="c1"># 处理数据</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="id15">
+<h2>内存使用过高<a class="headerlink" href="#id15" title="Link to this heading"></a></h2>
+<p><strong>解决方案</strong>：</p>
+<ol class="arabic">
+<li><p><strong>限制数据读取量</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 分块读取大量数据</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">read_large_data</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">slave_id</span><span class="p">,</span> <span class="n">start_addr</span><span class="p">,</span> <span class="n">total_count</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+    <span class="n">all_data</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">offset</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">total_count</span><span class="p">,</span> <span class="n">chunk_size</span><span class="p">):</span>
+        <span class="n">current_count</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">chunk_size</span><span class="p">,</span> <span class="n">total_count</span> <span class="o">-</span> <span class="n">offset</span><span class="p">)</span>
+        <span class="n">chunk</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span>
+            <span class="n">slave_id</span><span class="p">,</span> <span class="n">start_addr</span> <span class="o">+</span> <span class="n">offset</span><span class="p">,</span> <span class="n">current_count</span>
+        <span class="p">)</span>
+        <span class="n">all_data</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">all_data</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>及时释放资源</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">gc</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">process_large_dataset</span><span class="p">():</span>
+    <span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
+        <span class="c1"># 处理数据</span>
+        <span class="n">processed</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="o">*</span> <span class="mi">2</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
+
+        <span class="c1"># 手动清理内存</span>
+        <span class="k">del</span> <span class="n">data</span>
+        <span class="n">gc</span><span class="o">.</span><span class="n">collect</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">processed</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+</section>
+<section id="id16">
+<h1>数据问题<a class="headerlink" href="#id16" title="Link to this heading"></a></h1>
+<section id="id17">
+<h2>数据类型转换错误<a class="headerlink" href="#id17" title="Link to this heading"></a></h2>
+<p><strong>问题现象</strong>：
+数据读取结果与预期不符</p>
+<p><strong>解决方案</strong>：</p>
+<ol class="arabic">
+<li><p><strong>验证字节序</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 检查不同字节序</span>
+<span class="n">registers</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># 大端字节序 (默认)</span>
+<span class="n">value_be</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_float32</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;大端字节序: </span><span class="si">{</span><span class="n">value_be</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># 如果需要小端字节序，手动转换</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">struct</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;&gt;HH&#39;</span><span class="p">,</span> <span class="n">registers</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">registers</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">value_le</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&lt;f&#39;</span><span class="p">,</span> <span class="n">data</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;小端字节序: </span><span class="si">{</span><span class="n">value_le</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>数据范围验证</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">validate_sensor_data</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">min_val</span><span class="o">=-</span><span class="mi">50</span><span class="p">,</span> <span class="n">max_val</span><span class="o">=</span><span class="mi">150</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;无效数据类型: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">min_val</span> <span class="o">&lt;=</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="n">max_val</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;数据超出范围: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2"> (期望: </span><span class="si">{</span><span class="n">min_val</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">max_val</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">value</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">temp</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_float32</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="n">validated_temp</span> <span class="o">=</span> <span class="n">validate_sensor_data</span><span class="p">(</span><span class="n">temp</span><span class="p">,</span> <span class="o">-</span><span class="mi">40</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;温度: </span><span class="si">{</span><span class="n">validated_temp</span><span class="si">}</span><span class="s2">°C&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;数据验证失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="id18">
+<h2>字符串编码问题<a class="headerlink" href="#id18" title="Link to this heading"></a></h2>
+<p><strong>问题现象</strong>：
+字符串读取出现乱码</p>
+<p><strong>解决方案</strong>：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">read_string_safe</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">slave_id</span><span class="p">,</span> <span class="n">start_addr</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># 使用ModbusLink内置方法</span>
+        <span class="k">return</span> <span class="n">client</span><span class="o">.</span><span class="n">read_string</span><span class="p">(</span><span class="n">slave_id</span><span class="p">,</span> <span class="n">start_addr</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">UnicodeDecodeError</span><span class="p">:</span>
+        <span class="c1"># 回退到手动处理</span>
+        <span class="n">registers</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="n">slave_id</span><span class="p">,</span> <span class="n">start_addr</span><span class="p">,</span> <span class="n">length</span><span class="p">)</span>
+
+        <span class="c1"># 转换为字节</span>
+        <span class="n">byte_data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">reg</span> <span class="ow">in</span> <span class="n">registers</span><span class="p">:</span>
+            <span class="n">byte_data</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">reg</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">,</span> <span class="n">reg</span> <span class="o">&amp;</span> <span class="mh">0xFF</span><span class="p">])</span>
+
+        <span class="c1"># 尝试不同编码</span>
+        <span class="k">for</span> <span class="n">enc</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="s1">&#39;ascii&#39;</span><span class="p">,</span> <span class="s1">&#39;latin1&#39;</span><span class="p">,</span> <span class="s1">&#39;gb2312&#39;</span><span class="p">]:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">decoded</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">byte_data</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">enc</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;使用 </span><span class="si">{</span><span class="n">enc</span><span class="si">}</span><span class="s2"> 编码成功: </span><span class="si">{</span><span class="n">decoded</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">decoded</span>
+            <span class="k">except</span> <span class="ne">UnicodeDecodeError</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+        <span class="k">return</span> <span class="s2">&quot;解码失败&quot;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id19">
+<h1>调试和监控<a class="headerlink" href="#id19" title="Link to this heading"></a></h1>
+<section id="id20">
+<h2>启用详细日志<a class="headerlink" href="#id20" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink.utils.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">enable_debug_logging</span>
+
+<span class="c1"># 启用ModbusLink调试日志</span>
+<span class="n">enable_debug_logging</span><span class="p">()</span>
+
+<span class="c1"># 配置Python日志</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
+    <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> - </span><span class="si">%(name)s</span><span class="s1"> - </span><span class="si">%(levelname)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">&#39;</span>
+<span class="p">)</span>
+
+<span class="c1"># 现在所有操作都会显示详细信息</span>
+<span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id21">
+<h2>协议包分析<a class="headerlink" href="#id21" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">DebugTransport</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transport</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transport</span> <span class="o">=</span> <span class="n">transport</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">send_and_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;发送数据: </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">send_and_receive</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;接收数据: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">response</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+
+<span class="c1"># 使用调试传输层</span>
+<span class="n">original_transport</span> <span class="o">=</span> <span class="n">TcpTransport</span><span class="p">(</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="mi">502</span><span class="p">)</span>
+<span class="n">debug_transport</span> <span class="o">=</span> <span class="n">DebugTransport</span><span class="p">(</span><span class="n">original_transport</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ModbusClient</span><span class="p">(</span><span class="n">debug_transport</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id22">
+<h2>性能监控<a class="headerlink" href="#id22" title="Link to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
+
+<span class="nd">@contextmanager</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">measure_time</span><span class="p">(</span><span class="n">operation_name</span><span class="p">):</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">yield</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">operation_name</span><span class="si">}</span><span class="s2"> 耗时: </span><span class="si">{</span><span class="n">duration</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">秒&quot;</span><span class="p">)</span>
+
+<span class="c1"># 使用示例</span>
+<span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">measure_time</span><span class="p">(</span><span class="s2">&quot;读取100个寄存器&quot;</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">measure_time</span><span class="p">(</span><span class="s2">&quot;写入10个寄存器&quot;</span><span class="p">):</span>
+        <span class="n">client</span><span class="o">.</span><span class="n">write_multiple_registers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)))</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id23">
+<h1>常见错误汇总<a class="headerlink" href="#id23" title="Link to this heading"></a></h1>
+<section id="id24">
+<h2>错误代码对照表<a class="headerlink" href="#id24" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 15.0%" />
+<col style="width: 25.0%" />
+<col style="width: 60.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>错误类型</p></th>
+<th class="head"><p>典型信息</p></th>
+<th class="head"><p>解决方案</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>ConnectionError</p></td>
+<td><p>Connection refused</p></td>
+<td><p>检查设备IP、端口、网络连接</p></td>
+</tr>
+<tr class="row-odd"><td><p>TimeoutError</p></td>
+<td><p>Request timeout</p></td>
+<td><p>增加超时时间、检查设备响应</p></td>
+</tr>
+<tr class="row-even"><td><p>CRCError</p></td>
+<td><p>CRC check failed</p></td>
+<td><p>检查线缆质量、降低波特率</p></td>
+</tr>
+<tr class="row-odd"><td><p>InvalidResponseError</p></td>
+<td><p>Invalid function code</p></td>
+<td><p>确认设备支持该功能码、检查从站地址</p></td>
+</tr>
+<tr class="row-even"><td><p>SerialException</p></td>
+<td><p>Device busy</p></td>
+<td><p>检查串口占用、正确关闭连接</p></td>
+</tr>
+<tr class="row-odd"><td><p>AddressError</p></td>
+<td><p>Invalid address</p></td>
+<td><p>确认寄存器地址在设备支持范围内</p></td>
+</tr>
+<tr class="row-even"><td><p>ValueRangeError</p></td>
+<td><p>Value out of range</p></td>
+<td><p>检查写入值是否在允许范围内</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="id25">
+<h1>预防措施<a class="headerlink" href="#id25" title="Link to this heading"></a></h1>
+<section id="id26">
+<h2>代码最佳实践<a class="headerlink" href="#id26" title="Link to this heading"></a></h2>
+<ol class="arabic">
+<li><p><strong>总是使用上下文管理器</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 推荐方式</span>
+<span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+<span class="c1"># 避免的方式</span>
+<span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">client</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>  <span class="c1"># 可能被异常跳过</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>实现健壮的错误处理</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">robust_modbus_read</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">slave_id</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">max_retries</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_retries</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="n">slave_id</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">ConnectionError</span><span class="p">,</span> <span class="ne">TimeoutError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">attempt</span> <span class="o">==</span> <span class="n">max_retries</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;尝试 </span><span class="si">{</span><span class="n">attempt</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> 失败，重试中...&quot;</span><span class="p">)</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>定期健康检查</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">health_check</span><span class="p">(</span><span class="n">client</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># 读取一个已知存在的寄存器</span>
+        <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;健康检查失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+</section>
+<section id="id27">
+<h1>获取帮助<a class="headerlink" href="#id27" title="Link to this heading"></a></h1>
+<p>如果问题仍未解决，请：</p>
+<ol class="arabic simple">
+<li><p><strong>查看日志输出</strong> - 启用调试模式获取详细信息</p></li>
+<li><p><strong>检查GitHub Issues</strong> - 搜索类似问题的解决方案</p></li>
+<li><p><strong>提交Bug报告</strong> - 包含完整的错误信息和最小复现代码</p></li>
+<li><p><strong>参考设备手册</strong> - 确认设备的Modbus实现细节</p></li>
+</ol>
+<p>联系方式：
+- GitHub: <a class="reference external" href="https://github.com/Miraitowa-la/ModbusLink/issues">https://github.com/Miraitowa-la/ModbusLink/issues</a>
+- 文档: <a class="reference external" href="https://miraitowa-la.github.io/ModbusLink/">https://miraitowa-la.github.io/ModbusLink/</a></p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
+        <a href="best_practices.html" class="btn btn-neutral float-left" title="最佳实践指南" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="api_reference.html" class="btn btn-neutral float-right" title="API 参考" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, Miraitowa。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

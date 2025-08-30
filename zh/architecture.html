@@ -1,0 +1,610 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>架构设计 &mdash; ModbusLink 1.2.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=d1fcaa3c"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=beaddf03"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="用户指南" href="user_guide.html" />
+    <link rel="prev" title="快速开始" href="quickstart.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            ModbusLink
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">快速入门</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">快速开始</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id4">30秒快速体验</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id5">主流传输方式</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id6">高级数据类型</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id7">高性能异步操作</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id8">本地测试环境</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id9">错误处理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id10">下一步</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">架构设计</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id3">概述</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">整体架构图</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">核心设计原则</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id6">传输层设计</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id7">传输层架构</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">核心接口</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">传输实现细节</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id10">客户端层设计</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id11">客户端架构</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id12">设计模式应用</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id13">服务器层设计</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id14">服务器架构</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id15">数据存储设计</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id16">工具层设计</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id17">工具组件</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id18">错误处理架构</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id19">异常层次结构</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id20">异常处理策略</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id21">性能优化设计</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id22">连接池</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id23">批量操作优化</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id24">扩展性设计</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id25">插件架构</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id26">自定义传输层</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id27">总结</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">用户指南</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">示例和实践</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">示例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html">最佳实践指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id3">连接管理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id6">错误处理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id9">性能优化</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id12">数据验证</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id15">监控和诊断</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id17">配置管理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id18">生产环境最佳实践</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id21">测试策略</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id24">总结</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">故障排除指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id3">连接问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id11">协议错误</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id13">性能问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id16">数据问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id19">调试和监控</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id23">常见错误汇总</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id25">预防措施</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id27">获取帮助</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API 参考</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ModbusLink</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">架构设计</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/architecture.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>架构设计<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<nav class="contents local" id="id2">
+<p class="topic-title">本页内容</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#id3" id="id28">概述</a></p></li>
+<li><p><a class="reference internal" href="#id4" id="id29">整体架构图</a></p></li>
+<li><p><a class="reference internal" href="#id5" id="id30">核心设计原则</a></p></li>
+<li><p><a class="reference internal" href="#id6" id="id31">传输层设计</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id7" id="id32">传输层架构</a></p></li>
+<li><p><a class="reference internal" href="#id8" id="id33">核心接口</a></p></li>
+<li><p><a class="reference internal" href="#id9" id="id34">传输实现细节</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id10" id="id35">客户端层设计</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id11" id="id36">客户端架构</a></p></li>
+<li><p><a class="reference internal" href="#id12" id="id37">设计模式应用</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id13" id="id38">服务器层设计</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id14" id="id39">服务器架构</a></p></li>
+<li><p><a class="reference internal" href="#id15" id="id40">数据存储设计</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id16" id="id41">工具层设计</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id17" id="id42">工具组件</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id18" id="id43">错误处理架构</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id19" id="id44">异常层次结构</a></p></li>
+<li><p><a class="reference internal" href="#id20" id="id45">异常处理策略</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id21" id="id46">性能优化设计</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id22" id="id47">连接池</a></p></li>
+<li><p><a class="reference internal" href="#id23" id="id48">批量操作优化</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id24" id="id49">扩展性设计</a></p>
+<ul>
+<li><p><a class="reference internal" href="#id25" id="id50">插件架构</a></p></li>
+<li><p><a class="reference internal" href="#id26" id="id51">自定义传输层</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#id27" id="id52">总结</a></p></li>
+</ul>
+</nav>
+<section id="id3">
+<h2><a class="toc-backref" href="#id28" role="doc-backlink">概述</a><a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>ModbusLink 采用**现代分层架构**设计，严格遵循**单一职责原则**和**开闭原则**，确保代码的可维护性、可扩展性和可测试性。</p>
+</section>
+<section id="id4">
+<h2><a class="toc-backref" href="#id29" role="doc-backlink">整体架构图</a><a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>┌─────────────────────────────────────────────────────────────┐
+│                      应用层 (Application Layer)              │
+│                   用户代码和业务逻辑                         │
+└─────────────────────────────────────────────────────────────┘
+                                 │
+┌─────────────────────────────────────────────────────────────┐
+│                      客户端层 (Client Layer)                │
+│         ModbusClient, AsyncModbusClient                     │
+│    • 高级API封装  • 数据类型转换  • 错误处理                │
+└─────────────────────────────────────────────────────────────┘
+                                 │
+┌─────────────────────────────────────────────────────────────┐
+│                     协议层 (Protocol Layer)                 │
+│                    Modbus协议实现                           │
+│    • PDU构造  • 功能码处理  • 数据验证                      │
+└─────────────────────────────────────────────────────────────┘
+                                 │
+┌─────────────────────────────────────────────────────────────┐
+│                     传输层 (Transport Layer)                │
+│         TCP, RTU, ASCII传输实现                             │
+│    • 连接管理  • 数据帧处理  • 校验计算                      │
+└─────────────────────────────────────────────────────────────┘
+                                 │
+┌─────────────────────────────────────────────────────────────┐
+│                      物理层 (Physical Layer)                │
+│                  以太网 / 串口 / 其他                       │
+└─────────────────────────────────────────────────────────────┘
+</pre></div>
+</div>
+</section>
+<section id="id5">
+<h2><a class="toc-backref" href="#id30" role="doc-backlink">核心设计原则</a><a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>分层架构</strong> (Layered Architecture)
+- 每层只与相邻层交互
+- 上层依赖于下层，下层不依赖上层
+- 便于独立测试和替换</p></li>
+<li><p><strong>依赖注入</strong> (Dependency Injection)
+- 客户端通过构造函数接收传输层实例
+- 降低耦合度，提高可测试性</p></li>
+<li><p><strong>面向接口编程</strong> (Interface-Oriented Programming)
+- 使用抽象基类定义接口
+- 具体实现可插拔替换</p></li>
+<li><p><strong>策略模式</strong> (Strategy Pattern)
+- 不同传输方式作为不同策略
+- 运行时切换传输策略</p></li>
+</ol>
+</section>
+<section id="id6">
+<h2><a class="toc-backref" href="#id31" role="doc-backlink">传输层设计</a><a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<section id="id7">
+<h3><a class="toc-backref" href="#id32" role="doc-backlink">传输层架构</a><a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>BaseTransport (ABC)
+├── TcpTransport
+├── RtuTransport
+└── AsciiTransport
+
+AsyncBaseTransport (ABC)
+├── AsyncTcpTransport
+├── AsyncRtuTransport
+└── AsyncAsciiTransport
+</pre></div>
+</div>
+</section>
+<section id="id8">
+<h3><a class="toc-backref" href="#id33" role="doc-backlink">核心接口</a><a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<p><strong>同步传输接口</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">BaseTransport</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;建立连接&quot;&quot;&quot;</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;断开连接&quot;&quot;&quot;</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">send_and_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;发送数据并接收响应&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p><strong>异步传输接口</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">AsyncBaseTransport</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;异步建立连接&quot;&quot;&quot;</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;异步断开连接&quot;&quot;&quot;</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_and_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;异步发送数据并接收响应&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="id9">
+<h3><a class="toc-backref" href="#id34" role="doc-backlink">传输实现细节</a><a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<p><strong>TCP传输 (Modbus TCP)</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>MBAP Header (7 bytes) + PDU
+┌──────┬──────┬──────┬──────┬──────────┬─────────────┐
+│ TID  │ PID  │ Length     │ Unit ID  │ Function    │
+│ (2)  │ (2)  │ (2)        │ (1)      │ Code + Data │
+└──────┴──────┴──────┴──────┴──────────┴─────────────┘
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>TID</strong>: 事务标识符，用于匹配请求响应</p></li>
+<li><p><strong>PID</strong>: 协议标识符，Modbus为0</p></li>
+<li><p><strong>Length</strong>: 后续字节长度</p></li>
+<li><p><strong>Unit ID</strong>: 单元标识符（从站地址）</p></li>
+</ul>
+<p><strong>RTU传输 (Modbus RTU)</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>RTU Frame
+┌─────────┬─────────────┬─────────────┐
+│ Address │ Function    │ CRC-16      │
+│ (1)     │ Code + Data │ (2)         │
+└─────────┴─────────────┴─────────────┘
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>Address</strong>: 从站地址 (1-247)</p></li>
+<li><p><strong>CRC-16</strong>: 循环冗余校验，使用Modbus多项式</p></li>
+<li><p><strong>帧间隔</strong>: 至少3.5个字符时间</p></li>
+</ul>
+<p><strong>ASCII传输 (Modbus ASCII)</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ASCII Frame
+┌───┬─────────┬─────────────┬─────┬─────┬───┐
+│ : │ Address │ Function    │ LRC │ CR  │ LF│
+│   │ (2)     │ Code + Data │ (2) │     │   │
+└───┴─────────┴─────────────┴─────┴─────┴───┘
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>Start</strong>: 冒号字符 ‘:’</p></li>
+<li><p><strong>LRC</strong>: 纵向冗余校验</p></li>
+<li><p><strong>End</strong>: 回车换行 (CR LF)</p></li>
+</ul>
+</section>
+</section>
+<section id="id10">
+<h2><a class="toc-backref" href="#id35" role="doc-backlink">客户端层设计</a><a class="headerlink" href="#id10" title="Link to this heading"></a></h2>
+<section id="id11">
+<h3><a class="toc-backref" href="#id36" role="doc-backlink">客户端架构</a><a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>┌─────────────────────────────────────┐
+│         高级数据类型API              │
+│  read_float32, write_string, etc.   │
+└─────────────────────────────────────┘
+                  │
+┌─────────────────────────────────────┐
+│         标准Modbus API               │
+│  read_holding_registers, etc.       │
+└─────────────────────────────────────┘
+                  │
+┌─────────────────────────────────────┐
+│         协议处理层                   │
+│  PDU构造, 响应解析, 异常处理         │
+└─────────────────────────────────────┘
+                  │
+┌─────────────────────────────────────┐
+│         传输层接口                   │
+│  BaseTransport/AsyncBaseTransport   │
+└─────────────────────────────────────┘
+</pre></div>
+</div>
+</section>
+<section id="id12">
+<h3><a class="toc-backref" href="#id37" role="doc-backlink">设计模式应用</a><a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<p><strong>模板方法模式</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ModbusClient</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_execute_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">function_code</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                       <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;模板方法：定义请求执行流程&quot;&quot;&quot;</span>
+        <span class="c1"># 1. 构造PDU</span>
+        <span class="n">pdu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_pdu</span><span class="p">(</span><span class="n">function_code</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># 2. 发送并接收</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span><span class="o">.</span><span class="n">send_and_receive</span><span class="p">(</span><span class="n">pdu</span><span class="p">)</span>
+
+        <span class="c1"># 3. 验证响应</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_response</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">function_code</span><span class="p">)</span>
+
+        <span class="c1"># 4. 解析数据</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>装饰器模式</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">connection_required</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;确保连接存在的装饰器&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span><span class="o">.</span><span class="n">is_connected</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="s2">&quot;Not connected&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wrapper</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id13">
+<h2><a class="toc-backref" href="#id38" role="doc-backlink">服务器层设计</a><a class="headerlink" href="#id13" title="Link to this heading"></a></h2>
+<section id="id14">
+<h3><a class="toc-backref" href="#id39" role="doc-backlink">服务器架构</a><a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>┌─────────────────────────────────────┐
+│        协议处理器                    │
+│   请求解析、响应构造、异常处理        │
+└─────────────────────────────────────┘
+                  │
+┌─────────────────────────────────────┐
+│        数据存储层                    │
+│   线圈、寄存器的读写操作             │
+└─────────────────────────────────────┘
+                  │
+┌─────────────────────────────────────┐
+│        传输服务器                    │
+│   TCP/RTU/ASCII服务器实现           │
+└─────────────────────────────────────┘
+</pre></div>
+</div>
+</section>
+<section id="id15">
+<h3><a class="toc-backref" href="#id40" role="doc-backlink">数据存储设计</a><a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ModbusDataStore</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;线程安全的Modbus数据存储&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coils_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">65536</span><span class="p">,</span>
+                 <span class="n">discrete_inputs_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">65536</span><span class="p">,</span>
+                 <span class="n">holding_registers_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">65536</span><span class="p">,</span>
+                 <span class="n">input_registers_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">65536</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_coils</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">*</span> <span class="n">coils_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_discrete_inputs</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">*</span> <span class="n">discrete_inputs_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_holding_registers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">holding_registers_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_input_registers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">input_registers_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">RLock</span><span class="p">()</span>  <span class="c1"># 可重入锁</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id16">
+<h2><a class="toc-backref" href="#id41" role="doc-backlink">工具层设计</a><a class="headerlink" href="#id16" title="Link to this heading"></a></h2>
+<section id="id17">
+<h3><a class="toc-backref" href="#id42" role="doc-backlink">工具组件</a><a class="headerlink" href="#id17" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>CRC计算器</strong>
+- 实现Modbus标准CRC-16算法
+- 支持表查找优化</p></li>
+<li><p><strong>数据编码器</strong>
+- 大小端字节序转换
+- 各种数据类型编解码</p></li>
+<li><p><strong>日志系统</strong>
+- 协议级调试信息
+- 可配置日志级别</p></li>
+</ol>
+</section>
+</section>
+<section id="id18">
+<h2><a class="toc-backref" href="#id43" role="doc-backlink">错误处理架构</a><a class="headerlink" href="#id18" title="Link to this heading"></a></h2>
+<section id="id19">
+<h3><a class="toc-backref" href="#id44" role="doc-backlink">异常层次结构</a><a class="headerlink" href="#id19" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ModbusLinkError (基础异常)
+├── ConnectionError (连接相关)
+│   ├── ConnectionTimeoutError
+│   └── ConnectionRefusedError
+├── ProtocolError (协议相关)
+│   ├── CRCError
+│   ├── InvalidResponseError
+│   └── FunctionCodeError
+└── DataError (数据相关)
+    ├── AddressError
+    └── ValueRangeError
+</pre></div>
+</div>
+</section>
+<section id="id20">
+<h3><a class="toc-backref" href="#id45" role="doc-backlink">异常处理策略</a><a class="headerlink" href="#id20" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>传输层异常</strong>: 网络、串口通信错误</p></li>
+<li><p><strong>协议层异常</strong>: Modbus协议格式错误</p></li>
+<li><p><strong>应用层异常</strong>: 业务逻辑错误</p></li>
+</ol>
+</section>
+</section>
+<section id="id21">
+<h2><a class="toc-backref" href="#id46" role="doc-backlink">性能优化设计</a><a class="headerlink" href="#id21" title="Link to this heading"></a></h2>
+<section id="id22">
+<h3><a class="toc-backref" href="#id47" role="doc-backlink">连接池</a><a class="headerlink" href="#id22" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ModbusConnectionPool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Modbus连接池，支持连接复用&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_connections</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pool</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Queue</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="n">max_connections</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">acquire</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncModbusClient</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;获取连接&quot;&quot;&quot;</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">AsyncModbusClient</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;释放连接&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="id23">
+<h3><a class="toc-backref" href="#id48" role="doc-backlink">批量操作优化</a><a class="headerlink" href="#id23" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">batch_read_registers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ReadRequest</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;批量读取寄存器，自动优化为最少请求数&quot;&quot;&quot;</span>
+    <span class="c1"># 合并连续地址的请求</span>
+    <span class="n">optimized_requests</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_optimize_requests</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
+
+    <span class="c1"># 并发执行</span>
+    <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_read_registers</span><span class="p">(</span><span class="o">**</span><span class="n">req</span><span class="p">)</span> <span class="k">for</span> <span class="n">req</span> <span class="ow">in</span> <span class="n">optimized_requests</span><span class="p">]</span>
+    <span class="k">return</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id24">
+<h2><a class="toc-backref" href="#id49" role="doc-backlink">扩展性设计</a><a class="headerlink" href="#id24" title="Link to this heading"></a></h2>
+<section id="id25">
+<h3><a class="toc-backref" href="#id50" role="doc-backlink">插件架构</a><a class="headerlink" href="#id25" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ModbusPlugin</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Modbus插件基类&quot;&quot;&quot;</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">ModbusRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModbusRequest</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;请求预处理&quot;&quot;&quot;</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">ModbusResponse</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ModbusResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;响应后处理&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="id26">
+<h3><a class="toc-backref" href="#id51" role="doc-backlink">自定义传输层</a><a class="headerlink" href="#id26" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">WebSocketTransport</span><span class="p">(</span><span class="n">AsyncBaseTransport</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;WebSocket传输层示例&quot;&quot;&quot;</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_websocket</span> <span class="o">=</span> <span class="k">await</span> <span class="n">websockets</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_uri</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_and_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_websocket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_websocket</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">response</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id27">
+<h2><a class="toc-backref" href="#id52" role="doc-backlink">总结</a><a class="headerlink" href="#id27" title="Link to this heading"></a></h2>
+<p>ModbusLink的架构设计具有以下优势：</p>
+<ol class="arabic simple">
+<li><p><strong>清晰的分层结构</strong>，每层职责明确</p></li>
+<li><p><strong>高度的可扩展性</strong>，支持自定义传输层和协议扩展</p></li>
+<li><p><strong>优秀的性能表现</strong>，支持异步和连接池</p></li>
+<li><p><strong>完善的错误处理</strong>，提供详细的异常信息</p></li>
+<li><p><strong>良好的可测试性</strong>，每层都可以独立测试</p></li>
+</ol>
+<p>这种设计确保了ModbusLink既能满足当前需求，又具备未来扩展的灵活性。</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
+        <a href="quickstart.html" class="btn btn-neutral float-left" title="快速开始" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="user_guide.html" class="btn btn-neutral float-right" title="用户指南" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, Miraitowa。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

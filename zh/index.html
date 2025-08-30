@@ -1,0 +1,468 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ModbusLink 文档 &mdash; ModbusLink 1.2.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=d1fcaa3c"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=beaddf03"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="安装指南" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            ModbusLink
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">快速入门</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">快速开始</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id4">30秒快速体验</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id5">主流传输方式</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id6">高级数据类型</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id7">高性能异步操作</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id8">本地测试环境</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id9">错误处理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id10">下一步</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">架构设计</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">用户指南</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">示例和实践</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">示例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html">最佳实践指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id3">连接管理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id6">错误处理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id9">性能优化</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id12">数据验证</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id15">监控和诊断</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id17">配置管理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id18">生产环境最佳实践</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id21">测试策略</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id24">总结</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">故障排除指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id3">连接问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id11">协议错误</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id13">性能问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id16">数据问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id19">调试和监控</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id23">常见错误汇总</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id25">预防措施</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id27">获取帮助</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API 参考</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">ModbusLink</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">ModbusLink 文档</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="modbuslink">
+<h1>ModbusLink 文档<a class="headerlink" href="#modbuslink" title="Link to this heading"></a></h1>
+<a class="reference external image-reference" href="https://pypi.org/project/modbuslink/"><img alt="PyPI版本" src="https://img.shields.io/pypi/v/modbuslink.svg" />
+</a>
+<a class="reference external image-reference" href="https://pypi.org/project/modbuslink/"><img alt="Python版本" src="https://img.shields.io/pypi/pyversions/modbuslink.svg" />
+</a>
+<a class="reference external image-reference" href="https://github.com/Miraitowa-la/ModbusLink/blob/main/LICENSE.txt"><img alt="许可证" src="https://img.shields.io/github/license/Miraitowa-la/ModbusLink" />
+</a>
+<p>欢迎使用 ModbusLink 文档！</p>
+<p>ModbusLink 是一个**现代化、高性能的Python Modbus库**，专为工业自动化、物联网应用和SCADA系统设计。采用现代化Python开发实践，在保持企业级可靠性的同时提供无与伦比的易用性。</p>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+<section id="id1">
+<h1>文档导航<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<section id="id2">
+<h2>新手入门<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover quickstart-card docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+⚡ 30秒快速体验</div>
+<p class="sd-card-text">几分钟内开始使用ModbusLink。学习基础知识并实现您的第一次Modbus通信。</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="quickstart.html"><span class="doc">快速开始</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover install-card docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+🛠️ 安装说明</div>
+<p class="sd-card-text">详细的安装指南，包括系统要求、依赖项和环境配置。</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="installation.html"><span class="doc">安装指南</span></a></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id3">
+<h2>核心功能<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-3 sd-row-cols-xs-3 sd-row-cols-sm-3 sd-row-cols-md-3 sd-row-cols-lg-3 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover guide-card docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+📖 用户指南</div>
+<p class="sd-card-text">全面的使用指南，涵盖从基本操作到高级配置的所有功能。</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="user_guide.html"><span class="doc">用户指南</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover arch-card docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+🏗️ 架构设计</div>
+<p class="sd-card-text">深入了解ModbusLink的分层架构和设计原理。</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="architecture.html"><span class="doc">架构设计</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover api-card docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+📚 API参考</div>
+<p class="sd-card-text">完整的API文档，包含详细的类和方法描述。</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="api_reference.html"><span class="doc">API 参考</span></a></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id4">
+<h2>实战应用<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-3 sd-row-cols-xs-3 sd-row-cols-sm-3 sd-row-cols-md-3 sd-row-cols-lg-3 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover example-card docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+💡 代码示例</div>
+<p class="sd-card-text">丰富的实际示例，涵盖各种工业应用场景。</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="examples.html"><span class="doc">示例</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover perf-card docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+⚡ 性能优化</div>
+<p class="sd-card-text">性能调优技巧和并发处理最佳实践。</p>
+</div>
+<span class="sd-stretched-link sd-hide-link-text">performance</span></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover trouble-card docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+🔧 故障排除</div>
+<p class="sd-card-text">常见问题解决方案和调试技巧。</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="troubleshooting.html"><span class="doc">故障排除指南</span></a></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="id5">
+<h1>核心特性<a class="headerlink" href="#id5" title="Link to this heading"></a></h1>
+<table class="docutils align-default" id="id13">
+<caption><span class="caption-text">ModbusLink 核心特性</span><a class="headerlink" href="#id13" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 40.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>特性</p></th>
+<th class="head"><p>描述</p></th>
+<th class="head"><p>优势</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>🏗️ <strong>分层架构</strong></p></td>
+<td><p>关注点清晰分离</p></td>
+<td><p>易于维护和扩展</p></td>
+</tr>
+<tr class="row-odd"><td><p>🔌 <strong>通用传输</strong></p></td>
+<td><p>支持TCP、RTU、ASCII</p></td>
+<td><p>兼容所有Modbus设备</p></td>
+</tr>
+<tr class="row-even"><td><p>⚡ <strong>异步性能</strong></p></td>
+<td><p>原生asyncio支持</p></td>
+<td><p>处理1000+并发连接</p></td>
+</tr>
+<tr class="row-odd"><td><p>🛠️ <strong>开发体验</strong></p></td>
+<td><p>直观API和完整类型提示</p></td>
+<td><p>更快开发，更少bug</p></td>
+</tr>
+<tr class="row-even"><td><p>📊 <strong>丰富数据类型</strong></p></td>
+<td><p>float32、int32、字符串等</p></td>
+<td><p>处理复杂工业数据</p></td>
+</tr>
+<tr class="row-odd"><td><p>🔍 <strong>高级调试</strong></p></td>
+<td><p>协议级监控</p></td>
+<td><p>快速故障排除</p></td>
+</tr>
+<tr class="row-even"><td><p>🖥️ <strong>完整服务器</strong></p></td>
+<td><p>全功能服务器实现</p></td>
+<td><p>构建自定义Modbus设备</p></td>
+</tr>
+<tr class="row-odd"><td><p>🎯 <strong>生产就绪</strong></p></td>
+<td><p>全面错误处理</p></td>
+<td><p>放心部署</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="modbus">
+<h1>支持的Modbus功能码<a class="headerlink" href="#modbus" title="Link to this heading"></a></h1>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 15.0%" />
+<col style="width: 25.0%" />
+<col style="width: 60.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>功能码</p></th>
+<th class="head"><p>功能名称</p></th>
+<th class="head"><p>描述</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>0x01</strong></p></td>
+<td><p>读取线圈</p></td>
+<td><p>读取一个或多个线圈的状态（布尔值）</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>0x02</strong></p></td>
+<td><p>读取离散输入</p></td>
+<td><p>读取一个或多个离散输入的状态（只读布尔值）</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>0x03</strong></p></td>
+<td><p>读取保持寄存器</p></td>
+<td><p>读取一个或多个保持寄存器的值（16位整数）</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>0x04</strong></p></td>
+<td><p>读取输入寄存器</p></td>
+<td><p>读取一个或多个输入寄存器的值（只读16位整数）</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>0x05</strong></p></td>
+<td><p>写单个线圈</p></td>
+<td><p>向指定地址写入单个线圈值</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>0x06</strong></p></td>
+<td><p>写单个寄存器</p></td>
+<td><p>向指定地址写入单个寄存器值</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>0x0F</strong></p></td>
+<td><p>写多个线圈</p></td>
+<td><p>向连续地址写入多个线圈值</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>0x10</strong></p></td>
+<td><p>写多个寄存器</p></td>
+<td><p>向连续地址写入多个寄存器值</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id6">
+<h1>30秒快速体验<a class="headerlink" href="#id6" title="Link to this heading"></a></h1>
+<section id="id7">
+<h2>安装ModbusLink<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 从 PyPI 安装</span>
+pip<span class="w"> </span>install<span class="w"> </span>modbuslink
+</pre></div>
+</div>
+</section>
+<section id="id8">
+<h2>简单示例<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<p><strong>TCP客户端（以太网设备）</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModbusClient</span><span class="p">,</span> <span class="n">TcpTransport</span>
+
+<span class="c1"># 连接到Modbus TCP设备</span>
+<span class="n">transport</span> <span class="o">=</span> <span class="n">TcpTransport</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">502</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+    <span class="c1"># 读取温度传感器</span>
+    <span class="n">temp</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_float32</span><span class="p">(</span><span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;温度: </span><span class="si">{</span><span class="n">temp</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">°C&quot;</span><span class="p">)</span>
+
+    <span class="c1"># 控制水泵开关</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">write_single_coil</span><span class="p">(</span><span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;水泵已启动！&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>串口客户端（RTU设备）</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModbusClient</span><span class="p">,</span> <span class="n">RtuTransport</span>
+
+<span class="c1"># 连接到串口设备</span>
+<span class="n">transport</span> <span class="o">=</span> <span class="n">RtuTransport</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="s1">&#39;COM3&#39;</span><span class="p">,</span> <span class="n">baudrate</span><span class="o">=</span><span class="mi">9600</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+    <span class="c1"># 读取流量计数据</span>
+    <span class="n">flow</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_float32</span><span class="p">(</span><span class="n">slave_id</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;流量: </span><span class="si">{</span><span class="n">flow</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> L/min&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>高性能异步操作</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncModbusClient</span><span class="p">,</span> <span class="n">AsyncTcpTransport</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">read_multiple_plcs</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;同时读取多个PLC数据&quot;&quot;&quot;</span>
+    <span class="n">plc1</span> <span class="o">=</span> <span class="n">AsyncModbusClient</span><span class="p">(</span><span class="n">AsyncTcpTransport</span><span class="p">(</span><span class="s1">&#39;192.168.1.10&#39;</span><span class="p">,</span> <span class="mi">502</span><span class="p">))</span>
+    <span class="n">plc2</span> <span class="o">=</span> <span class="n">AsyncModbusClient</span><span class="p">(</span><span class="n">AsyncTcpTransport</span><span class="p">(</span><span class="s1">&#39;192.168.1.11&#39;</span><span class="p">,</span> <span class="mi">502</span><span class="p">))</span>
+
+    <span class="k">async</span> <span class="k">with</span> <span class="n">plc1</span><span class="p">,</span> <span class="n">plc2</span><span class="p">:</span>
+        <span class="c1"># 并发读取</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+            <span class="n">plc1</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+            <span class="n">plc2</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PLC1: </span><span class="si">{</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, PLC2: </span><span class="si">{</span><span class="n">results</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">read_multiple_plcs</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="id9">
+<h2>立即开始<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<p>🚀 准备好了吗？前往 <a class="reference internal" href="installation.html"><span class="doc">安装指南</span></a> 安装ModbusLink，然后查看 <a class="reference internal" href="quickstart.html"><span class="doc">快速开始</span></a> 获取详细的入门教程！</p>
+</section>
+</section>
+<section id="id10">
+<h1>社区和支持<a class="headerlink" href="#id10" title="Link to this heading"></a></h1>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+📖 GitHub项目</div>
+<p class="sd-card-text">源代码、问题报告和功能请求</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="https://github.com/Miraitowa-la/ModbusLink"><span>https://github.com/Miraitowa-la/ModbusLink</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+📦 PyPI包</div>
+<p class="sd-card-text">官方发布包和版本历史</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="https://pypi.org/project/modbuslink/"><span>https://pypi.org/project/modbuslink/</span></a></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id11">
+<h1>版本信息<a class="headerlink" href="#id11" title="Link to this heading"></a></h1>
+</section>
+<section id="id12">
+<h1>索引和表格<a class="headerlink" href="#id12" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">索引</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">模块索引</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">搜索页面</span></a></p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
+        <a href="installation.html" class="btn btn-neutral float-right" title="安装指南" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, Miraitowa。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

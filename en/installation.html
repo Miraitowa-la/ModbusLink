@@ -1,0 +1,570 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Installation Guide &mdash; ModbusLink 1.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=6efca38a"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Quick Start" href="quickstart.html" />
+    <link rel="prev" title="ModbusLink Documentation" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            ModbusLink
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#system-requirements">System Requirements</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#basic-requirements">Basic Requirements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#quick-installation">Quick Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#install-from-pypi-recommended">Install from PyPI (Recommended)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#verify-installation">Verify Installation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced-installation">Advanced Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#install-from-source">Install from Source</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#docker-installation">Docker Installation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#environment-configuration">Environment Configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#serial-port-permissions-linux-macos">Serial Port Permissions (Linux/macOS)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#windows-serial-port-configuration">Windows Serial Port Configuration</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#troubleshooting">Troubleshooting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#common-installation-issues">Common Installation Issues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#serial-port-diagnostics">Serial Port Diagnostics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#network-diagnostics">Network Diagnostics</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#performance-tuning">Performance Tuning</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#production-environment-configuration">Production Environment Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#memory-optimization">Memory Optimization</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#upgrade-guide">Upgrade Guide</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#upgrading-from-older-versions">Upgrading from Older Versions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#second-demo">30-Second Demo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#main-transport-methods">Main Transport Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#advanced-data-types">Advanced Data Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#high-performance-async-operations">High-Performance Async Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#local-testing-environment">Local Testing Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#error-handling">Error Handling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#next-steps">Next Steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture Design</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples &amp; Practices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html">Best Practices Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#connection-management">Connection Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#error-handling">Error Handling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#performance-optimization">Performance Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#data-validation">Data Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#monitoring-and-diagnostics">Monitoring and Diagnostics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#configuration-management">Configuration Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#production-best-practices">Production Best Practices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#testing-strategy">Testing Strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#connection-issues">Connection Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#protocol-errors">Protocol Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#performance-issues">Performance Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#data-issues">Data Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#debugging-and-monitoring">Debugging and Monitoring</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#common-error-reference">Common Error Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#prevention-measures">Prevention Measures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#getting-help">Getting Help</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ModbusLink</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Installation Guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/installation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="installation-guide">
+<h1>Installation Guide<a class="headerlink" href="#installation-guide" title="Link to this heading"></a></h1>
+<nav class="contents local" id="table-of-contents">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#system-requirements" id="id1">System Requirements</a></p>
+<ul>
+<li><p><a class="reference internal" href="#basic-requirements" id="id2">Basic Requirements</a></p></li>
+<li><p><a class="reference internal" href="#dependencies" id="id3">Dependencies</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#quick-installation" id="id4">Quick Installation</a></p>
+<ul>
+<li><p><a class="reference internal" href="#install-from-pypi-recommended" id="id5">Install from PyPI (Recommended)</a></p></li>
+<li><p><a class="reference internal" href="#verify-installation" id="id6">Verify Installation</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#advanced-installation" id="id7">Advanced Installation</a></p>
+<ul>
+<li><p><a class="reference internal" href="#install-from-source" id="id8">Install from Source</a></p></li>
+<li><p><a class="reference internal" href="#docker-installation" id="id9">Docker Installation</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#environment-configuration" id="id10">Environment Configuration</a></p>
+<ul>
+<li><p><a class="reference internal" href="#serial-port-permissions-linux-macos" id="id11">Serial Port Permissions (Linux/macOS)</a></p></li>
+<li><p><a class="reference internal" href="#windows-serial-port-configuration" id="id12">Windows Serial Port Configuration</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#troubleshooting" id="id13">Troubleshooting</a></p>
+<ul>
+<li><p><a class="reference internal" href="#common-installation-issues" id="id14">Common Installation Issues</a></p></li>
+<li><p><a class="reference internal" href="#serial-port-diagnostics" id="id15">Serial Port Diagnostics</a></p></li>
+<li><p><a class="reference internal" href="#network-diagnostics" id="id16">Network Diagnostics</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#performance-tuning" id="id17">Performance Tuning</a></p>
+<ul>
+<li><p><a class="reference internal" href="#production-environment-configuration" id="id18">Production Environment Configuration</a></p></li>
+<li><p><a class="reference internal" href="#memory-optimization" id="id19">Memory Optimization</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#upgrade-guide" id="id20">Upgrade Guide</a></p>
+<ul>
+<li><p><a class="reference internal" href="#upgrading-from-older-versions" id="id21">Upgrading from Older Versions</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#next-steps" id="id22">Next Steps</a></p></li>
+</ul>
+</nav>
+<section id="system-requirements">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">System Requirements</a><a class="headerlink" href="#system-requirements" title="Link to this heading"></a></h2>
+<section id="basic-requirements">
+<h3><a class="toc-backref" href="#id2" role="doc-backlink">Basic Requirements</a><a class="headerlink" href="#basic-requirements" title="Link to this heading"></a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Requirement</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Python Version</strong></p></td>
+<td><p>Python 3.9+ (Recommended 3.11+)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Operating System</strong></p></td>
+<td><p>Windows 10+, Linux (Ubuntu 18.04+), macOS 10.15+</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Memory</strong></p></td>
+<td><p>Minimum 100MB RAM</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Storage</strong></p></td>
+<td><p>Approximately 10MB disk space</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="dependencies">
+<h3><a class="toc-backref" href="#id3" role="doc-backlink">Dependencies</a><a class="headerlink" href="#dependencies" title="Link to this heading"></a></h3>
+<p><strong>Required Dependencies</strong></p>
+<ul class="simple">
+<li><p><strong>Python Standard Library</strong>: asyncio, threading, struct, socket</p></li>
+<li><p><strong>No External Dependencies</strong>: Core functionality requires no additional packages</p></li>
+</ul>
+<p><strong>Optional Dependencies</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Serial communication support (RTU/ASCII)</span>
+pip<span class="w"> </span>install<span class="w"> </span>pyserial&gt;<span class="o">=</span><span class="m">3</span>.5
+
+<span class="c1"># Async serial support</span>
+pip<span class="w"> </span>install<span class="w"> </span>pyserial-asyncio&gt;<span class="o">=</span><span class="m">0</span>.6
+
+<span class="c1"># Development tools</span>
+pip<span class="w"> </span>install<span class="w"> </span>pytest&gt;<span class="o">=</span><span class="m">7</span>.0<span class="w"> </span>black&gt;<span class="o">=</span><span class="m">22</span>.0<span class="w"> </span>ruff&gt;<span class="o">=</span><span class="m">0</span>.1.0
+</pre></div>
+</div>
+</section>
+</section>
+<section id="quick-installation">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Quick Installation</a><a class="headerlink" href="#quick-installation" title="Link to this heading"></a></h2>
+<section id="install-from-pypi-recommended">
+<h3><a class="toc-backref" href="#id5" role="doc-backlink">Install from PyPI (Recommended)</a><a class="headerlink" href="#install-from-pypi-recommended" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Basic installation</span>
+pip<span class="w"> </span>install<span class="w"> </span>modbuslink
+
+<span class="c1"># Include serial support</span>
+pip<span class="w"> </span>install<span class="w"> </span>modbuslink<span class="o">[</span>serial<span class="o">]</span>
+
+<span class="c1"># Include development dependencies</span>
+pip<span class="w"> </span>install<span class="w"> </span>modbuslink<span class="o">[</span>dev<span class="o">]</span>
+
+<span class="c1"># Complete installation (all features)</span>
+pip<span class="w"> </span>install<span class="w"> </span>modbuslink<span class="o">[</span>all<span class="o">]</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you only need TCP functionality, the basic installation is sufficient. Serial functionality requires the <code class="docutils literal notranslate"><span class="pre">pyserial</span></code> dependency.</p>
+</div>
+</section>
+<section id="verify-installation">
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">Verify Installation</a><a class="headerlink" href="#verify-installation" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">modbuslink</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ModbusLink version: </span><span class="si">{</span><span class="n">modbuslink</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Check available components</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModbusClient</span><span class="p">,</span> <span class="n">TcpTransport</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✅ TCP functionality available&quot;</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">RtuTransport</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✅ RTU functionality available&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;❌ RTU functionality unavailable - need to install pyserial&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="advanced-installation">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Advanced Installation</a><a class="headerlink" href="#advanced-installation" title="Link to this heading"></a></h2>
+<section id="install-from-source">
+<h3><a class="toc-backref" href="#id8" role="doc-backlink">Install from Source</a><a class="headerlink" href="#install-from-source" title="Link to this heading"></a></h3>
+<p><strong>Developer Installation</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Clone repository</span>
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/Miraitowa-la/ModbusLink.git
+<span class="nb">cd</span><span class="w"> </span>ModbusLink
+
+<span class="c1"># Create virtual environment</span>
+python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>venv
+
+<span class="c1"># Activate virtual environment</span>
+<span class="c1"># Windows:</span>
+venv<span class="se">\S</span>cripts<span class="se">\a</span>ctivate
+<span class="c1"># Linux/macOS:</span>
+<span class="nb">source</span><span class="w"> </span>venv/bin/activate
+
+<span class="c1"># Install as editable package</span>
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev]&quot;</span>
+</pre></div>
+</div>
+<p><strong>Specific Version Installation</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install specific version</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="nv">modbuslink</span><span class="o">==</span><span class="m">1</span>.0.0
+
+<span class="c1"># Install pre-release version</span>
+pip<span class="w"> </span>install<span class="w"> </span>--pre<span class="w"> </span>modbuslink
+
+<span class="c1"># Install latest from GitHub</span>
+pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/Miraitowa-la/ModbusLink.git
+</pre></div>
+</div>
+</section>
+<section id="docker-installation">
+<h3><a class="toc-backref" href="#id9" role="doc-backlink">Docker Installation</a><a class="headerlink" href="#docker-installation" title="Link to this heading"></a></h3>
+<div class="highlight-dockerfile notranslate"><div class="highlight"><pre><span></span><span class="c"># Dockerfile example</span>
+<span class="k">FROM</span><span class="w"> </span><span class="s">python:3.11-slim</span>
+
+<span class="c"># Install ModbusLink</span>
+<span class="k">RUN</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>modbuslink<span class="o">[</span>all<span class="o">]</span>
+
+<span class="c"># Copy application code</span>
+<span class="k">COPY</span><span class="w"> </span>.<span class="w"> </span>/app
+<span class="k">WORKDIR</span><span class="w"> </span><span class="s">/app</span>
+
+<span class="c"># Run application</span>
+<span class="k">CMD</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;python&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;your_modbus_app.py&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="environment-configuration">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">Environment Configuration</a><a class="headerlink" href="#environment-configuration" title="Link to this heading"></a></h2>
+<section id="serial-port-permissions-linux-macos">
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">Serial Port Permissions (Linux/macOS)</a><a class="headerlink" href="#serial-port-permissions-linux-macos" title="Link to this heading"></a></h3>
+<p><strong>Ubuntu/Debian</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add user to dialout group</span>
+sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>dialout<span class="w"> </span><span class="nv">$USER</span>
+
+<span class="c1"># Restart session to apply permissions</span>
+<span class="c1"># Or temporarily switch group</span>
+newgrp<span class="w"> </span>dialout
+
+<span class="c1"># View serial port devices</span>
+ls<span class="w"> </span>-la<span class="w"> </span>/dev/ttyUSB*<span class="w"> </span>/dev/ttyACM*
+</pre></div>
+</div>
+<p><strong>CentOS/RHEL</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Add user to uucp group</span>
+sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>uucp<span class="w"> </span><span class="nv">$USER</span>
+
+<span class="c1"># Restart session</span>
+</pre></div>
+</div>
+<p><strong>macOS</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># View available serial ports</span>
+ls<span class="w"> </span>/dev/cu.*
+
+<span class="c1"># Usually no special permissions needed</span>
+</pre></div>
+</div>
+</section>
+<section id="windows-serial-port-configuration">
+<h3><a class="toc-backref" href="#id12" role="doc-backlink">Windows Serial Port Configuration</a><a class="headerlink" href="#windows-serial-port-configuration" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Check Device Manager</strong> for port information</p></li>
+<li><p><strong>Confirm COM port number</strong> (e.g., COM1, COM3)</p></li>
+<li><p><strong>Verify driver installation</strong> is correct</p></li>
+<li><p><strong>Firewall settings</strong>: Ensure Python applications have network permissions (for TCP functionality)</p></li>
+</ol>
+</section>
+</section>
+<section id="troubleshooting">
+<h2><a class="toc-backref" href="#id13" role="doc-backlink">Troubleshooting</a><a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h2>
+<section id="common-installation-issues">
+<h3><a class="toc-backref" href="#id14" role="doc-backlink">Common Installation Issues</a><a class="headerlink" href="#common-installation-issues" title="Link to this heading"></a></h3>
+<p><strong>ImportError: No module named ‘serial’</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Solution: Install pyserial</span>
+pip<span class="w"> </span>install<span class="w"> </span>pyserial
+</pre></div>
+</div>
+<p><strong>Permission denied on serial port</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Linux solution</span>
+sudo<span class="w"> </span>chmod<span class="w"> </span><span class="m">666</span><span class="w"> </span>/dev/ttyUSB0<span class="w">  </span><span class="c1"># Temporary solution</span>
+sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>dialout<span class="w"> </span><span class="nv">$USER</span><span class="w">  </span><span class="c1"># Permanent solution</span>
+</pre></div>
+</div>
+<p><strong>ModuleNotFoundError: No module named ‘modbuslink’</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check installation status</span>
+pip<span class="w"> </span>list<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>modbuslink
+
+<span class="c1"># Reinstall</span>
+pip<span class="w"> </span>uninstall<span class="w"> </span>modbuslink
+pip<span class="w"> </span>install<span class="w"> </span>modbuslink
+</pre></div>
+</div>
+<p><strong>Version Conflicts</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create clean virtual environment</span>
+python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>clean_env
+<span class="nb">source</span><span class="w"> </span>clean_env/bin/activate<span class="w">  </span><span class="c1"># Linux/macOS</span>
+clean_env<span class="se">\S</span>cripts<span class="se">\a</span>ctivate<span class="w">     </span><span class="c1"># Windows</span>
+pip<span class="w"> </span>install<span class="w"> </span>modbuslink
+</pre></div>
+</div>
+</section>
+<section id="serial-port-diagnostics">
+<h3><a class="toc-backref" href="#id15" role="doc-backlink">Serial Port Diagnostics</a><a class="headerlink" href="#serial-port-diagnostics" title="Link to this heading"></a></h3>
+<p><strong>Check Serial Port Availability</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">serial.tools.list_ports</span>
+
+<span class="c1"># List all serial ports</span>
+<span class="n">ports</span> <span class="o">=</span> <span class="n">serial</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">list_ports</span><span class="o">.</span><span class="n">comports</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">port</span> <span class="ow">in</span> <span class="n">ports</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Port: </span><span class="si">{</span><span class="n">port</span><span class="o">.</span><span class="n">device</span><span class="si">}</span><span class="s2">, Description: </span><span class="si">{</span><span class="n">port</span><span class="o">.</span><span class="n">description</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Test Serial Port Connection</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">serial</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">ser</span> <span class="o">=</span> <span class="n">serial</span><span class="o">.</span><span class="n">Serial</span><span class="p">(</span><span class="s1">&#39;COM3&#39;</span><span class="p">,</span> <span class="mi">9600</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># Windows</span>
+    <span class="c1"># ser = serial.Serial(&#39;/dev/ttyUSB0&#39;, 9600, timeout=1)  # Linux</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✅ Serial port connection successful&quot;</span><span class="p">)</span>
+    <span class="n">ser</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;❌ Serial port connection failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="network-diagnostics">
+<h3><a class="toc-backref" href="#id16" role="doc-backlink">Network Diagnostics</a><a class="headerlink" href="#network-diagnostics" title="Link to this heading"></a></h3>
+<p><strong>Test TCP Connection</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">socket</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_tcp_connection</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">settimeout</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">connect_ex</span><span class="p">((</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+<span class="k">if</span> <span class="n">test_tcp_connection</span><span class="p">(</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="mi">502</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✅ TCP connection normal&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;❌ TCP connection failed&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="performance-tuning">
+<h2><a class="toc-backref" href="#id17" role="doc-backlink">Performance Tuning</a><a class="headerlink" href="#performance-tuning" title="Link to this heading"></a></h2>
+<section id="production-environment-configuration">
+<h3><a class="toc-backref" href="#id18" role="doc-backlink">Production Environment Configuration</a><a class="headerlink" href="#production-environment-configuration" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Recommended production environment configuration</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncModbusClient</span><span class="p">,</span> <span class="n">AsyncTcpTransport</span>
+
+<span class="c1"># Connection pool configuration</span>
+<span class="n">transport</span> <span class="o">=</span> <span class="n">AsyncTcpTransport</span><span class="p">(</span>
+    <span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span>
+    <span class="n">port</span><span class="o">=</span><span class="mi">502</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span>           <span class="c1"># Moderate timeout</span>
+    <span class="n">connect_timeout</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>   <span class="c1"># Connection timeout</span>
+    <span class="n">keepalive</span><span class="o">=</span><span class="kc">True</span>         <span class="c1"># Keep connection alive</span>
+<span class="p">)</span>
+
+<span class="c1"># Async event loop optimization</span>
+<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">asyncio</span><span class="p">,</span> <span class="s1">&#39;WindowsSelectorEventLoopPolicy&#39;</span><span class="p">):</span>
+    <span class="c1"># Windows optimization</span>
+    <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop_policy</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">WindowsSelectorEventLoopPolicy</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="memory-optimization">
+<h3><a class="toc-backref" href="#id19" role="doc-backlink">Memory Optimization</a><a class="headerlink" href="#memory-optimization" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># For large data reads, use batch operations</span>
+<span class="n">registers</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">quantity</span><span class="o">=</span><span class="mi">100</span>  <span class="c1"># Read multiple registers at once</span>
+<span class="p">)</span>
+
+<span class="c1"># Avoid frequent client object creation</span>
+<span class="c1"># Use connection pools or long connections</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="upgrade-guide">
+<h2><a class="toc-backref" href="#id20" role="doc-backlink">Upgrade Guide</a><a class="headerlink" href="#upgrade-guide" title="Link to this heading"></a></h2>
+<section id="upgrading-from-older-versions">
+<h3><a class="toc-backref" href="#id21" role="doc-backlink">Upgrading from Older Versions</a><a class="headerlink" href="#upgrading-from-older-versions" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Check current version</span>
+pip<span class="w"> </span>show<span class="w"> </span>modbuslink
+
+<span class="c1"># Upgrade to latest version</span>
+pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>modbuslink
+
+<span class="c1"># Upgrade to specific version</span>
+pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span><span class="nv">modbuslink</span><span class="o">==</span><span class="m">2</span>.0.0
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Before upgrading, please check <span class="xref std std-doc">changelog</span> for breaking changes.</p>
+</div>
+</section>
+</section>
+<section id="next-steps">
+<h2><a class="toc-backref" href="#id22" role="doc-backlink">Next Steps</a><a class="headerlink" href="#next-steps" title="Link to this heading"></a></h2>
+<p>After installation, we recommend:</p>
+<ol class="arabic simple">
+<li><p>📖 Read <a class="reference internal" href="quickstart.html"><span class="doc">Quick Start</span></a> for a quick start guide</p></li>
+<li><p>🏗️ Understand <a class="reference internal" href="architecture.html"><span class="doc">Architecture Design</span></a> design</p></li>
+<li><p>💡 Check <a class="reference internal" href="examples.html"><span class="doc">Examples</span></a> for real examples</p></li>
+<li><p>📚 Reference <a class="reference internal" href="api_reference.html"><span class="doc">API Reference</span></a> for API documentation</p></li>
+</ol>
+<p>If you encounter issues, please check <a class="reference internal" href="troubleshooting.html"><span class="doc">Troubleshooting Guide</span></a> or submit an issue on GitHub.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="ModbusLink Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="quickstart.html" class="btn btn-neutral float-right" title="Quick Start" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Miraitowa-la.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
