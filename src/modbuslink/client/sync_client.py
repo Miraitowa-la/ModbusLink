@@ -20,7 +20,6 @@ class ModbusClient:
     提供简洁、用户友好的Modbus操作接口。通过依赖注入的方式接收传输层实例，支持RTU和TCP等不同传输方式。
     所有方法都使用Python原生数据类型（int, list等），将底层的字节操作完全封装。
 
-
     Synchronous Modbus Client
     Provides a concise, user-friendly Modbus operation interface. Receives
     transport layer instances through dependency injection, supporting different
@@ -31,9 +30,7 @@ class ModbusClient:
 
     def __init__(self, transport: BaseTransport):
         """
-        初始化Modbus客户端
-
-        Initialize Modbus Client
+        初始化Modbus客户端 | Initialize Modbus Client
 
         Args:
             transport: 传输层实例（RtuTransport或TcpTransport） | Transport layer instance (RtuTransport or TcpTransport)
@@ -42,7 +39,7 @@ class ModbusClient:
         self._logger = get_logger("client.sync")
 
     def read_coils(
-        self, slave_id: int, start_address: int, quantity: int
+            self, slave_id: int, start_address: int, quantity: int
     ) -> List[bool]:
         """
         读取线圈状态（功能码0x01） | Read Coil Status (Function Code 0x01)
@@ -53,13 +50,7 @@ class ModbusClient:
             quantity: 读取数量（1-2000） | Quantity to read (1-2000)
 
         Returns:
-            线圈状态列表，True表示ON，False表示OFF
-
-            List of coil status, True for ON, False for OFF
-
-        Example:
-            >>> client.read_coils(1, 0, 8)
-            [True, False, True, False, False, False, True, False]
+            线圈状态列表，True表示ON，False表示OFF | List of coil status, True for ON, False for OFF
         """
         if not (1 <= quantity <= 2000):
             raise ValueError(
@@ -98,7 +89,7 @@ class ModbusClient:
         for byte_idx, byte_val in enumerate(coil_data):
             for bit_idx in range(8):
                 if (
-                    len(coils) >= quantity
+                        len(coils) >= quantity
                 ):  # 只返回请求的数量 | Only return requested quantity
                     break
                 coils.append(bool(byte_val & (1 << bit_idx)))
@@ -106,7 +97,7 @@ class ModbusClient:
         return coils[:quantity]
 
     def read_discrete_inputs(
-        self, slave_id: int, start_address: int, quantity: int
+            self, slave_id: int, start_address: int, quantity: int
     ) -> List[bool]:
         """
         读取离散输入状态（功能码0x02） | Read Discrete Input Status (Function Code 0x02)
@@ -117,9 +108,7 @@ class ModbusClient:
             quantity: 读取数量（1-2000） | Quantity to read (1-2000)
 
         Returns:
-            离散输入状态列表，True表示ON，False表示OFF
-
-            List of discrete input status, True for ON, False for OFF
+            离散输入状态列表，True表示ON，False表示OFF | List of discrete input status, True for ON, False for OFF
         """
         if not (1 <= quantity <= 2000):
             raise ValueError(
@@ -158,7 +147,7 @@ class ModbusClient:
         for byte_idx, byte_val in enumerate(input_data):
             for bit_idx in range(8):
                 if (
-                    len(inputs) >= quantity
+                        len(inputs) >= quantity
                 ):  # 只返回请求的数量 | Only return requested quantity
                     break
                 inputs.append(bool(byte_val & (1 << bit_idx)))
@@ -166,7 +155,7 @@ class ModbusClient:
         return inputs[:quantity]
 
     def read_holding_registers(
-        self, slave_id: int, start_address: int, quantity: int
+            self, slave_id: int, start_address: int, quantity: int
     ) -> List[int]:
         """
         读取保持寄存器（功能码0x03） | Read Holding Registers (Function Code 0x03)
@@ -177,13 +166,7 @@ class ModbusClient:
             quantity: 读取数量（1-125） | Quantity to read (1-125)
 
         Returns:
-            寄存器值列表，每个值为16位无符号整数（0-65535）
-
-            List of register values, each value is a 16-bit unsigned integer (0-65535)
-
-        Example:
-            >>> client.read_holding_registers(1, 0, 4)
-            [1234, 5678, 9012, 3456]
+            寄存器值列表，每个值为16位无符号整数（0-65535） | List of register values, each value is a 16-bit unsigned integer (0-65535)
         """
         if not (1 <= quantity <= 125):
             raise ValueError(
@@ -226,13 +209,13 @@ class ModbusClient:
         registers = []
 
         for i in range(0, len(register_data), 2):
-            register_value = struct.unpack(">H", register_data[i : i + 2])[0]
+            register_value = struct.unpack(">H", register_data[i: i + 2])[0]
             registers.append(register_value)
 
         return registers
 
     def read_input_registers(
-        self, slave_id: int, start_address: int, quantity: int
+            self, slave_id: int, start_address: int, quantity: int
     ) -> List[int]:
         """
         读取输入寄存器（功能码0x04） | Read Input Registers (Function Code 0x04)
@@ -243,9 +226,7 @@ class ModbusClient:
             quantity: 读取数量（1-125） | Quantity to read (1-125)
 
         Returns:
-            寄存器值列表，每个值为16位无符号整数（0-65535）
-
-            List of register values, each value is a 16-bit unsigned integer (0-65535)
+            寄存器值列表，每个值为16位无符号整数（0-65535） | List of register values, each value is a 16-bit unsigned integer (0-65535)
         """
         if not (1 <= quantity <= 125):
             raise ValueError(
@@ -288,7 +269,7 @@ class ModbusClient:
         registers = []
 
         for i in range(0, len(register_data), 2):
-            register_value = struct.unpack(">H", register_data[i : i + 2])[0]
+            register_value = struct.unpack(">H", register_data[i: i + 2])[0]
             registers.append(register_value)
 
         return registers
@@ -301,9 +282,6 @@ class ModbusClient:
             slave_id: 从站地址 | Slave address
             address: 线圈地址 | Coil address
             value: 线圈值，True表示ON，False表示OFF | Coil value, True for ON, False for OFF
-
-        Example:
-            >>> client.write_single_coil(1, 0, True)  # 设置线圈0为ON | Set coil 0 to ON
         """
         # 构建PDU：功能码 + 地址 + 值 | Build PDU: function code + address + value
         coil_value = 0xFF00 if value else 0x0000
@@ -326,9 +304,6 @@ class ModbusClient:
             slave_id: 从站地址 | Slave address
             address: 寄存器地址 | Register address
             value: 寄存器值（0-65535） | Register value (0-65535)
-
-        Example:
-            >>> client.write_single_register(1, 0, 1234)
         """
         if not (0 <= value <= 65535):
             raise ValueError(
@@ -348,7 +323,7 @@ class ModbusClient:
             )
 
     def write_multiple_coils(
-        self, slave_id: int, start_address: int, values: List[bool]
+            self, slave_id: int, start_address: int, values: List[bool]
     ) -> None:
         """
         写多个线圈（功能码0x0F） | Write Multiple Coils (Function Code 0x0F)
@@ -357,9 +332,6 @@ class ModbusClient:
             slave_id: 从站地址 | Slave address
             start_address: 起始地址 | Starting address
             values: 线圈值列表，True表示ON，False表示OFF | List of coil values, True for ON, False for OFF
-
-        Example:
-            >>> client.write_multiple_coils(1, 0, [True, False, True, False])
         """
         quantity = len(values)
         if not (1 <= quantity <= 1968):
@@ -395,7 +367,7 @@ class ModbusClient:
             )
 
     def write_multiple_registers(
-        self, slave_id: int, start_address: int, values: List[int]
+            self, slave_id: int, start_address: int, values: List[int]
     ) -> None:
         """
         写多个寄存器（功能码0x10） | Write Multiple Registers (Function Code 0x10)
@@ -404,9 +376,6 @@ class ModbusClient:
             slave_id: 从站地址 | Slave address
             start_address: 起始地址 | Starting address
             values: 寄存器值列表，每个值为0-65535 | List of register values, each value 0-65535
-
-        Example:
-            >>> client.write_multiple_registers(1, 0, [1234, 5678, 9012])
         """
         quantity = len(values)
         if not (1 <= quantity <= 123):
@@ -446,10 +415,10 @@ class ModbusClient:
         return self
 
     def __exit__(
-        self,
-        exc_type: Optional[type],
-        exc_val: Optional[BaseException],
-        exc_tb: Optional[Any],
+            self,
+            exc_type: Optional[type],
+            exc_val: Optional[BaseException],
+            exc_tb: Optional[Any],
     ) -> None:
         """上下文管理器出口 | Context manager exit"""
         self.transport.close()
@@ -457,11 +426,11 @@ class ModbusClient:
     # 高级数据类型API | Advanced Data Type APIs
 
     def read_float32(
-        self,
-        slave_id: int,
-        start_address: int,
-        byte_order: str = "big",
-        word_order: str = "high",
+            self,
+            slave_id: int,
+            start_address: int,
+            byte_order: str = "big",
+            word_order: str = "high",
     ) -> float:
         """
         读取32位浮点数（占用2个连续寄存器） | Read 32-bit float (occupies 2 consecutive registers)
@@ -474,20 +443,17 @@ class ModbusClient:
 
         Returns:
             32位浮点数值 | 32-bit float value
-
-        Example:
-            >>> temperature = client.read_float32(1, 100)  # 读取温度传感器值 | Read temperature sensor value
         """
         registers = self.read_holding_registers(slave_id, start_address, 2)
         return PayloadCoder.decode_float32(registers, byte_order, word_order)
 
     def write_float32(
-        self,
-        slave_id: int,
-        start_address: int,
-        value: float,
-        byte_order: str = "big",
-        word_order: str = "high",
+            self,
+            slave_id: int,
+            start_address: int,
+            value: float,
+            byte_order: str = "big",
+            word_order: str = "high",
     ) -> None:
         """
         写入32位浮点数（占用2个连续寄存器） | Write 32-bit float (occupies 2 consecutive registers)
@@ -498,19 +464,16 @@ class ModbusClient:
             value: 要写入的浮点数值 | Float value to write
             byte_order: 字节序，'big'或'little' | Byte order, 'big' or 'little'
             word_order: 字序，'high'或'low' | Word order, 'high' or 'low'
-
-        Example:
-            >>> client.write_float32(1, 100, 25.6)  # 写入温度设定值 | Write temperature setpoint
         """
         registers = PayloadCoder.encode_float32(value, byte_order, word_order)
         self.write_multiple_registers(slave_id, start_address, registers)
 
     def read_int32(
-        self,
-        slave_id: int,
-        start_address: int,
-        byte_order: str = "big",
-        word_order: str = "high",
+            self,
+            slave_id: int,
+            start_address: int,
+            byte_order: str = "big",
+            word_order: str = "high",
     ) -> int:
         """
         读取32位有符号整数（占用2个连续寄存器） | Read 32-bit signed integer (occupies 2 consecutive registers)
@@ -528,12 +491,12 @@ class ModbusClient:
         return PayloadCoder.decode_int32(registers, byte_order, word_order)
 
     def write_int32(
-        self,
-        slave_id: int,
-        start_address: int,
-        value: int,
-        byte_order: str = "big",
-        word_order: str = "high",
+            self,
+            slave_id: int,
+            start_address: int,
+            value: int,
+            byte_order: str = "big",
+            word_order: str = "high",
     ) -> None:
         """
         写入32位有符号整数（占用2个连续寄存器） | Write 32-bit signed integer (occupies 2 consecutive registers)
@@ -549,11 +512,11 @@ class ModbusClient:
         self.write_multiple_registers(slave_id, start_address, registers)
 
     def read_uint32(
-        self,
-        slave_id: int,
-        start_address: int,
-        byte_order: str = "big",
-        word_order: str = "high",
+            self,
+            slave_id: int,
+            start_address: int,
+            byte_order: str = "big",
+            word_order: str = "high",
     ) -> int:
         """
         读取32位无符号整数（占用2个连续寄存器） | Read 32-bit unsigned integer (occupies 2 consecutive registers)
@@ -571,12 +534,12 @@ class ModbusClient:
         return PayloadCoder.decode_uint32(registers, byte_order, word_order)
 
     def write_uint32(
-        self,
-        slave_id: int,
-        start_address: int,
-        value: int,
-        byte_order: str = "big",
-        word_order: str = "high",
+            self,
+            slave_id: int,
+            start_address: int,
+            value: int,
+            byte_order: str = "big",
+            word_order: str = "high",
     ) -> None:
         """
         写入32位无符号整数（占用2个连续寄存器） | Write 32-bit unsigned integer (occupies 2 consecutive registers)
@@ -592,11 +555,11 @@ class ModbusClient:
         self.write_multiple_registers(slave_id, start_address, registers)
 
     def read_int64(
-        self,
-        slave_id: int,
-        start_address: int,
-        byte_order: str = "big",
-        word_order: str = "high",
+            self,
+            slave_id: int,
+            start_address: int,
+            byte_order: str = "big",
+            word_order: str = "high",
     ) -> int:
         """
         读取64位有符号整数（占用4个连续寄存器） | Read 64-bit signed integer (occupies 4 consecutive registers)
@@ -614,12 +577,12 @@ class ModbusClient:
         return PayloadCoder.decode_int64(registers, byte_order, word_order)
 
     def write_int64(
-        self,
-        slave_id: int,
-        start_address: int,
-        value: int,
-        byte_order: str = "big",
-        word_order: str = "high",
+            self,
+            slave_id: int,
+            start_address: int,
+            value: int,
+            byte_order: str = "big",
+            word_order: str = "high",
     ) -> None:
         """
         写入64位有符号整数（占用4个连续寄存器） | Write 64-bit signed integer (occupies 4 consecutive registers)
@@ -635,11 +598,11 @@ class ModbusClient:
         self.write_multiple_registers(slave_id, start_address, registers)
 
     def read_uint64(
-        self,
-        slave_id: int,
-        start_address: int,
-        byte_order: str = "big",
-        word_order: str = "high",
+            self,
+            slave_id: int,
+            start_address: int,
+            byte_order: str = "big",
+            word_order: str = "high",
     ) -> int:
         """
         读取64位无符号整数（占用4个连续寄存器） | Read 64-bit unsigned integer (occupies 4 consecutive registers)
@@ -657,12 +620,12 @@ class ModbusClient:
         return PayloadCoder.decode_uint64(registers, byte_order, word_order)
 
     def write_uint64(
-        self,
-        slave_id: int,
-        start_address: int,
-        value: int,
-        byte_order: str = "big",
-        word_order: str = "high",
+            self,
+            slave_id: int,
+            start_address: int,
+            value: int,
+            byte_order: str = "big",
+            word_order: str = "high",
     ) -> None:
         """
         写入64位无符号整数（占用4个连续寄存器） | Write 64-bit unsigned integer (occupies 4 consecutive registers)
@@ -678,7 +641,7 @@ class ModbusClient:
         self.write_multiple_registers(slave_id, start_address, registers)
 
     def read_string(
-        self, slave_id: int, start_address: int, length: int, encoding: str = "utf-8"
+            self, slave_id: int, start_address: int, length: int, encoding: str = "utf-8"
     ) -> str:
         """
         读取字符串（从连续寄存器中） | Read string (from consecutive registers)
@@ -691,16 +654,13 @@ class ModbusClient:
 
         Returns:
             解码后的字符串 | Decoded string
-
-        Example:
-            >>> device_name = client.read_string(1, 200, 16)  # 读取设备名称 | Read device name
         """
         register_count = (length + 1) // 2  # 每个寄存器2字节 | 2 bytes per register
         registers = self.read_holding_registers(slave_id, start_address, register_count)
         return PayloadCoder.decode_string(registers, PayloadCoder.BIG_ENDIAN, encoding)
 
     def write_string(
-        self, slave_id: int, start_address: int, value: str, encoding: str = "utf-8"
+            self, slave_id: int, start_address: int, value: str, encoding: str = "utf-8"
     ) -> None:
         """
         写入字符串（到连续寄存器中） | Write string (to consecutive registers)
@@ -710,9 +670,6 @@ class ModbusClient:
             start_address: 起始寄存器地址 | Starting register address
             value: 要写入的字符串 | String to write
             encoding: 字符编码，默认'utf-8' | Character encoding, default 'utf-8'
-
-        Example:
-            >>> client.write_string(1, 200, "ModbusLink")  # 写入设备名称 | Write device name
         """
         # 计算所需的寄存器数量 | Calculate required register count
         byte_length = len(value.encode(encoding))

@@ -20,7 +20,6 @@ class TcpTransport(BaseTransport):
     Modbus TCP传输层实现
     处理基于TCP/IP的Modbus TCP通信，包括：
 
-
     Modbus TCP Transport Layer Implementation
     Handles Modbus TCP communication based on TCP/IP, including:
 
@@ -32,9 +31,7 @@ class TcpTransport(BaseTransport):
 
     def __init__(self, host: str, port: int = 502, timeout: float = 10.0):
         """
-        初始化TCP传输层
-
-        Initialize TCP transport layer
+        初始化TCP传输层 | Initialize TCP transport layer
 
         Args:
             host: 目标主机IP地址或域名 | Target host IP address or domain name
@@ -110,7 +107,6 @@ class TcpTransport(BaseTransport):
         发送PDU并接收响应
         实现TCP协议的完整通信流程：
 
-
         Send PDU and receive response
         Implements complete TCP protocol communication flow:
 
@@ -127,8 +123,8 @@ class TcpTransport(BaseTransport):
         # 1. 生成事务ID并构建MBAP头 | Generate transaction ID and build MBAP header
         current_transaction_id = self._transaction_id
         self._transaction_id = (
-            self._transaction_id + 1
-        ) % 0x10000  # 16位回绕 | 16-bit wraparound
+                                       self._transaction_id + 1
+                               ) % 0x10000  # 16位回绕 | 16-bit wraparound
 
         # MBAP头格式： | MBAP header format:
         # - Transaction ID (2字节): 事务标识符 | Transaction identifier
@@ -184,7 +180,7 @@ class TcpTransport(BaseTransport):
 
             # 7. 接收响应PDU | Receive response PDU
             pdu_length = (
-                response_length - 1
+                    response_length - 1
             )  # 减去Unit ID的1字节 | Subtract 1 byte for Unit ID
             if pdu_length <= 0:
                 raise InvalidResponseError(
@@ -199,12 +195,12 @@ class TcpTransport(BaseTransport):
 
             # 8. 检查是否为异常响应 | Check if it's an exception response
             if (
-                len(response_pdu) > 0 and response_pdu[0] & 0x80
+                    len(response_pdu) > 0 and response_pdu[0] & 0x80
             ):  # 异常响应 | Exception response
                 from ..common.exceptions import ModbusException
 
                 function_code = (
-                    response_pdu[0] & 0x7F
+                        response_pdu[0] & 0x7F
                 )  # 去除异常标志位 | Remove exception flag bit
                 exception_code = response_pdu[1] if len(response_pdu) > 1 else 0
                 raise ModbusException(exception_code, function_code)
@@ -220,9 +216,7 @@ class TcpTransport(BaseTransport):
 
     def _receive_exact(self, length: int) -> bytes:
         """
-        精确接收指定长度的数据
-
-        Receive exact length of data
+        精确接收指定长度的数据 | Receive exact length of data
 
         Args:
             length: 需要接收的字节数 | Number of bytes to receive

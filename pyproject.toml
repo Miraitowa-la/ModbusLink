@@ -4,12 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "modbuslink"
-version = "1.1.1"
+version = "1.2.0"
 description = "现代化、功能强大、开发者友好且高度可扩展的Python Modbus库 | Modern, powerful, developer-friendly and highly scalable Python Modbus library"
 authors = [
-    { name = "Miraitowa", email = "2056978412@qq.com" }
+    { name = "Miraitowa-la", email = "2056978412@qq.com" }
 ]
-readme = "README.md"
+dynamic = ["readme"]
 requires-python = ">=3.9"
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -47,6 +47,9 @@ dev = [
 Homepage = "https://github.com/Miraitowa-la/ModbusLink"
 Repository = "https://github.com/Miraitowa-la/ModbusLink"
 Issues = "https://github.com/Miraitowa-la/ModbusLink/issues"
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.md", "README-zh_CN.md"]}
 
 [tool.setuptools.packages.find]
 where = ["src"]

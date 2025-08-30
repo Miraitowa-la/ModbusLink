@@ -17,7 +17,6 @@ class ModbusLinkError(Exception):
     Base exception class for ModbusLink library
     All ModbusLink-related exceptions inherit from this base class.
     """
-
     pass
 
 
@@ -29,7 +28,6 @@ class ConnectionError(ModbusLinkError):
     Connection error exception
     Raised when unable to establish or maintain connection with Modbus device.
     """
-
     pass
 
 
@@ -41,7 +39,6 @@ class TimeoutError(ModbusLinkError):
     Timeout error exception
     Raised when operation exceeds the specified timeout period.
     """
-
     pass
 
 
@@ -53,7 +50,6 @@ class CRCError(ModbusLinkError):
     CRC validation error exception
     Raised when CRC validation of received data frame fails.
     """
-
     pass
 
 
@@ -66,7 +62,6 @@ class InvalidResponseError(ModbusLinkError):
     Invalid response error exception
     Raised when received response format is incorrect or unexpected.
     """
-
     pass
 
 
@@ -84,7 +79,7 @@ class ModbusException(ModbusLinkError):
     """
 
     def __init__(
-        self, exception_code: int, function_code: int, message: Optional[str] = None
+            self, exception_code: int, function_code: int, message: Optional[str] = None
     ):
         self.exception_code = exception_code
         self.function_code = function_code

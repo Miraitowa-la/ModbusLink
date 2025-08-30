@@ -4,8 +4,8 @@ ModbusLink - 现代化、功能强大、开发者友好且高度可扩展的Pyth
 Modern, powerful, developer-friendly and highly scalable Python Modbus library
 """
 
-__version__ = "1.1.1"
-__author__ = "Miraitowa"
+__version__ = "1.2.0"
+__author__ = "Miraitowa-la"
 __email__ = "2056978412@qq.com"
 
 # 导入主要的公共接口 | Import main public interfaces

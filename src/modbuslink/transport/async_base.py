@@ -52,9 +52,7 @@ class AsyncBaseTransport(ABC):
     @abstractmethod
     async def is_open(self) -> bool:
         """
-        异步检查连接状态
-
-        Async Check Connection Status
+        异步检查连接状态 | Async Check Connection Status
 
         Returns:
             如果连接已建立且可用返回True，否则返回False
@@ -71,9 +69,7 @@ class AsyncBaseTransport(ABC):
         负责添加必要的传输层信息（如TCP的MBAP头），
         异步发送请求，接收响应，验证响应的完整性，然后返回响应的PDU部分。
 
-
         Async Send PDU and Receive Response
-
         This is the core method of the async transport layer. It receives pure PDU (Protocol Data Unit),
         is responsible for adding necessary transport layer information (such as TCP MBAP header),
         asynchronously sends requests, receives responses, verifies response integrity,
@@ -101,10 +97,10 @@ class AsyncBaseTransport(ABC):
         return self
 
     async def __aexit__(
-        self,
-        exc_type: Optional[type],
-        exc_val: Optional[BaseException],
-        exc_tb: Optional[Any],
+            self,
+            exc_type: Optional[type],
+            exc_val: Optional[BaseException],
+            exc_tb: Optional[Any],
     ) -> None:
         """异步上下文管理器出口 | Async Context Manager Exit"""
         await self.close()

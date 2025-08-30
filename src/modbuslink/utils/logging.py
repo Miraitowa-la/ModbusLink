@@ -26,25 +26,19 @@ class ModbusLogger:
 
     @staticmethod
     def setup_logging(
-        level: int = logging.INFO,
-        format_string: Optional[str] = None,
-        enable_debug: bool = False,
-        log_file: Optional[str] = None,
+            level: int = logging.INFO,
+            format_string: Optional[str] = None,
+            enable_debug: bool = False,
+            log_file: Optional[str] = None,
     ) -> None:
         """
-        设置ModbusLink的日志配置
-
-        Setup ModbusLink logging configuration
+        设置ModbusLink的日志配置 | Setup ModbusLink logging configuration
 
         Args:
             level: 日志级别，默认INFO | Log level, default INFO
             format_string: 自定义日志格式 | Custom log format
             enable_debug: 是否启用调试模式（显示详细信息） | Enable debug mode (show detailed info)
             log_file: 日志文件路径，如果提供则同时输出到文件 | Log file path, if provided, also output to file
-
-        Example:
-            >>> ModbusLogger.setup_logging(level=logging.DEBUG, enable_debug=True)
-            >>> ModbusLogger.setup_logging(log_file='modbus.log')
         """
         # 选择日志格式 | Choose log format
         if format_string is None:
@@ -87,9 +81,7 @@ class ModbusLogger:
     @staticmethod
     def get_logger(name: str) -> logging.Logger:
         """
-        获取指定名称的日志器
-
-        Get logger with specified name
+        获取指定名称的日志器 | Get logger with specified name
 
         Args:
             name: 日志器名称 | Logger name
@@ -104,7 +96,6 @@ class ModbusLogger:
         """
         启用协议级别的调试日志
         显示原始的十六进制数据包，用于调试通信问题。
-
 
         Enable protocol-level debug logging
         Shows raw hexadecimal packets for debugging communication issues.
@@ -123,10 +114,7 @@ class ModbusLogger:
 
     @staticmethod
     def disable_protocol_debug() -> None:
-        """
-        禁用协议级别的调试日志
-
-        Disable protocol-level debug logging"""
+        """禁用协议级别的调试日志 | Disable protocol-level debug logging"""
         # 恢复传输层日志级别 | Restore transport layer log level
         transport_logger = logging.getLogger("modbuslink.transport")
         transport_logger.setLevel(logging.INFO)
@@ -142,18 +130,12 @@ class ModbusLogger:
 
 def get_logger(name: str) -> logging.Logger:
     """
-    便捷函数：获取ModbusLink日志器
-
-    Convenience function: get ModbusLink logger
+    便捷函数：获取ModbusLink日志器 | Convenience function: get ModbusLink logger
 
     Args:
         name: 日志器名称 | Logger name
 
     Returns:
         配置好的日志器实例 | Configured logger instance
-
-    Example:
-        >>> logger = get_logger('transport.rtu')
-        >>> logger.info('RTU连接已建立')
     """
     return ModbusLogger.get_logger(name)

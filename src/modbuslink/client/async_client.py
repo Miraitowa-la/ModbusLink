@@ -32,9 +32,7 @@ class AsyncModbusClient:
 
     def __init__(self, transport: AsyncBaseTransport):
         """
-        初始化异步Modbus客户端
-
-        Initialize Async Modbus Client
+        初始化异步Modbus客户端 | Initialize Async Modbus Client
 
         Args:
             transport: 异步传输层实例（AsyncTcpTransport等） | Async transport layer instance (AsyncTcpTransport, etc.)
@@ -43,11 +41,11 @@ class AsyncModbusClient:
         self._logger = get_logger("client.async")
 
     async def read_coils(
-        self,
-        slave_id: int,
-        start_address: int,
-        quantity: int,
-        callback: Optional[Callable[[List[bool]], None]] = None,
+            self,
+            slave_id: int,
+            start_address: int,
+            quantity: int,
+            callback: Optional[Callable[[List[bool]], None]] = None,
     ) -> List[bool]:
         """
         异步读取线圈状态（功能码0x01） | Async Read Coil Status (Function Code 0x01)
@@ -62,10 +60,6 @@ class AsyncModbusClient:
             线圈状态列表，True表示ON，False表示OFF
 
             List of coil status, True for ON, False for OFF
-
-        Example:
-            >>> coils = await client.read_coils(1, 0, 8)
-            [True, False, True, False, False, False, True, False]
         """
         if not (1 <= quantity <= 2000):
             raise ValueError(
@@ -104,7 +98,7 @@ class AsyncModbusClient:
         for byte_idx, byte_val in enumerate(coil_data):
             for bit_idx in range(8):
                 if (
-                    len(coils) >= quantity
+                        len(coils) >= quantity
                 ):  # 只返回请求的数量 | Only return requested quantity
                     break
                 coils.append(bool(byte_val & (1 << bit_idx)))
@@ -118,11 +112,11 @@ class AsyncModbusClient:
         return result
 
     async def read_discrete_inputs(
-        self,
-        slave_id: int,
-        start_address: int,
-        quantity: int,
-        callback: Optional[Callable[[List[bool]], None]] = None,
+            self,
+            slave_id: int,
+            start_address: int,
+            quantity: int,
+            callback: Optional[Callable[[List[bool]], None]] = None,
     ) -> List[bool]:
         """
         异步读取离散输入状态（功能码0x02） | Async Read Discrete Input Status (Function Code 0x02)
@@ -175,7 +169,7 @@ class AsyncModbusClient:
         for byte_idx, byte_val in enumerate(input_data):
             for bit_idx in range(8):
                 if (
-                    len(inputs) >= quantity
+                        len(inputs) >= quantity
                 ):  # 只返回请求的数量 | Only return requested quantity
                     break
                 inputs.append(bool(byte_val & (1 << bit_idx)))
@@ -189,11 +183,11 @@ class AsyncModbusClient:
         return result
 
     async def read_holding_registers(
-        self,
-        slave_id: int,
-        start_address: int,
-        quantity: int,
-        callback: Optional[Callable[[List[int]], None]] = None,
+            self,
+            slave_id: int,
+            start_address: int,
+            quantity: int,
+            callback: Optional[Callable[[List[int]], None]] = None,
     ) -> List[int]:
         """
         异步读取保持寄存器（功能码0x03） | Async Read Holding Registers (Function Code 0x03)
@@ -208,10 +202,6 @@ class AsyncModbusClient:
             寄存器值列表，每个值为16位无符号整数（0-65535）
 
             List of register values, each value is a 16-bit unsigned integer (0-65535)
-
-        Example:
-            >>> registers = await client.read_holding_registers(1, 0, 4)
-            [1234, 5678, 9012, 3456]
         """
         if not (1 <= quantity <= 125):
             raise ValueError(
@@ -254,7 +244,7 @@ class AsyncModbusClient:
         registers = []
 
         for i in range(0, len(register_data), 2):
-            register_value = struct.unpack(">H", register_data[i : i + 2])[0]
+            register_value = struct.unpack(">H", register_data[i: i + 2])[0]
             registers.append(register_value)
 
         # 如果提供了回调函数，在后台任务中调用 | If callback is provided, call it in background task
@@ -264,11 +254,11 @@ class AsyncModbusClient:
         return registers
 
     async def read_input_registers(
-        self,
-        slave_id: int,
-        start_address: int,
-        quantity: int,
-        callback: Optional[Callable[[List[int]], None]] = None,
+            self,
+            slave_id: int,
+            start_address: int,
+            quantity: int,
+            callback: Optional[Callable[[List[int]], None]] = None,
     ) -> List[int]:
         """
         异步读取输入寄存器（功能码0x04） | Async Read Input Registers (Function Code 0x04)
@@ -280,9 +270,7 @@ class AsyncModbusClient:
             callback: 可选的回调函数，在收到响应后调用 | Optional callback function, called after receiving response
 
         Returns:
-            寄存器值列表，每个值为16位无符号整数（0-65535）
-
-            List of register values, each value is a 16-bit unsigned integer (0-65535)
+            寄存器值列表，每个值为16位无符号整数（0-65535） | List of register values, each value is a 16-bit unsigned integer (0-65535)
         """
         if not (1 <= quantity <= 125):
             raise ValueError(
@@ -325,7 +313,7 @@ class AsyncModbusClient:
         registers = []
 
         for i in range(0, len(register_data), 2):
-            register_value = struct.unpack(">H", register_data[i : i + 2])[0]
+            register_value = struct.unpack(">H", register_data[i: i + 2])[0]
             registers.append(register_value)
 
         # 如果提供了回调函数，在后台任务中调用 | If callback is provided, call it in background task
@@ -335,11 +323,11 @@ class AsyncModbusClient:
         return registers
 
     async def write_single_coil(
-        self,
-        slave_id: int,
-        address: int,
-        value: bool,
-        callback: Optional[Callable[[], None]] = None,
+            self,
+            slave_id: int,
+            address: int,
+            value: bool,
+            callback: Optional[Callable[[], None]] = None,
     ) -> None:
         """
         异步写单个线圈（功能码0x05） | Async Write Single Coil (Function Code 0x05)
@@ -349,9 +337,6 @@ class AsyncModbusClient:
             address: 线圈地址 | Coil address
             value: 线圈值，True表示ON，False表示OFF | Coil value, True for ON, False for OFF
             callback: 可选的回调函数，在操作完成后调用 | Optional callback function, called after operation completes
-
-        Example:
-            >>> await client.write_single_coil(1, 0, True)  # 设置线圈0为ON | Set coil 0 to ON
         """
         # 构建PDU：功能码 + 地址 + 值 | Build PDU: function code + address + value
         coil_value = 0xFF00 if value else 0x0000
@@ -371,11 +356,11 @@ class AsyncModbusClient:
             asyncio.create_task(self._call_callback(callback, None))
 
     async def write_single_register(
-        self,
-        slave_id: int,
-        address: int,
-        value: int,
-        callback: Optional[Callable[[], None]] = None,
+            self,
+            slave_id: int,
+            address: int,
+            value: int,
+            callback: Optional[Callable[[], None]] = None,
     ) -> None:
         """
         异步写单个寄存器（功能码0x06） | Async Write Single Register (Function Code 0x06)
@@ -385,9 +370,6 @@ class AsyncModbusClient:
             address: 寄存器地址 | Register address
             value: 寄存器值（0-65535） | Register value (0-65535)
             callback: 可选的回调函数，在操作完成后调用 | Optional callback function, called after operation completes
-
-        Example:
-            >>> await client.write_single_register(1, 0, 1234)
         """
         if not (0 <= value <= 65535):
             raise ValueError(
@@ -411,11 +393,11 @@ class AsyncModbusClient:
             asyncio.create_task(self._call_callback(callback, None))
 
     async def write_multiple_coils(
-        self,
-        slave_id: int,
-        start_address: int,
-        values: List[bool],
-        callback: Optional[Callable[[], None]] = None,
+            self,
+            slave_id: int,
+            start_address: int,
+            values: List[bool],
+            callback: Optional[Callable[[], None]] = None,
     ) -> None:
         """
         异步写多个线圈（功能码0x0F） | Async Write Multiple Coils (Function Code 0x0F)
@@ -425,9 +407,6 @@ class AsyncModbusClient:
             start_address: 起始地址 | Starting address
             values: 线圈值列表，True表示ON，False表示OFF | List of coil values, True for ON, False for OFF
             callback: 可选的回调函数，在操作完成后调用 | Optional callback function, called after operation completes
-
-        Example:
-            >>> await client.write_multiple_coils(1, 0, [True, False, True, False])
         """
         quantity = len(values)
         if not (1 <= quantity <= 1968):
@@ -467,11 +446,11 @@ class AsyncModbusClient:
             asyncio.create_task(self._call_callback(callback, None))
 
     async def write_multiple_registers(
-        self,
-        slave_id: int,
-        start_address: int,
-        values: List[int],
-        callback: Optional[Callable[[], None]] = None,
+            self,
+            slave_id: int,
+            start_address: int,
+            values: List[int],
+            callback: Optional[Callable[[], None]] = None,
     ) -> None:
         """
         异步写多个寄存器（功能码0x10） | Async Write Multiple Registers (Function Code 0x10)
@@ -481,9 +460,6 @@ class AsyncModbusClient:
             start_address: 起始地址 | Starting address
             values: 寄存器值列表，每个值为0-65535 | List of register values, each value 0-65535
             callback: 可选的回调函数，在操作完成后调用 | Optional callback function, called after operation completes
-
-        Example:
-            >>> await client.write_multiple_registers(1, 0, [1234, 5678, 9012])
         """
         quantity = len(values)
         if not (1 <= quantity <= 123):
@@ -536,12 +512,12 @@ class AsyncModbusClient:
     # 高级数据类型API | Advanced Data Type APIs
 
     async def read_float32(
-        self,
-        slave_id: int,
-        start_address: int,
-        byte_order: str = "big",
-        word_order: str = "high",
-        callback: Optional[Callable[[float], None]] = None,
+            self,
+            slave_id: int,
+            start_address: int,
+            byte_order: str = "big",
+            word_order: str = "high",
+            callback: Optional[Callable[[float], None]] = None,
     ) -> float:
         """
         异步读取32位浮点数（占用2个连续寄存器） | Async Read 32-bit float (occupies 2 consecutive registers)
@@ -566,13 +542,13 @@ class AsyncModbusClient:
         return result
 
     async def write_float32(
-        self,
-        slave_id: int,
-        start_address: int,
-        value: float,
-        byte_order: str = "big",
-        word_order: str = "high",
-        callback: Optional[Callable[[], None]] = None,
+            self,
+            slave_id: int,
+            start_address: int,
+            value: float,
+            byte_order: str = "big",
+            word_order: str = "high",
+            callback: Optional[Callable[[], None]] = None,
     ) -> None:
         """
         异步写入32位浮点数（占用2个连续寄存器） | Async Write 32-bit float (occupies 2 consecutive registers)
@@ -591,12 +567,12 @@ class AsyncModbusClient:
         )
 
     async def read_int32(
-        self,
-        slave_id: int,
-        start_address: int,
-        byte_order: str = "big",
-        word_order: str = "high",
-        callback: Optional[Callable[[int], None]] = None,
+            self,
+            slave_id: int,
+            start_address: int,
+            byte_order: str = "big",
+            word_order: str = "high",
+            callback: Optional[Callable[[int], None]] = None,
     ) -> int:
         """
         异步读取32位有符号整数（占用2个连续寄存器） | Async Read 32-bit signed integer (occupies 2 consecutive registers)
@@ -621,13 +597,13 @@ class AsyncModbusClient:
         return result
 
     async def write_int32(
-        self,
-        slave_id: int,
-        start_address: int,
-        value: int,
-        byte_order: str = "big",
-        word_order: str = "high",
-        callback: Optional[Callable[[], None]] = None,
+            self,
+            slave_id: int,
+            start_address: int,
+            value: int,
+            byte_order: str = "big",
+            word_order: str = "high",
+            callback: Optional[Callable[[], None]] = None,
     ) -> None:
         """
         异步写入32位有符号整数（占用2个连续寄存器） | Async Write 32-bit signed integer (occupies 2 consecutive registers)
@@ -651,10 +627,10 @@ class AsyncModbusClient:
         return self
 
     async def __aexit__(
-        self,
-        exc_type: Optional[type],
-        exc_val: Optional[BaseException],
-        exc_tb: Optional[Any],
+            self,
+            exc_type: Optional[type],
+            exc_val: Optional[BaseException],
+            exc_tb: Optional[Any],
     ) -> None:
         """异步上下文管理器出口 | Async context manager exit"""
         await self.transport.close()

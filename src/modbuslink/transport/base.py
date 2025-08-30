@@ -32,7 +32,6 @@ class BaseTransport(ABC):
         建立与Modbus设备的连接。对于串口是打开串口，
         对于TCP是建立socket连接。
 
-
         Open Transport Connection
         Establishes connection with Modbus device. For serial port, opens the port;
         for TCP, establishes socket connection.
@@ -48,7 +47,6 @@ class BaseTransport(ABC):
         关闭传输连接
         关闭与Modbus设备的连接并释放相关资源。
 
-
         Close Transport Connection
         Closes connection with Modbus device and releases related resources.
         """
@@ -57,9 +55,7 @@ class BaseTransport(ABC):
     @abstractmethod
     def is_open(self) -> bool:
         """
-        检查连接状态
-
-        Check Connection Status
+        检查连接状态 | Check Connection Status
 
         Returns:
             如果连接已建立且可用返回True，否则返回False
@@ -75,7 +71,6 @@ class BaseTransport(ABC):
         这是传输层的核心方法。它接收纯净的PDU（协议数据单元），
         负责添加必要的传输层信息（如RTU的地址和CRC，或TCP的MBAP头），
         发送请求，接收响应，验证响应的完整性，然后返回响应的PDU部分。
-
 
         Send PDU and Receive Response
         This is the core method of the transport layer. It receives pure PDU (Protocol Data Unit),
@@ -106,10 +101,10 @@ class BaseTransport(ABC):
         return self
 
     def __exit__(
-        self,
-        exc_type: Optional[type],
-        exc_val: Optional[BaseException],
-        exc_tb: Optional[Any],
+            self,
+            exc_type: Optional[type],
+            exc_val: Optional[BaseException],
+            exc_tb: Optional[Any],
     ) -> None:
         """上下文管理器出口 | Context Manager Exit"""
         self.close()

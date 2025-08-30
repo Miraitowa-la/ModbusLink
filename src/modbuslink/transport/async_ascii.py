@@ -1,4 +1,5 @@
-"""ModbusLink 异步ASCII传输层实现
+"""
+ModbusLink 异步ASCII传输层实现
 实现基于asyncio的异步Modbus ASCII协议传输，包括LRC校验。
 
 Async ASCII Transport Layer Implementation
@@ -36,18 +37,16 @@ class AsyncAsciiTransport(AsyncBaseTransport):
     """
 
     def __init__(
-        self,
-        port: str,
-        baudrate: int = 9600,
-        bytesize: int = 7,
-        parity: str = "E",
-        stopbits: float = 1,
-        timeout: float = 1.0,
+            self,
+            port: str,
+            baudrate: int = 9600,
+            bytesize: int = 7,
+            parity: str = "E",
+            stopbits: float = 1,
+            timeout: float = 1.0,
     ):
         """
-        初始化异步ASCII传输层
-
-        Initialize async ASCII transport layer
+        初始化异步ASCII传输层 | Initialize async ASCII transport layer
 
         Args:
             port: 串口名称 (如 'COM1', '/dev/ttyUSB0') | Serial port name (e.g. 'COM1', '/dev/ttyUSB0')
@@ -82,11 +81,7 @@ class AsyncAsciiTransport(AsyncBaseTransport):
         self._logger = get_logger("transport.async_ascii")
 
     async def open(self) -> None:
-        """
-        异步打开串口连接
-
-        Async open serial port connection
-        """
+        """异步打开串口连接 | Async open serial port connection"""
         try:
             self._reader, self._writer = await serial_asyncio.open_serial_connection(
                 url=self.port,
@@ -104,11 +99,7 @@ class AsyncAsciiTransport(AsyncBaseTransport):
             raise ConnectionError(f"异步串口连接失败 | Async serial port connection failed: {e}")
 
     async def close(self) -> None:
-        """
-        异步关闭串口连接
-
-        Async close serial port connection
-        """
+        """异步关闭串口连接 | sync close serial port connection"""
         if self._writer:
             try:
                 self._writer.close()
@@ -123,11 +114,7 @@ class AsyncAsciiTransport(AsyncBaseTransport):
                 self._writer = None
 
     async def is_open(self) -> bool:
-        """
-        异步检查串口连接状态
-
-        Async check serial port connection status
-        """
+        """异步检查串口连接状态 | Async check serial port connection status"""
         return self._reader is not None and self._writer is not None and not self._writer.is_closing()
 
     async def send_and_receive(self, slave_id: int, pdu: bytes) -> bytes:
@@ -152,7 +139,7 @@ class AsyncAsciiTransport(AsyncBaseTransport):
         # 1. 构建请求帧 | Build request frame
         frame_data = bytes([slave_id]) + pdu
         lrc = self._calculate_lrc(frame_data)
-        
+
         # ASCII编码：冒号 + 数据的十六进制表示 + LRC + CRLF | ASCII encoding: colon + hex data + LRC + CRLF
         ascii_data = frame_data + bytes([lrc])
         ascii_frame = b':' + ascii_data.hex().upper().encode('ascii') + b'\r\n'
@@ -165,7 +152,7 @@ class AsyncAsciiTransport(AsyncBaseTransport):
             # 2. 清空接收缓冲区并发送请求 | Clear receive buffer and send request
             if self._reader.at_eof():
                 raise ConnectionError("异步串口连接已断开 | Async serial connection lost")
-            
+
             # 清空可能存在的旧数据 | Clear any existing old data
             while True:
                 try:
@@ -197,9 +184,7 @@ class AsyncAsciiTransport(AsyncBaseTransport):
 
     async def _receive_response(self, expected_slave_id: int, function_code: int) -> bytes:
         """
-        异步接收并验证响应帧
-
-        Async receive and validate response frame
+        异步接收并验证响应帧 | Async receive and validate response frame
 
         Args:
             expected_slave_id: 期望的从站地址 | Expected slave address
@@ -221,22 +206,26 @@ class AsyncAsciiTransport(AsyncBaseTransport):
 
             # 验证帧格式 | Validate frame format
             if not response_line.startswith(b':'):
-                raise InvalidResponseError("ASCII响应帧格式无效：缺少起始冒号 | Invalid ASCII response frame format: missing start colon")
-            
+                raise InvalidResponseError(
+                    "ASCII响应帧格式无效：缺少起始冒号 | Invalid ASCII response frame format: missing start colon")
+
             if not response_line.endswith(b'\r\n'):
-                raise InvalidResponseError("ASCII响应帧格式无效：缺少结束符 | Invalid ASCII response frame format: missing end markers")
+                raise InvalidResponseError(
+                    "ASCII响应帧格式无效：缺少结束符 | Invalid ASCII response frame format: missing end markers")
 
             # 提取十六进制数据部分 | Extract hex data part
             hex_data = response_line[1:-2].decode('ascii')
-            
+
             if len(hex_data) % 2 != 0:
-                raise InvalidResponseError("ASCII响应帧格式无效：十六进制数据长度不是偶数 | Invalid ASCII response frame format: hex data length is not even")
+                raise InvalidResponseError(
+                    "ASCII响应帧格式无效：十六进制数据长度不是偶数 | Invalid ASCII response frame format: hex data length is not even")
 
             # 将十六进制字符串转换为字节 | Convert hex string to bytes
             try:
                 response_bytes = bytes.fromhex(hex_data)
             except ValueError as e:
-                raise InvalidResponseError(f"ASCII响应帧格式无效：十六进制数据解析失败 | Invalid ASCII response frame format: hex data parsing failed: {e}")
+                raise InvalidResponseError(
+                    f"ASCII响应帧格式无效：十六进制数据解析失败 | Invalid ASCII response frame format: hex data parsing failed: {e}")
 
             if len(response_bytes) < 3:  # 至少需要：地址 + 功能码 + LRC | At least need: address + function code + LRC
                 raise InvalidResponseError("ASCII响应帧太短 | ASCII response frame too short")
@@ -262,7 +251,7 @@ class AsyncAsciiTransport(AsyncBaseTransport):
 
             # 提取PDU | Extract PDU
             response_pdu = frame_data[1:]
-            
+
             if len(response_pdu) == 0:
                 raise InvalidResponseError("响应PDU为空 | Response PDU is empty")
 
@@ -306,11 +295,7 @@ class AsyncAsciiTransport(AsyncBaseTransport):
         return (-lrc) & 0xFF
 
     def __repr__(self) -> str:
-        """
-        返回传输层的字符串表示
-
-        Return string representation of transport layer
-        """
+        """返回传输层的字符串表示 | Return string representation of transport layer"""
         status = "已连接 | Connected" if asyncio.run(self.is_open()) else "未连接 | Disconnected"
         return (
             f"AsyncAsciiTransport(port='{self.port}', baudrate={self.baudrate}, "

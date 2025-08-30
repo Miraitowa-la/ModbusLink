@@ -12,12 +12,12 @@ sys.path.insert(0, os.path.abspath('../../src'))
 # -- Project information -----------------------------------------------------
 
 project = 'ModbusLink'
-copyright = '2025, Miraitowa'
-author = 'Miraitowa'
+copyright = '2025, Miraitowa-la'
+author = 'Miraitowa-la'
 
 # The full version, including alpha/beta/rc tags
-release = '1.1.1'
-version = '1.1.1'
+release = '1.2.0'
+version = '1.2.0'
 
 # -- General configuration ---------------------------------------------------
 

@@ -1,4 +1,5 @@
 LICENSE.txt
+README-zh_CN.md
 README.md
 pyproject.toml
 src/modbuslink/__init__.py

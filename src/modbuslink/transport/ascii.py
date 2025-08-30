@@ -1,4 +1,5 @@
-"""ModbusLink ASCII传输层实现
+"""
+ModbusLink ASCII传输层实现
 实现基于串口的Modbus ASCII协议传输，包括LRC校验。
 
 ASCII Transport Layer Implementation
@@ -36,18 +37,16 @@ class AsciiTransport(BaseTransport):
     """
 
     def __init__(
-        self,
-        port: str,
-        baudrate: int = 9600,
-        bytesize: int = 7,
-        parity: str = "E",
-        stopbits: float = 1,
-        timeout: float = 1.0,
+            self,
+            port: str,
+            baudrate: int = 9600,
+            bytesize: int = 7,
+            parity: str = "E",
+            stopbits: float = 1,
+            timeout: float = 1.0,
     ):
         """
-        初始化ASCII传输层
-
-        Initialize ASCII transport layer
+        初始化ASCII传输层 | Initialize ASCII transport layer
 
         Args:
             port: 串口名称 (如 'COM1', '/dev/ttyUSB0') | Serial port name (e.g. 'COM1', '/dev/ttyUSB0')
@@ -81,11 +80,7 @@ class AsciiTransport(BaseTransport):
         self._logger = get_logger("transport.ascii")
 
     def open(self) -> None:
-        """
-        打开串口连接
-
-        Open serial port connection
-        """
+        """打开串口连接 | Open serial port connection"""
         try:
             self._serial = serial.Serial(
                 port=self.port,
@@ -104,11 +99,7 @@ class AsciiTransport(BaseTransport):
             raise ConnectionError(f"串口连接失败 | Serial port connection failed: {e}")
 
     def close(self) -> None:
-        """
-        关闭串口连接
-
-        Close serial port connection
-        """
+        """关闭串口连接 | Close serial port connection"""
         if self._serial and self._serial.is_open:
             try:
                 self._serial.close()
@@ -121,11 +112,7 @@ class AsciiTransport(BaseTransport):
                 self._serial = None
 
     def is_open(self) -> bool:
-        """
-        检查串口连接状态
-
-        Check serial port connection status
-        """
+        """检查串口连接状态 | Check serial port connection status"""
         return self._serial is not None and self._serial.is_open
 
     def send_and_receive(self, slave_id: int, pdu: bytes) -> bytes:
@@ -148,7 +135,7 @@ class AsciiTransport(BaseTransport):
         # 1. 构建请求帧 | Build request frame
         frame_data = bytes([slave_id]) + pdu
         lrc = self._calculate_lrc(frame_data)
-        
+
         # ASCII编码：冒号 + 数据的十六进制表示 + LRC + CRLF | ASCII encoding: colon + hex data + LRC + CRLF
         ascii_data = frame_data + bytes([lrc])
         ascii_frame = b':' + ascii_data.hex().upper().encode('ascii') + b'\r\n'
@@ -186,9 +173,7 @@ class AsciiTransport(BaseTransport):
 
     def _receive_response(self, expected_slave_id: int, function_code: int) -> bytes:
         """
-        接收并验证响应帧
-
-        Receive and validate response frame
+        接收并验证响应帧 | Receive and validate response frame
 
         Args:
             expected_slave_id: 期望的从站地址 | Expected slave address
@@ -206,18 +191,18 @@ class AsciiTransport(BaseTransport):
             # 接收完整的ASCII帧直到CRLF | Receive complete ASCII frame until CRLF
             response_line = b''
             start_time = time.time()
-            
+
             while True:
                 if time.time() - start_time > self.timeout:
                     raise TimeoutError(f"接收ASCII响应超时 | Receive ASCII response timeout: {self.timeout}s")
-                
+
                 if self._serial.in_waiting > 0:
                     char = self._serial.read(1)
                     if not char:
                         continue
-                    
+
                     response_line += char
-                    
+
                     # 检查是否接收到完整帧 | Check if complete frame received
                     if response_line.endswith(b'\r\n'):
                         break
@@ -226,22 +211,26 @@ class AsciiTransport(BaseTransport):
 
             # 验证帧格式 | Validate frame format
             if not response_line.startswith(b':'):
-                raise InvalidResponseError("ASCII响应帧格式无效：缺少起始冒号 | Invalid ASCII response frame format: missing start colon")
-            
+                raise InvalidResponseError(
+                    "ASCII响应帧格式无效：缺少起始冒号 | Invalid ASCII response frame format: missing start colon")
+
             if not response_line.endswith(b'\r\n'):
-                raise InvalidResponseError("ASCII响应帧格式无效：缺少结束符 | Invalid ASCII response frame format: missing end markers")
+                raise InvalidResponseError(
+                    "ASCII响应帧格式无效：缺少结束符 | Invalid ASCII response frame format: missing end markers")
 
             # 提取十六进制数据部分 | Extract hex data part
             hex_data = response_line[1:-2].decode('ascii')
-            
+
             if len(hex_data) % 2 != 0:
-                raise InvalidResponseError("ASCII响应帧格式无效：十六进制数据长度不是偶数 | Invalid ASCII response frame format: hex data length is not even")
+                raise InvalidResponseError(
+                    "ASCII响应帧格式无效：十六进制数据长度不是偶数 | Invalid ASCII response frame format: hex data length is not even")
 
             # 将十六进制字符串转换为字节 | Convert hex string to bytes
             try:
                 response_bytes = bytes.fromhex(hex_data)
             except ValueError as e:
-                raise InvalidResponseError(f"ASCII响应帧格式无效：十六进制数据解析失败 | Invalid ASCII response frame format: hex data parsing failed: {e}")
+                raise InvalidResponseError(
+                    f"ASCII响应帧格式无效：十六进制数据解析失败 | Invalid ASCII response frame format: hex data parsing failed: {e}")
 
             if len(response_bytes) < 3:  # 至少需要：地址 + 功能码 + LRC | At least need: address + function code + LRC
                 raise InvalidResponseError("ASCII响应帧太短 | ASCII response frame too short")
@@ -267,7 +256,7 @@ class AsciiTransport(BaseTransport):
 
             # 提取PDU | Extract PDU
             response_pdu = frame_data[1:]
-            
+
             if len(response_pdu) == 0:
                 raise InvalidResponseError("响应PDU为空 | Response PDU is empty")
 

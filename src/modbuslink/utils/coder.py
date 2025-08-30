@@ -1,7 +1,8 @@
 """
-ModbusLink 高级数据编解码器模块 | ModbusLink Advanced Data Encoder/Decoder Module
-
+ModbusLink 高级数据编解码器模块
 提供各种数据类型的编解码功能，支持不同的字节序和字序配置。
+
+ModbusLink Advanced Data Encoder/Decoder Module
 Provides encoding/decoding functionality for various data types with support for different byte order and word order configurations.
 """
 
@@ -11,11 +12,11 @@ from typing import List
 
 class PayloadCoder:
     """
-    高级数据编解码器类 | Advanced Data Encoder/Decoder Class
-
+    高级数据编解码器类
     提供各种数据类型与Modbus寄存器之间的转换功能。
     支持不同的字节序（大端/小端）和字序（高字在前/低字在前）配置。
 
+    Advanced Data Encoder/Decoder Class
     Provides conversion functionality between various data types and Modbus registers.
     Supports different byte order (big/little endian) and word order (high/low word first) configurations.
     """
@@ -30,9 +31,9 @@ class PayloadCoder:
 
     @staticmethod
     def decode_float32(
-        registers: List[int],
-        byte_order: str = BIG_ENDIAN,
-        word_order: str = HIGH_WORD_FIRST,
+            registers: List[int],
+            byte_order: str = BIG_ENDIAN,
+            word_order: str = HIGH_WORD_FIRST,
     ) -> float:
         """
         将两个16位寄存器解码为32位浮点数 | Decode two 16-bit registers to a 32-bit float
@@ -77,7 +78,7 @@ class PayloadCoder:
 
     @staticmethod
     def encode_float32(
-        value: float, byte_order: str = BIG_ENDIAN, word_order: str = HIGH_WORD_FIRST
+            value: float, byte_order: str = BIG_ENDIAN, word_order: str = HIGH_WORD_FIRST
     ) -> List[int]:
         """
         将32位浮点数编码为两个16位寄存器 | Encode a 32-bit float to two 16-bit registers
@@ -111,10 +112,10 @@ class PayloadCoder:
 
     @staticmethod
     def decode_int32(
-        registers: List[int],
-        byte_order: str = BIG_ENDIAN,
-        word_order: str = HIGH_WORD_FIRST,
-        signed: bool = True,
+            registers: List[int],
+            byte_order: str = BIG_ENDIAN,
+            word_order: str = HIGH_WORD_FIRST,
+            signed: bool = True,
     ) -> int:
         """
         将两个16位寄存器解码为32位整数 | Decode two 16-bit registers to a 32-bit integer
@@ -160,10 +161,10 @@ class PayloadCoder:
 
     @staticmethod
     def encode_int32(
-        value: int,
-        byte_order: str = BIG_ENDIAN,
-        word_order: str = HIGH_WORD_FIRST,
-        signed: bool = True,
+            value: int,
+            byte_order: str = BIG_ENDIAN,
+            word_order: str = HIGH_WORD_FIRST,
+            signed: bool = True,
     ) -> List[int]:
         """
         将32位整数编码为两个16位寄存器 | Encode a 32-bit integer to two 16-bit registers
@@ -200,10 +201,10 @@ class PayloadCoder:
 
     @staticmethod
     def decode_int64(
-        registers: List[int],
-        byte_order: str = BIG_ENDIAN,
-        word_order: str = HIGH_WORD_FIRST,
-        signed: bool = True,
+            registers: List[int],
+            byte_order: str = BIG_ENDIAN,
+            word_order: str = HIGH_WORD_FIRST,
+            signed: bool = True,
     ) -> int:
         """
         将四个16位寄存器解码为64位整数 | Decode four 16-bit registers to a 64-bit integer
@@ -215,14 +216,10 @@ class PayloadCoder:
             signed: 是否为有符号整数 | Whether it's a signed integer
 
         Returns:
-            int: 解码后的整数值
-
-            Decoded integer value
+            int: 解码后的整数值 | Decoded integer value
 
         Raises:
-            ValueError: 当寄存器数量不为4时
-
-            When register count is not 4
+            ValueError: 当寄存器数量不为4时 | When register count is not 4
         """
         if len(registers) != 4:
             raise ValueError(
@@ -252,10 +249,10 @@ class PayloadCoder:
 
     @staticmethod
     def encode_int64(
-        value: int,
-        byte_order: str = BIG_ENDIAN,
-        word_order: str = HIGH_WORD_FIRST,
-        signed: bool = True,
+            value: int,
+            byte_order: str = BIG_ENDIAN,
+            word_order: str = HIGH_WORD_FIRST,
+            signed: bool = True,
     ) -> List[int]:
         """
         将64位整数编码为四个16位寄存器 | Encode a 64-bit integer to four 16-bit registers
@@ -282,9 +279,9 @@ class PayloadCoder:
         registers = []
         for i in range(0, 8, 2):
             if byte_order == PayloadCoder.BIG_ENDIAN:
-                word = int.from_bytes(packed_bytes[i : i + 2], "big")
+                word = int.from_bytes(packed_bytes[i: i + 2], "big")
             else:
-                word = int.from_bytes(packed_bytes[i : i + 2], "little")
+                word = int.from_bytes(packed_bytes[i: i + 2], "little")
             registers.append(word)
 
         # 根据字序返回寄存器列表 | Return register list according to word order
@@ -295,7 +292,7 @@ class PayloadCoder:
 
     @staticmethod
     def decode_string(
-        registers: List[int], byte_order: str = BIG_ENDIAN, encoding: str = "utf-8"
+            registers: List[int], byte_order: str = BIG_ENDIAN, encoding: str = "utf-8"
     ) -> str:
         """
         将寄存器解码为字符串 | Decode registers to a string
@@ -329,10 +326,10 @@ class PayloadCoder:
 
     @staticmethod
     def encode_string(
-        value: str,
-        register_count: int,
-        byte_order: str = BIG_ENDIAN,
-        encoding: str = "utf-8",
+            value: str,
+            register_count: int,
+            byte_order: str = BIG_ENDIAN,
+            encoding: str = "utf-8",
     ) -> List[int]:
         """
         将字符串编码为寄存器 | Encode a string to registers
@@ -373,18 +370,18 @@ class PayloadCoder:
         registers = []
         for i in range(0, len(padded_bytes), 2):
             if byte_order == PayloadCoder.BIG_ENDIAN:
-                word = int.from_bytes(padded_bytes[i : i + 2], "big")
+                word = int.from_bytes(padded_bytes[i: i + 2], "big")
             else:
-                word = int.from_bytes(padded_bytes[i : i + 2], "little")
+                word = int.from_bytes(padded_bytes[i: i + 2], "little")
             registers.append(word)
 
         return registers
 
     @staticmethod
     def decode_uint32(
-        registers: List[int],
-        byte_order: str = BIG_ENDIAN,
-        word_order: str = HIGH_WORD_FIRST,
+            registers: List[int],
+            byte_order: str = BIG_ENDIAN,
+            word_order: str = HIGH_WORD_FIRST,
     ) -> int:
         """
         将两个16位寄存器解码为32位无符号整数 | Decode two 16-bit registers to a 32-bit unsigned integer
@@ -399,7 +396,7 @@ class PayloadCoder:
 
     @staticmethod
     def encode_uint32(
-        value: int, byte_order: str = BIG_ENDIAN, word_order: str = HIGH_WORD_FIRST
+            value: int, byte_order: str = BIG_ENDIAN, word_order: str = HIGH_WORD_FIRST
     ) -> List[int]:
         """将32位无符号整数编码为两个16位寄存器 | Encode a 32-bit unsigned integer to two 16-bit registers
 
@@ -411,9 +408,9 @@ class PayloadCoder:
 
     @staticmethod
     def decode_uint64(
-        registers: List[int],
-        byte_order: str = BIG_ENDIAN,
-        word_order: str = HIGH_WORD_FIRST,
+            registers: List[int],
+            byte_order: str = BIG_ENDIAN,
+            word_order: str = HIGH_WORD_FIRST,
     ) -> int:
         """
         将四个16位寄存器解码为64位无符号整数 | Decode four 16-bit registers to a 64-bit unsigned integer
@@ -428,13 +425,11 @@ class PayloadCoder:
 
     @staticmethod
     def encode_uint64(
-        value: int, byte_order: str = BIG_ENDIAN, word_order: str = HIGH_WORD_FIRST
+            value: int, byte_order: str = BIG_ENDIAN, word_order: str = HIGH_WORD_FIRST
     ) -> List[int]:
         """
         将64位无符号整数编码为四个16位寄存器 | Encode a 64-bit unsigned integer to four 16-bit registers
 
-        这是encode_int64的便捷方法，signed=False
-
-        This is a convenience method for encode_int64 with signed=False
+        这是encode_int64的便捷方法，signed=False | This is a convenience method for encode_int64 with signed=False
         """
         return PayloadCoder.encode_int64(value, byte_order, word_order, signed=False)

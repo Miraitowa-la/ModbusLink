@@ -26,7 +26,6 @@ class RtuTransport(BaseTransport):
     Modbus RTU传输层实现
     处理基于串口的Modbus RTU通信，包括：
 
-
     Modbus RTU Transport Layer Implementation
     Handles Modbus RTU communication based on serial port, including:
 
@@ -37,18 +36,16 @@ class RtuTransport(BaseTransport):
     """
 
     def __init__(
-        self,
-        port: str,
-        baudrate: int = 9600,
-        bytesize: int = serial.EIGHTBITS,
-        parity: str = serial.PARITY_NONE,
-        stopbits: float = serial.STOPBITS_ONE,
-        timeout: float = 1.0,
+            self,
+            port: str,
+            baudrate: int = 9600,
+            bytesize: int = serial.EIGHTBITS,
+            parity: str = serial.PARITY_NONE,
+            stopbits: float = serial.STOPBITS_ONE,
+            timeout: float = 1.0,
     ):
         """
-        初始化RTU传输层
-
-        Initialize RTU transport layer
+        初始化RTU传输层 | Initialize RTU transport layer
 
         Args:
             port: 串口名称 (如 'COM1', '/dev/ttyUSB0') | Serial port name (e.g. 'COM1', '/dev/ttyUSB0')
@@ -82,10 +79,7 @@ class RtuTransport(BaseTransport):
         self._logger = get_logger("transport.rtu")
 
     def open(self) -> None:
-        """
-        打开串口连接
-
-        Open serial port connection"""
+        """打开串口连接 | Open serial port connection"""
         try:
             self._serial = serial.Serial(
                 port=self.port,
@@ -109,19 +103,13 @@ class RtuTransport(BaseTransport):
             raise ConnectionError(f"串口连接失败 | Serial port connection failed: {e}")
 
     def close(self) -> None:
-        """
-        关闭串口连接
-
-        Close serial port connection"""
+        """关闭串口连接 | Close serial port connection"""
         if self._serial and self._serial.is_open:
             self._serial.close()
             self._logger.info(f"RTU连接已关闭 | RTU connection closed: {self.port}")
 
     def is_open(self) -> bool:
-        """
-        检查串口连接状态
-
-        Check serial port connection status"""
+        """检查串口连接状态 | Check serial port connection status"""
         return self._serial is not None and self._serial.is_open
 
     def send_and_receive(self, slave_id: int, pdu: bytes) -> bytes:

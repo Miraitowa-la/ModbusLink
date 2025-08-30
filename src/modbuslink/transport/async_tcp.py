@@ -31,9 +31,7 @@ class AsyncTcpTransport(AsyncBaseTransport):
 
     def __init__(self, host: str, port: int = 502, timeout: float = 10.0):
         """
-        初始化异步TCP传输层
-
-        Initialize async TCP transport layer
+        初始化异步TCP传输层 | Initialize async TCP transport layer
 
         Args:
             host: 目标主机IP地址或域名 | Target host IP address or domain name
@@ -111,7 +109,6 @@ class AsyncTcpTransport(AsyncBaseTransport):
         异步发送PDU并接收响应
         实现异步TCP协议的完整通信流程：
 
-
         Async send PDU and receive response
         Implements complete async TCP protocol communication flow:
 
@@ -129,9 +126,7 @@ class AsyncTcpTransport(AsyncBaseTransport):
 
         # 1. 生成事务ID并构建MBAP头 | Generate transaction ID and build MBAP header
         current_transaction_id = self._transaction_id
-        self._transaction_id = (
-            self._transaction_id + 1
-        ) % 0x10000  # 16位回绕 | 16-bit wraparound
+        self._transaction_id = (self._transaction_id + 1) % 0x10000  # 16位回绕 | 16-bit wraparound
 
         # MBAP头格式： | MBAP header format:
         # - Transaction ID (2字节): 事务标识符 | Transaction identifier
@@ -190,7 +185,7 @@ class AsyncTcpTransport(AsyncBaseTransport):
 
             # 7. 异步接收响应PDU | Async receive response PDU
             pdu_length = (
-                response_length - 1
+                    response_length - 1
             )  # 减去Unit ID的1字节 | Subtract 1 byte for Unit ID
             if pdu_length <= 0:
                 raise InvalidResponseError(
@@ -205,12 +200,12 @@ class AsyncTcpTransport(AsyncBaseTransport):
 
             # 8. 检查是否为异常响应 | Check if it's an exception response
             if (
-                len(response_pdu) > 0 and response_pdu[0] & 0x80
+                    len(response_pdu) > 0 and response_pdu[0] & 0x80
             ):  # 异常响应 | Exception response
                 from ..common.exceptions import ModbusException
 
                 function_code = (
-                    response_pdu[0] & 0x7F
+                        response_pdu[0] & 0x7F
                 )  # 去除异常标志位 | Remove exception flag bit
                 exception_code = response_pdu[1] if len(response_pdu) > 1 else 0
                 raise ModbusException(exception_code, function_code)
@@ -230,9 +225,7 @@ class AsyncTcpTransport(AsyncBaseTransport):
 
     async def _receive_exact(self, length: int) -> bytes:
         """
-        异步精确接收指定长度的数据
-
-        Async receive exact length of data
+        异步精确接收指定长度的数据 | Async receive exact length of data
 
         Args:
             length: 需要接收的字节数 | Number of bytes to receive

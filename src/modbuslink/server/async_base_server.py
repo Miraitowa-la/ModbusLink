@@ -33,9 +33,7 @@ class AsyncBaseModbusServer(ABC):
                  data_store: Optional[ModbusDataStore] = None,
                  slave_id: int = 1):
         """
-        初始化异步Modbus服务器
-        
-        Initialize Async Modbus Server
+        初始化异步Modbus服务器 | Initialize Async Modbus Server
         
         Args:
             data_store: 数据存储实例，如果为None则创建默认实例 | Data store instance, creates default if None
@@ -89,9 +87,7 @@ class AsyncBaseModbusServer(ABC):
     @abstractmethod
     async def is_running(self) -> bool:
         """
-        检查服务器运行状态
-        
-        Check Server Running Status
+        检查服务器运行状态 | Check Server Running Status
         
         Returns:
             如果服务器正在运行返回True，否则返回False | True if server is running, False otherwise
@@ -146,9 +142,7 @@ class AsyncBaseModbusServer(ABC):
 
     def _create_exception_response(self, function_code: int, exception_code: int) -> bytes:
         """
-        创建异常响应PDU
-        
-        Create Exception Response PDU
+        创建异常响应PDU | Create Exception Response PDU
         
         Args:
             function_code: 原始功能码 | Original function code
@@ -160,9 +154,7 @@ class AsyncBaseModbusServer(ABC):
         return struct.pack(">BB", function_code | 0x80, exception_code)
 
     def _handle_read_coils(self, slave_id: int, data: bytes) -> bytes:
-        """
-        处理读取线圈请求（功能码0x01） | Handle Read Coils Request (Function Code 0x01)
-        """
+        """处理读取线圈请求（功能码0x01） | Handle Read Coils Request (Function Code 0x01)"""
         if len(data) < 4:
             raise ModbusException(0x03, 0x01)  # 非法数据值 | Illegal data value
         
@@ -189,9 +181,7 @@ class AsyncBaseModbusServer(ABC):
         return struct.pack(">BB", 0x01, byte_count) + bytes(response_data)
 
     def _handle_read_discrete_inputs(self, slave_id: int, data: bytes) -> bytes:
-        """
-        处理读取离散输入请求（功能码0x02） | Handle Read Discrete Inputs Request (Function Code 0x02)
-        """
+        """处理读取离散输入请求（功能码0x02） | Handle Read Discrete Inputs Request (Function Code 0x02)"""
         if len(data) < 4:
             raise ModbusException(0x03, 0x02)  # 非法数据值 | Illegal data value
         
@@ -218,9 +208,7 @@ class AsyncBaseModbusServer(ABC):
         return struct.pack(">BB", 0x02, byte_count) + bytes(response_data)
 
     def _handle_read_holding_registers(self, slave_id: int, data: bytes) -> bytes:
-        """
-        处理读取保持寄存器请求（功能码0x03） | Handle Read Holding Registers Request (Function Code 0x03)
-        """
+        """处理读取保持寄存器请求（功能码0x03） | Handle Read Holding Registers Request (Function Code 0x03)"""
         if len(data) < 4:
             raise ModbusException(0x03, 0x03)  # 非法数据值 | Illegal data value
         
@@ -243,9 +231,7 @@ class AsyncBaseModbusServer(ABC):
         return response_data
 
     def _handle_read_input_registers(self, slave_id: int, data: bytes) -> bytes:
-        """
-        处理读取输入寄存器请求（功能码0x04） | Handle Read Input Registers Request (Function Code 0x04)
-        """
+        """处理读取输入寄存器请求（功能码0x04） | Handle Read Input Registers Request (Function Code 0x04)"""
         if len(data) < 4:
             raise ModbusException(0x03, 0x04)  # 非法数据值 | Illegal data value
         
@@ -268,9 +254,7 @@ class AsyncBaseModbusServer(ABC):
         return response_data
 
     def _handle_write_single_coil(self, slave_id: int, data: bytes) -> bytes:
-        """
-        处理写入单个线圈请求（功能码0x05） | Handle Write Single Coil Request (Function Code 0x05)
-        """
+        """处理写入单个线圈请求（功能码0x05） | Handle Write Single Coil Request (Function Code 0x05)"""
         if len(data) < 4:
             raise ModbusException(0x03, 0x05)  # 非法数据值 | Illegal data value
         
@@ -290,9 +274,7 @@ class AsyncBaseModbusServer(ABC):
         return struct.pack(">BHH", 0x05, address, value)
 
     def _handle_write_single_register(self, slave_id: int, data: bytes) -> bytes:
-        """
-        处理写入单个寄存器请求（功能码0x06） | Handle Write Single Register Request (Function Code 0x06)
-        """
+        """处理写入单个寄存器请求（功能码0x06） | Handle Write Single Register Request (Function Code 0x06)"""
         if len(data) < 4:
             raise ModbusException(0x03, 0x06)  # 非法数据值 | Illegal data value
         
@@ -307,9 +289,7 @@ class AsyncBaseModbusServer(ABC):
         return struct.pack(">BHH", 0x06, address, value)
 
     def _handle_write_multiple_coils(self, slave_id: int, data: bytes) -> bytes:
-        """
-        处理写入多个线圈请求（功能码0x0F） | Handle Write Multiple Coils Request (Function Code 0x0F)
-        """
+        """处理写入多个线圈请求（功能码0x0F） | Handle Write Multiple Coils Request (Function Code 0x0F)"""
         if len(data) < 5:
             raise ModbusException(0x03, 0x0F)  # 非法数据值 | Illegal data value
         
@@ -338,9 +318,7 @@ class AsyncBaseModbusServer(ABC):
         return struct.pack(">BHH", 0x0F, start_address, quantity)
 
     def _handle_write_multiple_registers(self, slave_id: int, data: bytes) -> bytes:
-        """
-        处理写入多个寄存器请求（功能码0x10） | Handle Write Multiple Registers Request (Function Code 0x10)
-        """
+        """处理写入多个寄存器请求（功能码0x10） | Handle Write Multiple Registers Request (Function Code 0x10)"""
         if len(data) < 5:
             raise ModbusException(0x03, 0x10)  # 非法数据值 | Illegal data value
         

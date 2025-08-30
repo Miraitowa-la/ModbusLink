@@ -22,15 +22,13 @@ class ModbusDataStore:
     for coils, discrete inputs, holding registers, and input registers.
     """
 
-    def __init__(self, 
+    def __init__(self,
                  coils_size: int = 65536,
                  discrete_inputs_size: int = 65536,
                  holding_registers_size: int = 65536,
                  input_registers_size: int = 65536):
         """
-        初始化数据存储
-        
-        Initialize Data Store
+        初始化数据存储 | Initialize Data Store
         
         Args:
             coils_size: 线圈数量 | Number of coils
@@ -40,24 +38,22 @@ class ModbusDataStore:
         """
         self._logger = get_logger("server.data_store")
         self._lock = threading.RLock()
-        
+
         # 初始化数据存储区域 | Initialize data storage areas
         self._coils: List[bool] = [False] * coils_size
         self._discrete_inputs: List[bool] = [False] * discrete_inputs_size
         self._holding_registers: List[int] = [0] * holding_registers_size
         self._input_registers: List[int] = [0] * input_registers_size
-        
+
         self._logger.info(f"数据存储初始化完成 | Data store initialized: "
-                         f"线圈 | Coils: {coils_size}, "
-                         f"离散输入 | Discrete Inputs: {discrete_inputs_size}, "
-                         f"保持寄存器 | Holding Registers: {holding_registers_size}, "
-                         f"输入寄存器 | Input Registers: {input_registers_size}")
+                          f"线圈 | Coils: {coils_size}, "
+                          f"离散输入 | Discrete Inputs: {discrete_inputs_size}, "
+                          f"保持寄存器 | Holding Registers: {holding_registers_size}, "
+                          f"输入寄存器 | Input Registers: {input_registers_size}")
 
     def read_coils(self, address: int, count: int) -> List[bool]:
         """
-        读取线圈状态
-        
-        Read Coil Status
+        读取线圈状态 | Read Coil Status
         
         Args:
             address: 起始地址 | Starting address
@@ -74,16 +70,14 @@ class ModbusDataStore:
                 raise ValueError(f"线圈地址超出范围 | Coil address out of range: {address}")
             if count <= 0 or address + count > len(self._coils):
                 raise ValueError(f"线圈数量无效 | Invalid coil count: {count}")
-            
+
             result = self._coils[address:address + count]
             self._logger.debug(f"读取线圈 | Read coils: 地址 | Address {address}, 数量 | Count {count}")
             return result
 
     def write_coils(self, address: int, values: List[bool]) -> None:
         """
-        写入线圈状态
-        
-        Write Coil Status
+        写入线圈状态 | Write Coil Status
         
         Args:
             address: 起始地址 | Starting address
@@ -97,17 +91,15 @@ class ModbusDataStore:
                 raise ValueError(f"线圈地址超出范围 | Coil address out of range: {address}")
             if not values or address + len(values) > len(self._coils):
                 raise ValueError(f"线圈数据无效 | Invalid coil data")
-            
+
             for i, value in enumerate(values):
                 self._coils[address + i] = value
-            
+
             self._logger.debug(f"写入线圈 | Write coils: 地址 | Address {address}, 数量 | Count {len(values)}")
 
     def read_discrete_inputs(self, address: int, count: int) -> List[bool]:
         """
-        读取离散输入状态
-        
-        Read Discrete Input Status
+        读取离散输入状态 | Read Discrete Input Status
         
         Args:
             address: 起始地址 | Starting address
@@ -124,7 +116,7 @@ class ModbusDataStore:
                 raise ValueError(f"离散输入地址超出范围 | Discrete input address out of range: {address}")
             if count <= 0 or address + count > len(self._discrete_inputs):
                 raise ValueError(f"离散输入数量无效 | Invalid discrete input count: {count}")
-            
+
             result = self._discrete_inputs[address:address + count]
             self._logger.debug(f"读取离散输入 | Read discrete inputs: 地址 | Address {address}, 数量 | Count {count}")
             return result
@@ -145,17 +137,16 @@ class ModbusDataStore:
                 raise ValueError(f"离散输入地址超出范围 | Discrete input address out of range: {address}")
             if not values or address + len(values) > len(self._discrete_inputs):
                 raise ValueError(f"离散输入数据无效 | Invalid discrete input data")
-            
+
             for i, value in enumerate(values):
                 self._discrete_inputs[address + i] = value
-            
-            self._logger.debug(f"写入离散输入 | Write discrete inputs: 地址 | Address {address}, 数量 | Count {len(values)}")
+
+            self._logger.debug(
+                f"写入离散输入 | Write discrete inputs: 地址 | Address {address}, 数量 | Count {len(values)}")
 
     def read_holding_registers(self, address: int, count: int) -> List[int]:
         """
-        读取保持寄存器
-        
-        Read Holding Registers
+        读取保持寄存器 | Read Holding Registers
         
         Args:
             address: 起始地址 | Starting address
@@ -172,16 +163,15 @@ class ModbusDataStore:
                 raise ValueError(f"保持寄存器地址超出范围 | Holding register address out of range: {address}")
             if count <= 0 or address + count > len(self._holding_registers):
                 raise ValueError(f"保持寄存器数量无效 | Invalid holding register count: {count}")
-            
+
             result = self._holding_registers[address:address + count]
-            self._logger.debug(f"读取保持寄存器 | Read holding registers: 地址 | Address {address}, 数量 | Count {count}")
+            self._logger.debug(
+                f"读取保持寄存器 | Read holding registers: 地址 | Address {address}, 数量 | Count {count}")
             return result
 
     def write_holding_registers(self, address: int, values: List[int]) -> None:
         """
-        写入保持寄存器
-        
-        Write Holding Registers
+        写入保持寄存器 | Write Holding Registers
         
         Args:
             address: 起始地址 | Starting address
@@ -195,19 +185,18 @@ class ModbusDataStore:
                 raise ValueError(f"保持寄存器地址超出范围 | Holding register address out of range: {address}")
             if not values or address + len(values) > len(self._holding_registers):
                 raise ValueError(f"保持寄存器数据无效 | Invalid holding register data")
-            
+
             for i, value in enumerate(values):
                 if not (0 <= value <= 65535):
                     raise ValueError(f"寄存器值超出范围 | Register value out of range: {value}")
                 self._holding_registers[address + i] = value
-            
-            self._logger.debug(f"写入保持寄存器 | Write holding registers: 地址 | Address {address}, 数量 | Count {len(values)}")
+
+            self._logger.debug(
+                f"写入保持寄存器 | Write holding registers: 地址 | Address {address}, 数量 | Count {len(values)}")
 
     def read_input_registers(self, address: int, count: int) -> List[int]:
         """
-        读取输入寄存器
-        
-        Read Input Registers
+        读取输入寄存器 | Read Input Registers
         
         Args:
             address: 起始地址 | Starting address
@@ -224,7 +213,7 @@ class ModbusDataStore:
                 raise ValueError(f"输入寄存器地址超出范围 | Input register address out of range: {address}")
             if count <= 0 or address + count > len(self._input_registers):
                 raise ValueError(f"输入寄存器数量无效 | Invalid input register count: {count}")
-            
+
             result = self._input_registers[address:address + count]
             self._logger.debug(f"读取输入寄存器 | Read input registers: 地址 | Address {address}, 数量 | Count {count}")
             return result
@@ -245,13 +234,14 @@ class ModbusDataStore:
                 raise ValueError(f"输入寄存器地址超出范围 | Input register address out of range: {address}")
             if not values or address + len(values) > len(self._input_registers):
                 raise ValueError(f"输入寄存器数据无效 | Invalid input register data")
-            
+
             for i, value in enumerate(values):
                 if not (0 <= value <= 65535):
                     raise ValueError(f"寄存器值超出范围 | Register value out of range: {value}")
                 self._input_registers[address + i] = value
-            
-            self._logger.debug(f"写入输入寄存器 | Write input registers: 地址 | Address {address}, 数量 | Count {len(values)}")
+
+            self._logger.debug(
+                f"写入输入寄存器 | Write input registers: 地址 | Address {address}, 数量 | Count {len(values)}")
 
     def get_coils_size(self) -> int:
         """获取线圈总数 | Get total number of coils"""
@@ -284,5 +274,5 @@ class ModbusDataStore:
                 self._holding_registers[i] = 0
             for i in range(len(self._input_registers)):
                 self._input_registers[i] = 0
-            
+
             self._logger.info("数据存储已重置 | Data store reset")

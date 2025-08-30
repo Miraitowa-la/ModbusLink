@@ -1,4 +1,5 @@
-"""ModbusLink 异步RTU传输层实现
+"""
+ModbusLink 异步RTU传输层实现
 实现基于asyncio的异步Modbus RTU协议传输，包括CRC16校验。
 
 Async RTU Transport Layer Implementation
@@ -36,18 +37,16 @@ class AsyncRtuTransport(AsyncBaseTransport):
     """
 
     def __init__(
-        self,
-        port: str,
-        baudrate: int = 9600,
-        bytesize: int = 8,
-        parity: str = "N",
-        stopbits: float = 1,
-        timeout: float = 1.0,
+            self,
+            port: str,
+            baudrate: int = 9600,
+            bytesize: int = 8,
+            parity: str = "N",
+            stopbits: float = 1,
+            timeout: float = 1.0,
     ):
         """
-        初始化异步RTU传输层
-
-        Initialize async RTU transport layer
+        初始化异步RTU传输层 | Initialize async RTU transport layer
 
         Args:
             port: 串口名称 (如 'COM1', '/dev/ttyUSB0') | Serial port name (e.g. 'COM1', '/dev/ttyUSB0')
@@ -82,11 +81,7 @@ class AsyncRtuTransport(AsyncBaseTransport):
         self._logger = get_logger("transport.async_rtu")
 
     async def open(self) -> None:
-        """
-        异步打开串口连接
-
-        Async open serial port connection
-        """
+        """异步打开串口连接 | Async open serial port connection"""
         try:
             self._reader, self._writer = await serial_asyncio.open_serial_connection(
                 url=self.port,
@@ -104,11 +99,7 @@ class AsyncRtuTransport(AsyncBaseTransport):
             raise ConnectionError(f"异步串口连接失败 | Async serial port connection failed: {e}")
 
     async def close(self) -> None:
-        """
-        异步关闭串口连接
-
-        Async close serial port connection
-        """
+        """异步关闭串口连接 | Async close serial port connection"""
         if self._writer:
             try:
                 self._writer.close()
@@ -123,11 +114,7 @@ class AsyncRtuTransport(AsyncBaseTransport):
                 self._writer = None
 
     async def is_open(self) -> bool:
-        """
-        异步检查串口连接状态
-
-        Async check serial port connection status
-        """
+        """异步检查串口连接状态 | Async check serial port connection status"""
         return self._reader is not None and self._writer is not None and not self._writer.is_closing()
 
     async def send_and_receive(self, slave_id: int, pdu: bytes) -> bytes:
@@ -162,7 +149,7 @@ class AsyncRtuTransport(AsyncBaseTransport):
             # 2. 清空接收缓冲区并发送请求 | Clear receive buffer and send request
             if self._reader.at_eof():
                 raise ConnectionError("异步串口连接已断开 | Async serial connection lost")
-            
+
             # 清空可能存在的旧数据 | Clear any existing old data
             while True:
                 try:
@@ -194,9 +181,7 @@ class AsyncRtuTransport(AsyncBaseTransport):
 
     async def _receive_response(self, expected_slave_id: int, function_code: int) -> bytes:
         """
-        异步接收并验证响应帧
-
-        Async receive and validate response frame
+        异步接收并验证响应帧 | Async receive and validate response frame
 
         Args:
             expected_slave_id: 期望的从站地址 | Expected slave address
@@ -275,7 +260,7 @@ class AsyncRtuTransport(AsyncBaseTransport):
                 if len(data_length_bytes) != 1:
                     raise InvalidResponseError("未接收到数据长度 | No data length received")
                 data_length = data_length_bytes[0]
-                
+
             elif function_code in [0x03, 0x04]:  # 读保持寄存器/输入寄存器 | Read holding/input registers
                 data_length_bytes = await asyncio.wait_for(
                     self._reader.read(1), timeout=self.timeout
@@ -283,15 +268,15 @@ class AsyncRtuTransport(AsyncBaseTransport):
                 if len(data_length_bytes) != 1:
                     raise InvalidResponseError("未接收到数据长度 | No data length received")
                 data_length = data_length_bytes[0]
-                
+
             elif function_code in [0x05, 0x06]:  # 写单个线圈/寄存器 | Write single coil/register
                 data_length = 4  # 地址(2) + 值(2) | Address(2) + Value(2)
                 data_length_bytes = b''
-                
+
             elif function_code in [0x0F, 0x10]:  # 写多个线圈/寄存器 | Write multiple coils/registers
                 data_length = 4  # 地址(2) + 数量(2) | Address(2) + Quantity(2)
                 data_length_bytes = b''
-                
+
             else:
                 raise InvalidResponseError(f"不支持的功能码 | Unsupported function code: {function_code}")
 
@@ -327,11 +312,7 @@ class AsyncRtuTransport(AsyncBaseTransport):
             raise TimeoutError(f"异步接收响应超时 | Async receive response timeout: {self.timeout}s")
 
     def __repr__(self) -> str:
-        """
-        返回传输层的字符串表示
-
-        Return string representation of transport layer
-        """
+        """返回传输层的字符串表示 | Return string representation of transport layer"""
         status = "已连接 | Connected" if asyncio.run(self.is_open()) else "未连接 | Disconnected"
         return (
             f"AsyncRtuTransport(port='{self.port}', baudrate={self.baudrate}, "
