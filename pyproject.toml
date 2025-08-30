@@ -9,7 +9,7 @@ description = "现代化、功能强大、开发者友好且高度可扩展的Py
 authors = [
     { name = "Miraitowa-la", email = "2056978412@qq.com" }
 ]
-dynamic = ["readme"]
+readme = "README.md"
 requires-python = ">=3.9"
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -47,9 +47,6 @@ dev = [
 Homepage = "https://github.com/Miraitowa-la/ModbusLink"
 Repository = "https://github.com/Miraitowa-la/ModbusLink"
 Issues = "https://github.com/Miraitowa-la/ModbusLink/issues"
-
-[tool.setuptools.dynamic]
-readme = {file = ["README.md", "README-zh_CN.md"]}
 
 [tool.setuptools.packages.find]
 where = ["src"]
