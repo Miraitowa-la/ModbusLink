@@ -108,7 +108,8 @@ transport = RtuTransport(
     baudrate=9600,
     parity='N',         # None, Even, Odd
     stopbits=1,
-    timeout=2.0
+    timeout=2.0,
+    rs485_mode=True     # Enable software-controlled RS485 (RTS for direction)
 )
 client = ModbusClient(transport)
 
@@ -676,13 +677,40 @@ ModbusLink's **layered design** supports all major Modbus variants:
 
 #### Synchronous Transports
 - 🌐 **TcpTransport**: Ethernet Modbus TCP/IP (IEEE 802.3)
-- 📞 **RtuTransport**: Serial Modbus RTU (RS232/RS485)
+- 📞 **RtuTransport**: Serial Modbus RTU (RS232/RS485) with RS485 mode support
 - 📜 **AsciiTransport**: Serial Modbus ASCII (7-bit text)
 
 #### Asynchronous Transports  
 - ⚡ **AsyncTcpTransport**: High-performance TCP (1000+ concurrent connections)
-- ⚡ **AsyncRtuTransport**: Non-blocking serial RTU
+- ⚡ **AsyncRtuTransport**: Non-blocking serial RTU with RS485 mode support
 - ⚡ **AsyncAsciiTransport**: Non-blocking serial ASCII
+
+#### RS485 Mode Support
+
+For adapters without automatic hardware flow control, ModbusLink supports **software-controlled RS485 mode** using RTS/DTR signals:
+
+```python
+from modbuslink import RtuTransport, RS485Settings
+
+# Basic RS485 mode (RTS high for TX, low for RX)
+transport = RtuTransport('/dev/ttyUSB0', baudrate=9600, rs485_mode=True)
+
+# Custom RS485 settings for specific hardware
+rs485_settings = RS485Settings(
+    rts_level_for_tx=True,   # RTS high during transmission
+    rts_level_for_rx=False,  # RTS low during reception
+    delay_before_tx=0.001,   # 1ms delay before TX (for transceiver settling)
+    delay_before_rx=0.001,   # 1ms delay before RX
+)
+transport = RtuTransport('/dev/ttyUSB0', rs485_mode=rs485_settings)
+```
+
+| RS485Settings Parameter | Type | Default | Description |
+|------------------------|------|---------|-------------|
+| `rts_level_for_tx` | bool | True | RTS pin level during transmission |
+| `rts_level_for_rx` | bool | False | RTS pin level during reception |
+| `delay_before_tx` | float | 0.0 | Delay in seconds before starting TX |
+| `delay_before_rx` | float | 0.0 | Delay in seconds before starting RX |
 
 ### Key Performance Metrics
 

@@ -108,7 +108,8 @@ transport = RtuTransport(
     baudrate=9600,
     parity='N',         # 无校验、偶校验、奇校验
     stopbits=1,
-    timeout=2.0
+    timeout=2.0,
+    rs485_mode=True     # 启用软件控制的RS485模式（RTS控制方向）
 )
 client = ModbusClient(transport)
 
@@ -676,13 +677,40 @@ ModbusLink的**分层设计**支持所有主流Modbus变种：
 
 #### 同步传输
 - 🌐 **TcpTransport**: 以太网Modbus TCP/IP (IEEE 802.3)
-- 📞 **RtuTransport**: 串口Modbus RTU (RS232/RS485)
+- 📞 **RtuTransport**: 串口Modbus RTU (RS232/RS485)，支持RS485模式
 - 📜 **AsciiTransport**: 串口Modbus ASCII (7位文本)
 
 #### 异步传输
 - ⚡ **AsyncTcpTransport**: 高性能TCP（1000+并发连接）
-- ⚡ **AsyncRtuTransport**: 非阻塞串口RTU
+- ⚡ **AsyncRtuTransport**: 非阻塞串口RTU，支持RS485模式
 - ⚡ **AsyncAsciiTransport**: 非阻塞串口ASCII
+
+#### RS485模式支持
+
+对于不支持自动硬件流控的适配器，ModbusLink支持使用RTS/DTR信号进行**软件控制的RS485模式**：
+
+```python
+from modbuslink import RtuTransport, RS485Settings
+
+# 基本RS485模式（RTS高电平发送，低电平接收）
+transport = RtuTransport('/dev/ttyUSB0', baudrate=9600, rs485_mode=True)
+
+# 针对特定硬件的自定义RS485设置
+rs485_settings = RS485Settings(
+    rts_level_for_tx=True,   # 发送时RTS高电平
+    rts_level_for_rx=False,  # 接收时RTS低电平
+    delay_before_tx=0.001,   # 发送前延迟1ms（用于收发器稳定）
+    delay_before_rx=0.001,   # 接收前延迟1ms
+)
+transport = RtuTransport('/dev/ttyUSB0', rs485_mode=rs485_settings)
+```
+
+| RS485Settings参数 | 类型 | 默认值 | 说明 |
+|------------------------|------|---------|-------------|
+| `rts_level_for_tx` | bool | True | 发送期间RTS引脚电平 |
+| `rts_level_for_rx` | bool | False | 接收期间RTS引脚电平 |
+| `delay_before_tx` | float | 0.0 | 开始发送前的延迟（秒） |
+| `delay_before_rx` | float | 0.0 | 开始接收前的延迟（秒） |
 
 ### 关键性能指标
 

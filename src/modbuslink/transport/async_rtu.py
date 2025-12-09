@@ -7,8 +7,10 @@ Implements async Modbus RTU protocol transport based on asyncio, including CRC16
 """
 
 import asyncio
-from typing import Optional
+from typing import Optional, Union
 
+import serial
+import serial.rs485
 import serial_asyncio
 
 from .async_base import AsyncBaseTransport
@@ -44,6 +46,7 @@ class AsyncRtuTransport(AsyncBaseTransport):
             parity: str = "N",
             stopbits: float = 1,
             timeout: float = 1.0,
+            rs485_mode: Optional[Union[bool, serial.rs485.RS485Settings]] = None,
     ):
         """
         初始化异步RTU传输层 | Initialize async RTU transport layer
@@ -55,10 +58,32 @@ class AsyncRtuTransport(AsyncBaseTransport):
             parity: 校验位，默认无校验 | Parity, default no parity
             stopbits: 停止位，默认1位 | Stop bits, default 1 bit
             timeout: 超时时间（秒），默认1.0秒 | Timeout in seconds, default 1.0 seconds
+            rs485_mode: RS485模式配置 | RS485 mode configuration
+                - None 或 False: 禁用RS485模式 | Disable RS485 mode
+                - True: 启用RS485模式（使用默认设置，RTS高电平发送，低电平接收）
+                        | Enable RS485 mode (default settings, RTS high for TX, low for RX)
+                - serial.rs485.RS485Settings: 使用自定义RS485设置
+                        | Use custom RS485 settings
 
         Raises:
             ValueError: 当参数无效时 | When parameters are invalid
             TypeError: 当参数类型错误时 | When parameter types are incorrect
+        
+        Example:
+            基本RS485模式 | Basic RS485 mode::
+            
+                transport = AsyncRtuTransport('/dev/ttyUSB0', rs485_mode=True)
+            
+            自定义RS485设置 | Custom RS485 settings::
+            
+                import serial.rs485
+                rs485_settings = serial.rs485.RS485Settings(
+                    rts_level_for_tx=True,   # RTS高电平发送 | RTS high during TX
+                    rts_level_for_rx=False,  # RTS低电平接收 | RTS low during RX
+                    delay_before_tx=0.0,     # 发送前延迟（秒） | Delay before TX (seconds)
+                    delay_before_rx=0.0,     # 接收前延迟（秒） | Delay before RX (seconds)
+                )
+                transport = AsyncRtuTransport('/dev/ttyUSB0', rs485_mode=rs485_settings)
         """
         if not port or not isinstance(port, str):
             raise ValueError(
@@ -75,9 +100,11 @@ class AsyncRtuTransport(AsyncBaseTransport):
         self.parity = parity
         self.stopbits = stopbits
         self.timeout = timeout
+        self.rs485_mode = rs485_mode
 
         self._reader: Optional[asyncio.StreamReader] = None
         self._writer: Optional[asyncio.StreamWriter] = None
+        self._serial: Optional[serial.Serial] = None  # 用于RS485模式配置 | For RS485 mode configuration
         self._logger = get_logger("transport.async_rtu")
 
     async def open(self) -> None:
@@ -90,6 +117,31 @@ class AsyncRtuTransport(AsyncBaseTransport):
                 parity=self.parity,
                 stopbits=self.stopbits,
             )
+
+            # 配置RS485模式 | Configure RS485 mode
+            if self.rs485_mode:
+                # 获取底层串口对象 | Get underlying serial object
+                transport = self._writer.transport
+                if hasattr(transport, 'serial'):
+                    self._serial = transport.serial
+                    if isinstance(self.rs485_mode, serial.rs485.RS485Settings):
+                        self._serial.rs485_mode = self.rs485_mode
+                    else:
+                        # 使用默认RS485设置 | Use default RS485 settings
+                        self._serial.rs485_mode = serial.rs485.RS485Settings(
+                            rts_level_for_tx=True,
+                            rts_level_for_rx=False,
+                            delay_before_tx=0.0,
+                            delay_before_rx=0.0,
+                        )
+                    self._logger.info(
+                        f"RS485模式已启用 | RS485 mode enabled: {self._serial.rs485_mode}"
+                    )
+                else:
+                    self._logger.warning(
+                        "无法配置RS485模式：无法访问底层串口对象 | "
+                        "Cannot configure RS485 mode: unable to access underlying serial object"
+                    )
 
             self._logger.info(
                 f"异步RTU连接已建立 | Async RTU connection established: {self.port} @ {self.baudrate}bps"
@@ -313,8 +365,8 @@ class AsyncRtuTransport(AsyncBaseTransport):
 
     def __repr__(self) -> str:
         """返回传输层的字符串表示 | Return string representation of transport layer"""
-        status = "已连接 | Connected" if asyncio.run(self.is_open()) else "未连接 | Disconnected"
+        rs485_info = ", rs485_mode=True" if self.rs485_mode else ""
         return (
             f"AsyncRtuTransport(port='{self.port}', baudrate={self.baudrate}, "
-            f"timeout={self.timeout}, status='{status}')"
+            f"timeout={self.timeout}{rs485_info})"
         )

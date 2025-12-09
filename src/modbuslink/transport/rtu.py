@@ -6,9 +6,10 @@ RTU Transport Layer Implementation
 Implements Modbus RTU protocol transport based on serial port, including CRC16 validation.
 """
 
-from typing import Optional
+from typing import Optional, Union
 
 import serial
+import serial.rs485
 
 from .base import BaseTransport
 from ..common.exceptions import (
@@ -43,6 +44,7 @@ class RtuTransport(BaseTransport):
             parity: str = serial.PARITY_NONE,
             stopbits: float = serial.STOPBITS_ONE,
             timeout: float = 1.0,
+            rs485_mode: Optional[Union[bool, serial.rs485.RS485Settings]] = None,
     ):
         """
         初始化RTU传输层 | Initialize RTU transport layer
@@ -54,10 +56,32 @@ class RtuTransport(BaseTransport):
             parity: 校验位，默认无校验 | Parity, default no parity
             stopbits: 停止位，默认1位 | Stop bits, default 1 bit
             timeout: 超时时间（秒），默认1.0秒 | Timeout in seconds, default 1.0 seconds
+            rs485_mode: RS485模式配置 | RS485 mode configuration
+                - None 或 False: 禁用RS485模式 | Disable RS485 mode
+                - True: 启用RS485模式（使用默认设置，RTS高电平发送，低电平接收）
+                        | Enable RS485 mode (default settings, RTS high for TX, low for RX)
+                - serial.rs485.RS485Settings: 使用自定义RS485设置
+                        | Use custom RS485 settings
 
         Raises:
             ValueError: 当参数无效时 | When parameters are invalid
             TypeError: 当参数类型错误时 | When parameter types are incorrect
+        
+        Example:
+            基本RS485模式 | Basic RS485 mode::
+            
+                transport = RtuTransport('/dev/ttyUSB0', rs485_mode=True)
+            
+            自定义RS485设置 | Custom RS485 settings::
+            
+                import serial.rs485
+                rs485_settings = serial.rs485.RS485Settings(
+                    rts_level_for_tx=True,   # RTS高电平发送 | RTS high during TX
+                    rts_level_for_rx=False,  # RTS低电平接收 | RTS low during RX
+                    delay_before_tx=0.0,     # 发送前延迟（秒） | Delay before TX (seconds)
+                    delay_before_rx=0.0,     # 接收前延迟（秒） | Delay before RX (seconds)
+                )
+                transport = RtuTransport('/dev/ttyUSB0', rs485_mode=rs485_settings)
         """
         if not port or not isinstance(port, str):
             raise ValueError(
@@ -74,6 +98,7 @@ class RtuTransport(BaseTransport):
         self.parity = parity
         self.stopbits = stopbits
         self.timeout = timeout
+        self.rs485_mode = rs485_mode
 
         self._serial: Optional[serial.Serial] = None
         self._logger = get_logger("transport.rtu")
@@ -93,6 +118,22 @@ class RtuTransport(BaseTransport):
             if not self._serial.is_open:
                 raise ConnectionError(
                     f"无法打开串口 | Unable to open serial port {self.port}"
+                )
+
+            # 配置RS485模式 | Configure RS485 mode
+            if self.rs485_mode:
+                if isinstance(self.rs485_mode, serial.rs485.RS485Settings):
+                    self._serial.rs485_mode = self.rs485_mode
+                else:
+                    # 使用默认RS485设置 | Use default RS485 settings
+                    self._serial.rs485_mode = serial.rs485.RS485Settings(
+                        rts_level_for_tx=True,
+                        rts_level_for_rx=False,
+                        delay_before_tx=0.0,
+                        delay_before_rx=0.0,
+                    )
+                self._logger.info(
+                    f"RS485模式已启用 | RS485 mode enabled: {self._serial.rs485_mode}"
                 )
 
             self._logger.info(
@@ -310,4 +351,5 @@ class RtuTransport(BaseTransport):
     def __repr__(self) -> str:
         """字符串表示 | String representation"""
         status = "已连接 | Connected" if self.is_open() else "未连接 | Disconnected"
-        return f"RtuTransport({self.port}@{self.baudrate}bps, {status})"
+        rs485_info = ", RS485" if self.rs485_mode else ""
+        return f"RtuTransport({self.port}@{self.baudrate}bps{rs485_info}, {status})"

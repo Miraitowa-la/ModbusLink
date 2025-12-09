@@ -4,9 +4,11 @@ ModbusLink - 现代化、功能强大、开发者友好且高度可扩展的Pyth
 Modern, powerful, developer-friendly and highly scalable Python Modbus library
 """
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 __author__ = "Miraitowa-la"
 __email__ = "2056978412@qq.com"
+
+import serial.rs485
 
 # 导入主要的公共接口 | Import main public interfaces
 from .client.sync_client import ModbusClient
@@ -30,6 +32,8 @@ from .common.exceptions import (
     ModbusException,
 )
 
+RS485Settings = serial.rs485.RS485Settings  # Re-export for convenience
+
 __all__ = [
     "ModbusClient",
     "AsyncModbusClient",
@@ -39,6 +43,7 @@ __all__ = [
     "AsyncRtuTransport",
     "AsyncAsciiTransport",
     "AsyncTcpTransport",
+    "RS485Settings",
     "ModbusDataStore",
     "AsyncTcpModbusServer",
     "AsyncRtuModbusServer",
