@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: modbuslink
-Version: 1.3.0
+Version: 1.3.1
 Summary: 现代化、功能强大、开发者友好且高度可扩展的Python Modbus库 | Modern, powerful, developer-friendly and highly scalable Python Modbus library
 Author-email: Miraitowa-la <2056978412@qq.com>
 License: MIT
@@ -636,15 +636,15 @@ else:
 **Debug communication issues** with protocol-level monitoring:
 
 ```python
-from modbuslink.utils import ModbusLogger
+from modbuslink.utils import ModbusLogger, Language
 import logging
 
-# Setup comprehensive logging
+# Setup comprehensive logging with English output
 ModbusLogger.setup_logging(
     level=logging.DEBUG,
     enable_debug=True,
     log_file='modbus_debug.log',
-    console_output=True
+    language=Language.EN  # Use Language.CN for Chinese (default)
 )
 
 # Enable packet-level debugging

@@ -70,7 +70,8 @@ class AsyncTcpTransport(AsyncBaseTransport):
             )
 
             self._logger.info(
-                f"异步TCP连接已建立 | Async TCP connection established: {self.host}:{self.port}"
+                cn=f"异步TCP连接已建立: {self.host}:{self.port}",
+                en=f"Async TCP connection established: {self.host}:{self.port}"
             )
 
         except asyncio.TimeoutError:
@@ -87,11 +88,13 @@ class AsyncTcpTransport(AsyncBaseTransport):
                 self._writer.close()
                 await self._writer.wait_closed()
                 self._logger.info(
-                    f"异步TCP连接已关闭 | Async TCP connection closed: {self.host}:{self.port}"
+                    cn=f"异步TCP连接已关闭: {self.host}:{self.port}",
+                    en=f"Async TCP connection closed: {self.host}:{self.port}"
                 )
             except Exception as e:
                 self._logger.debug(
-                    f"关闭异步连接时出现错误（可忽略）| Error during async connection close (ignorable): {e}"
+                    cn=f"关闭异步连接时出现错误（可忽略）: {e}",
+                    en=f"Error during async connection close (ignorable): {e}"
                 )
             finally:
                 self._reader = None
@@ -146,7 +149,8 @@ class AsyncTcpTransport(AsyncBaseTransport):
         request_frame = mbap_header + pdu
 
         self._logger.debug(
-            f"异步TCP发送 | Async TCP Send: {request_frame.hex(' ').upper()}"
+            cn=f"异步TCP发送: {request_frame.hex(' ').upper()}",
+            en=f"Async TCP Send: {request_frame.hex(' ').upper()}"
         )
 
         try:
@@ -195,7 +199,8 @@ class AsyncTcpTransport(AsyncBaseTransport):
             response_pdu = await self._receive_exact(pdu_length)
 
             self._logger.debug(
-                f"异步TCP接收 | Async TCP Receive: {(response_mbap + response_pdu).hex(' ').upper()}"
+                cn=f"异步TCP接收: {(response_mbap + response_pdu).hex(' ').upper()}",
+                en=f"Async TCP Receive: {(response_mbap + response_pdu).hex(' ').upper()}"
             )
 
             # 8. 检查是否为异常响应 | Check if it's an exception response

@@ -68,7 +68,9 @@ class AsyncRtuModbusServer(AsyncBaseModbusServer):
         self._frame_timeout = max(self._char_time * 3.5, 0.001)  # 最小1ms | Minimum 1ms
 
         self._logger.info(
-            f"RTU服务器初始化 | RTU server initialized: {port}@{baudrate}, 帧超时 | Frame timeout: {self._frame_timeout:.3f}s")
+            cn=f"RTU服务器初始化: {port}@{baudrate}, 帧超时: {self._frame_timeout:.3f}s",
+            en=f"RTU server initialized: {port}@{baudrate}, Frame timeout: {self._frame_timeout:.3f}s"
+        )
 
     async def start(self) -> None:
         """
@@ -78,7 +80,10 @@ class AsyncRtuModbusServer(AsyncBaseModbusServer):
             ConnectionError: 当无法打开串口时 | When serial port cannot be opened
         """
         if self._running:
-            self._logger.warning("服务器已在运行 | Server is already running")
+            self._logger.warning(
+                cn="服务器已在运行",
+                en="Server is already running"
+            )
             return
 
         try:
@@ -96,16 +101,25 @@ class AsyncRtuModbusServer(AsyncBaseModbusServer):
             # 启动服务器任务 | Start server task
             self._server_task = asyncio.create_task(self._server_loop())
 
-            self._logger.info(f"RTU服务器启动成功 | RTU server started successfully: {self.port}")
+            self._logger.info(
+                cn=f"RTU服务器启动成功: {self.port}",
+                en=f"RTU server started successfully: {self.port}"
+            )
 
         except Exception as e:
-            self._logger.error(f"启动RTU服务器失败 | Failed to start RTU server: {e}")
+            self._logger.error(
+                cn=f"启动RTU服务器失败: {e}",
+                en=f"Failed to start RTU server: {e}"
+            )
             raise ConnectionError(f"无法打开串口 | Cannot open serial port: {e}")
 
     async def stop(self) -> None:
         """停止异步RTU服务器 | Stop Async RTU Server"""
         if not self._running:
-            self._logger.warning("服务器未运行 | Server is not running")
+            self._logger.warning(
+                cn="服务器未运行",
+                en="Server is not running"
+            )
             return
 
         self._running = False
@@ -127,7 +141,10 @@ class AsyncRtuModbusServer(AsyncBaseModbusServer):
 
         self._reader = None
 
-        self._logger.info("RTU服务器已停止 | RTU server stopped")
+        self._logger.info(
+            cn="RTU服务器已停止",
+            en="RTU server stopped"
+        )
 
     async def is_running(self) -> bool:
         """
@@ -140,7 +157,10 @@ class AsyncRtuModbusServer(AsyncBaseModbusServer):
 
     async def _server_loop(self) -> None:
         """服务器主循环 | Server Main Loop"""
-        self._logger.info("RTU服务器主循环启动 | RTU server main loop started")
+        self._logger.info(
+            cn="RTU服务器主循环启动",
+            en="RTU server main loop started"
+        )
 
         buffer = bytearray()
 
@@ -186,17 +206,29 @@ class AsyncRtuModbusServer(AsyncBaseModbusServer):
                     continue
 
                 except Exception as e:
-                    self._logger.error(f"服务器循环异常 | Server loop exception: {e}")
+                    self._logger.error(
+                        cn=f"服务器循环异常: {e}",
+                        en=f"Server loop exception: {e}"
+                    )
                     if buffer:
                         buffer.clear()
                     await asyncio.sleep(0.1)  # 短暂延迟后继续 | Brief delay before continuing
 
         except asyncio.CancelledError:
-            self._logger.info("RTU服务器主循环被取消 | RTU server main loop cancelled")
+            self._logger.info(
+                cn="RTU服务器主循环被取消",
+                en="RTU server main loop cancelled"
+            )
         except Exception as e:
-            self._logger.error(f"RTU服务器主循环异常 | RTU server main loop exception: {e}")
+            self._logger.error(
+                cn=f"RTU服务器主循环异常: {e}",
+                en=f"RTU server main loop exception: {e}"
+            )
         finally:
-            self._logger.info("RTU服务器主循环结束 | RTU server main loop ended")
+            self._logger.info(
+                cn="RTU服务器主循环结束d",
+                en="RTU server main loop ended"
+            )
 
     async def _process_frame(self, frame: bytes) -> None:
         """
@@ -207,7 +239,10 @@ class AsyncRtuModbusServer(AsyncBaseModbusServer):
         """
         try:
             if len(frame) < 4:
-                self._logger.debug(f"帧长度不足 | Frame length insufficient: {len(frame)}")
+                self._logger.debug(
+                    cn=f"帧长度不足: {len(frame)}",
+                    en=f"Frame length insufficient: {len(frame)}"
+                )
                 return
 
             # 提取地址、PDU和CRC | Extract address, PDU and CRC
@@ -219,11 +254,15 @@ class AsyncRtuModbusServer(AsyncBaseModbusServer):
             calculated_crc = CRC16Modbus.crc16_to_int(frame[:-2])
             if received_crc != calculated_crc:
                 self._logger.warning(
-                    f"CRC校验失败 | CRC verification failed: 接收 | Received 0x{received_crc:04X}, 计算 | Calculated 0x{calculated_crc:04X}")
+                    cn=f"CRC校验失败: 接收 0x{received_crc:04X}, 计算 0x{calculated_crc:04X}",
+                    en=f"CRC verification failed: Received 0x{received_crc:04X}, Calculated 0x{calculated_crc:04X}"
+                )
                 return
 
             self._logger.debug(
-                f"接收到RTU帧 | Received RTU frame: 从站 | Slave {slave_id}, PDU长度 | PDU Length {len(pdu)}")
+                cn=f"接收到RTU帧: 从站 {slave_id}, PDU长度 {len(pdu)}",
+                en=f"Received RTU frame: Slave {slave_id}, PDU Length {len(pdu)}"
+            )
 
             # 处理请求 | Process request
             response_pdu = self.process_request(slave_id, pdu)
@@ -240,10 +279,15 @@ class AsyncRtuModbusServer(AsyncBaseModbusServer):
                     await self._writer.drain()
 
                     self._logger.debug(
-                        f"发送RTU响应 | Sent RTU response: 从站 | Slave {slave_id}, 帧长度 | Frame Length {len(response_frame)}")
+                        cn=f"发送RTU响应: 从站 {slave_id}, 帧长度 {len(response_frame)}",
+                        en=f"Sent RTU response: Slave {slave_id}, Frame Length {len(response_frame)}"
+                    )
 
         except Exception as e:
-            self._logger.error(f"处理RTU帧时出错 | Error processing RTU frame: {e}")
+            self._logger.error(
+                cn=f"处理RTU帧时出错: {e}",
+                en=f"Error processing RTU frame: {e}"
+            )
 
     async def serve_forever(self) -> None:
         """持续运行服务器直到被停止 | Run Server Forever Until Stopped"""
@@ -254,9 +298,15 @@ class AsyncRtuModbusServer(AsyncBaseModbusServer):
             try:
                 await self._server_task
             except asyncio.CancelledError:
-                self._logger.info("服务器被取消 | Server cancelled")
+                self._logger.info(
+                    cn="服务器被取消",
+                    en="Server cancelled"
+                )
             except Exception as e:
-                self._logger.error(f"服务器运行异常 | Server running exception: {e}")
+                self._logger.error(
+                    cn=f"服务器运行异常: {e}",
+                    en=f"Server running exception: {e}"
+                )
                 raise
         else:
             raise ConnectionError("服务器未启动 | Server not started")

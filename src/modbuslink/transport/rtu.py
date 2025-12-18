@@ -133,11 +133,13 @@ class RtuTransport(BaseTransport):
                         delay_before_rx=0.0,
                     )
                 self._logger.info(
-                    f"RS485模式已启用 | RS485 mode enabled: {self._serial.rs485_mode}"
+                    cn=f"RS485模式已启用: {self._serial.rs485_mode}",
+                    en=f"RS485 mode enabled: {self._serial.rs485_mode}"
                 )
 
             self._logger.info(
-                f"RTU连接已建立 | RTU connection established: {self.port} @ {self.baudrate}bps"
+                cn=f"RTU连接已建立: {self.port} @ {self.baudrate}bps",
+                en=f"RTU connection established: {self.port} @ {self.baudrate}bps"
             )
 
         except serial.SerialException as e:
@@ -147,7 +149,10 @@ class RtuTransport(BaseTransport):
         """关闭串口连接 | Close serial port connection"""
         if self._serial and self._serial.is_open:
             self._serial.close()
-            self._logger.info(f"RTU连接已关闭 | RTU connection closed: {self.port}")
+            self._logger.info(
+                cn=f"RTU连接已关闭: {self.port}",
+                en=f"RTU connection closed: {self.port}"
+            )
 
     def is_open(self) -> bool:
         """检查串口连接状态 | Check serial port connection status"""
@@ -177,7 +182,10 @@ class RtuTransport(BaseTransport):
         crc = CRC16Modbus.calculate(frame_prefix)
         request_adu = frame_prefix + crc
 
-        self._logger.debug(f"RTU发送 | RTU Send: {request_adu.hex(' ').upper()}")
+        self._logger.debug(
+            cn=f"RTU发送: {request_adu.hex(' ').upper()}",
+            en=f"RTU Send: {request_adu.hex(' ').upper()}"
+        )
 
         try:
             # 2. 清空接收缓冲区并发送请求 | Clear receive buffer and send request
@@ -192,7 +200,8 @@ class RtuTransport(BaseTransport):
             response_adu = self._receive_response(slave_id, pdu[0])
 
             self._logger.debug(
-                f"RTU接收 | RTU Receive: {response_adu.hex(' ').upper()}"
+                cn=f"RTU接收: {response_adu.hex(' ').upper()}",
+                en=f"RTU Receive: {response_adu.hex(' ').upper()}"
             )
 
             # 4. 验证CRC | Validate CRC

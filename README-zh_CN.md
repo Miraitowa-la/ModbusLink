@@ -600,15 +600,15 @@ else:
 **调试通信问题**，协议级监控：
 
 ```python
-from modbuslink.utils import ModbusLogger
+from modbuslink.utils import ModbusLogger, Language
 import logging
 
-# 设置全面日志
+# 设置全面日志，使用中文输出
 ModbusLogger.setup_logging(
     level=logging.DEBUG,
     enable_debug=True,
     log_file='modbus_debug.log',
-    console_output=True
+    language=Language.CN  # 使用 Language.EN 切换为英文
 )
 
 # 启用数据包级调试

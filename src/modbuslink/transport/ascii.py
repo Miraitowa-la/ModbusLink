@@ -92,7 +92,8 @@ class AsciiTransport(BaseTransport):
             )
 
             self._logger.info(
-                f"ASCII连接已建立 | ASCII connection established: {self.port} @ {self.baudrate}bps"
+                cn=f"ASCII连接已建立: {self.port} @ {self.baudrate}bps",
+                en=f"ASCII connection established: {self.port} @ {self.baudrate}bps"
             )
 
         except Exception as e:
@@ -103,10 +104,14 @@ class AsciiTransport(BaseTransport):
         if self._serial and self._serial.is_open:
             try:
                 self._serial.close()
-                self._logger.info(f"ASCII连接已关闭 | ASCII connection closed: {self.port}")
+                self._logger.info(
+                    cn=f"ASCII连接已关闭: {self.port}",
+                    en=f"ASCII connection closed: {self.port}"
+                )
             except Exception as e:
                 self._logger.debug(
-                    f"关闭串口连接时出现错误（可忽略）| Error during serial connection close (ignorable): {e}"
+                    cn=f"关闭串口连接时出现错误（可忽略）: {e}",
+                    en=f"Error during serial connection close (ignorable): {e}"
                 )
             finally:
                 self._serial = None
@@ -141,7 +146,8 @@ class AsciiTransport(BaseTransport):
         ascii_frame = b':' + ascii_data.hex().upper().encode('ascii') + b'\r\n'
 
         self._logger.debug(
-            f"发送ASCII请求 | Sending ASCII request: {ascii_frame.decode('ascii', errors='ignore')}"
+            cn=f"发送ASCII请求: {ascii_frame.decode('ascii', errors='ignore')}",
+            en=f"Sending ASCII request: {ascii_frame.decode('ascii', errors='ignore')}"
         )
 
         try:
@@ -157,7 +163,8 @@ class AsciiTransport(BaseTransport):
             response_pdu = self._receive_response(slave_id, function_code)
 
             self._logger.debug(
-                f"接收到ASCII响应PDU | Received ASCII response PDU: {response_pdu.hex()}"
+                cn=f"接收到ASCII响应PDU: {response_pdu.hex()}",
+                en=f"Received ASCII response PDU: {response_pdu.hex()}"
             )
 
             return response_pdu

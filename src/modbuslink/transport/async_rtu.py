@@ -135,16 +135,18 @@ class AsyncRtuTransport(AsyncBaseTransport):
                             delay_before_rx=0.0,
                         )
                     self._logger.info(
-                        f"RS485模式已启用 | RS485 mode enabled: {self._serial.rs485_mode}"
+                        cn=f"RS485模式已启用: {self._serial.rs485_mode}",
+                        en=f"RS485 mode enabled: {self._serial.rs485_mode}"
                     )
                 else:
                     self._logger.warning(
-                        "无法配置RS485模式：无法访问底层串口对象 | "
-                        "Cannot configure RS485 mode: unable to access underlying serial object"
+                        cn="无法配置RS485模式：无法访问底层串口对象",
+                        en="Cannot configure RS485 mode: unable to access underlying serial object"
                     )
 
             self._logger.info(
-                f"异步RTU连接已建立 | Async RTU connection established: {self.port} @ {self.baudrate}bps"
+                cn=f"异步RTU连接已建立: {self.port} @ {self.baudrate}bps",
+                en=f"Async RTU connection established: {self.port} @ {self.baudrate}bps"
             )
 
         except Exception as e:
@@ -156,10 +158,14 @@ class AsyncRtuTransport(AsyncBaseTransport):
             try:
                 self._writer.close()
                 await self._writer.wait_closed()
-                self._logger.info(f"异步RTU连接已关闭 | Async RTU connection closed: {self.port}")
+                self._logger.info(
+                    cn=f"异步RTU连接已关闭: {self.port}",
+                    en=f"Async RTU connection closed: {self.port}"
+                )
             except Exception as e:
                 self._logger.debug(
-                    f"关闭异步串口连接时出现错误（可忽略）| Error during async serial connection close (ignorable): {e}"
+                    cn=f"关闭异步串口连接时出现错误（可忽略）: {e}",
+                    en=f"Error during async serial connection close (ignorable): {e}"
                 )
             finally:
                 self._reader = None
@@ -194,7 +200,8 @@ class AsyncRtuTransport(AsyncBaseTransport):
         request_adu = frame_prefix + crc
 
         self._logger.debug(
-            f"发送异步RTU请求 | Sending async RTU request: {request_adu.hex()}"
+            cn=f"发送异步RTU请求: {request_adu.hex()}",
+            en=f"Sending async RTU request: {request_adu.hex()}"
         )
 
         try:
@@ -217,7 +224,8 @@ class AsyncRtuTransport(AsyncBaseTransport):
             response_pdu = await self._receive_response(slave_id, function_code)
 
             self._logger.debug(
-                f"接收到异步RTU响应PDU | Received async RTU response PDU: {response_pdu.hex()}"
+                cn=f"接收到异步RTU响应PDU: {response_pdu.hex()}",
+                en=f"Received async RTU response PDU: {response_pdu.hex()}"
             )
 
             return response_pdu

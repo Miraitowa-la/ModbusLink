@@ -92,7 +92,8 @@ class AsyncAsciiTransport(AsyncBaseTransport):
             )
 
             self._logger.info(
-                f"异步ASCII连接已建立 | Async ASCII connection established: {self.port} @ {self.baudrate}bps"
+                cn=f"异步ASCII连接已建立: {self.port} @ {self.baudrate}bps",
+                en=f"Async ASCII connection established: {self.port} @ {self.baudrate}bps"
             )
 
         except Exception as e:
@@ -104,10 +105,14 @@ class AsyncAsciiTransport(AsyncBaseTransport):
             try:
                 self._writer.close()
                 await self._writer.wait_closed()
-                self._logger.info(f"异步ASCII连接已关闭 | Async ASCII connection closed: {self.port}")
+                self._logger.info(
+                    cn=f"异步ASCII连接已关闭: {self.port}",
+                    en=f"Async ASCII connection closed: {self.port}"
+                )
             except Exception as e:
                 self._logger.debug(
-                    f"关闭异步串口连接时出现错误（可忽略）| Error during async serial connection close (ignorable): {e}"
+                    cn=f"关闭异步串口连接时出现错误（可忽略）: {e}",
+                    en=f"Error during async serial connection close (ignorable): {e}"
                 )
             finally:
                 self._reader = None
@@ -145,7 +150,8 @@ class AsyncAsciiTransport(AsyncBaseTransport):
         ascii_frame = b':' + ascii_data.hex().upper().encode('ascii') + b'\r\n'
 
         self._logger.debug(
-            f"发送异步ASCII请求 | Sending async ASCII request: {ascii_frame.decode('ascii', errors='ignore')}"
+            cn=f"发送异步ASCII请求: {ascii_frame.decode('ascii', errors='ignore')}",
+            en=f"Sending async ASCII request: {ascii_frame.decode('ascii', errors='ignore')}"
         )
 
         try:
@@ -168,7 +174,8 @@ class AsyncAsciiTransport(AsyncBaseTransport):
             response_pdu = await self._receive_response(slave_id, function_code)
 
             self._logger.debug(
-                f"接收到异步ASCII响应PDU | Received async ASCII response PDU: {response_pdu.hex()}"
+                cn=f"接收到异步ASCII响应PDU: {response_pdu.hex()}",
+                en=f"Received async ASCII response PDU: {response_pdu.hex()}"
             )
 
             return response_pdu
