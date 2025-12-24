@@ -88,7 +88,10 @@ class AsyncTcpModbusServer(AsyncBaseModbusServer):
                 cn=f"启动TCP服务器失败: {e}",
                 en=f"Failed to start TCP server: {e}"
             )
-            raise ConnectionError(f"无法启动TCP服务器 | Cannot start TCP server: {e}")
+            raise ConnectionError(
+                cn=f"无法启动TCP服务器: {e}",
+                en=f"Cannot start TCP server: {e}"
+            )
 
     async def stop(self) -> None:
         """停止异步TCP服务器 | Stop Async TCP Server"""
@@ -285,4 +288,7 @@ class AsyncTcpModbusServer(AsyncBaseModbusServer):
                 )
                 raise
         else:
-            raise ConnectionError("服务器未启动 | Server not started")
+            raise ConnectionError(
+                cn="服务器未启动",
+                en="Server not started"
+            )

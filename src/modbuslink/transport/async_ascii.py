@@ -18,6 +18,7 @@ from ..common.exceptions import (
     CRCError,
     InvalidResponseError,
 )
+from ..common.language import get_message
 from ..utils.logging import get_logger
 
 
@@ -58,16 +59,22 @@ class AsyncAsciiTransport(AsyncBaseTransport):
 
         Raises:
             ValueError: 当参数无效时 | When parameters are invalid
-            TypeError: 当参数类型错误时 | When parameter types are incorrect
         """
         if not port or not isinstance(port, str):
-            raise ValueError(
-                "串口名称不能为空且必须是字符串 | Port name cannot be empty and must be a string"
-            )
+            raise ValueError(get_message(
+                cn="串口名称不能为空且必须是字符串",
+                en="Port name cannot be empty and must be a string"
+            ))
         if not isinstance(baudrate, int) or baudrate <= 0:
-            raise ValueError("波特率必须是正整数 | Baudrate must be a positive integer")
+            raise ValueError(get_message(
+                cn="波特率必须是正整数",
+                en="Baudrate must be a positive integer"
+            ))
         if not isinstance(timeout, (int, float)) or timeout <= 0:
-            raise ValueError("超时时间必须是正数 | Timeout must be a positive number")
+            raise ValueError(get_message(
+                cn="超时时间必须是正数",
+                en="Timeout must be a positive number"
+            ))
 
         self.port = port
         self.baudrate = baudrate
@@ -97,7 +104,10 @@ class AsyncAsciiTransport(AsyncBaseTransport):
             )
 
         except Exception as e:
-            raise ConnectionError(f"异步串口连接失败 | Async serial port connection failed: {e}")
+            raise ConnectionError(
+                cn=f"异步串口连接失败: {e}",
+                en=f"Async serial port connection failed: {e}"
+            )
 
     async def close(self) -> None:
         """异步关闭串口连接 | sync close serial port connection"""
@@ -138,7 +148,8 @@ class AsyncAsciiTransport(AsyncBaseTransport):
         """
         if not await self.is_open():
             raise ConnectionError(
-                "异步串口连接未建立 | Async serial port connection not established"
+                cn="异步串口连接未建立",
+                en="Async serial port connection not established"
             )
 
         # 1. 构建请求帧 | Build request frame
@@ -157,7 +168,10 @@ class AsyncAsciiTransport(AsyncBaseTransport):
         try:
             # 2. 清空接收缓冲区并发送请求 | Clear receive buffer and send request
             if self._reader.at_eof():
-                raise ConnectionError("异步串口连接已断开 | Async serial connection lost")
+                raise ConnectionError(
+                    cn="异步串口连接已断开",
+                    en="Async serial connection lost"
+                )
 
             # 清空可能存在的旧数据 | Clear any existing old data
             while True:
@@ -182,12 +196,16 @@ class AsyncAsciiTransport(AsyncBaseTransport):
 
         except asyncio.TimeoutError:
             raise TimeoutError(
-                f"异步ASCII通信超时 | Async ASCII communication timeout: {self.timeout}s"
+                cn=f"异步ASCII通信超时: {self.timeout}s",
+                en=f"Async ASCII communication timeout: {self.timeout}s"
             )
         except Exception as e:
             if isinstance(e, (ConnectionError, TimeoutError, CRCError, InvalidResponseError)):
                 raise
-            raise ConnectionError(f"异步ASCII通信错误 | Async ASCII communication error: {e}")
+            raise ConnectionError(
+                cn=f"异步ASCII通信错误: {e}",
+                en=f"Async ASCII communication error: {e}"
+            )
 
     async def _receive_response(self, expected_slave_id: int, function_code: int) -> bytes:
         """
@@ -214,28 +232,39 @@ class AsyncAsciiTransport(AsyncBaseTransport):
             # 验证帧格式 | Validate frame format
             if not response_line.startswith(b':'):
                 raise InvalidResponseError(
-                    "ASCII响应帧格式无效：缺少起始冒号 | Invalid ASCII response frame format: missing start colon")
+                    cn="ASCII响应帧格式无效：缺少起始冒号",
+                    en="Invalid ASCII response frame format: missing start colon"
+                )
 
             if not response_line.endswith(b'\r\n'):
                 raise InvalidResponseError(
-                    "ASCII响应帧格式无效：缺少结束符 | Invalid ASCII response frame format: missing end markers")
+                    cn="ASCII响应帧格式无效：缺少结束符",
+                    en="Invalid ASCII response frame format: missing end markers"
+                )
 
             # 提取十六进制数据部分 | Extract hex data part
             hex_data = response_line[1:-2].decode('ascii')
 
             if len(hex_data) % 2 != 0:
                 raise InvalidResponseError(
-                    "ASCII响应帧格式无效：十六进制数据长度不是偶数 | Invalid ASCII response frame format: hex data length is not even")
+                    cn="ASCII响应帧格式无效：十六进制数据长度不是偶数",
+                    en="Invalid ASCII response frame format: hex data length is not even"
+                )
 
             # 将十六进制字符串转换为字节 | Convert hex string to bytes
             try:
                 response_bytes = bytes.fromhex(hex_data)
             except ValueError as e:
                 raise InvalidResponseError(
-                    f"ASCII响应帧格式无效：十六进制数据解析失败 | Invalid ASCII response frame format: hex data parsing failed: {e}")
+                    cn=f"ASCII响应帧格式无效：十六进制数据解析失败: {e}",
+                    en=f"Invalid ASCII response frame format: hex data parsing failed: {e}"
+                )
 
             if len(response_bytes) < 3:  # 至少需要：地址 + 功能码 + LRC | At least need: address + function code + LRC
-                raise InvalidResponseError("ASCII响应帧太短 | ASCII response frame too short")
+                raise InvalidResponseError(
+                    cn="ASCII响应帧太短",
+                    en="ASCII response frame too short"
+                )
 
             # 分离数据和LRC | Separate data and LRC
             frame_data = response_bytes[:-1]
@@ -245,41 +274,52 @@ class AsyncAsciiTransport(AsyncBaseTransport):
             expected_lrc = self._calculate_lrc(frame_data)
             if received_lrc != expected_lrc:
                 raise CRCError(
-                    f"LRC校验失败 | LRC validation failed: "
-                    f"expected {expected_lrc:02X}, got {received_lrc:02X}"
+                    cn=f"LRC校验失败: 预期 {expected_lrc:02X}, 得到 {received_lrc:02X}",
+                    en=f"LRC validation failed: expected {expected_lrc:02X}, got {received_lrc:02X}"
                 )
 
             # 验证从站地址 | Validate slave address
             received_slave_id = frame_data[0]
             if received_slave_id != expected_slave_id:
                 raise InvalidResponseError(
-                    f"从站地址不匹配 | Slave address mismatch: expected {expected_slave_id}, got {received_slave_id}"
+                    cn=f"从站地址不匹配: 预期 {expected_slave_id}, 得到 {received_slave_id}",
+                    en=f"Slave address mismatch: expected {expected_slave_id}, got {received_slave_id}"
                 )
 
             # 提取PDU | Extract PDU
             response_pdu = frame_data[1:]
 
             if len(response_pdu) == 0:
-                raise InvalidResponseError("响应PDU为空 | Response PDU is empty")
+                raise InvalidResponseError(
+                    cn="响应PDU为空",
+                    en="Response PDU is empty"
+                )
 
             received_function_code = response_pdu[0]
 
             # 检查是否为异常响应 | Check if it's an exception response
             if received_function_code & 0x80:
                 if len(response_pdu) != 2:
-                    raise InvalidResponseError("异常响应格式无效 | Invalid exception response format")
+                    raise InvalidResponseError(
+                        cn="异常响应格式无效",
+                        en="Invalid exception response format"
+                    )
                 return response_pdu
 
             # 验证功能码 | Validate function code
             if received_function_code != function_code:
                 raise InvalidResponseError(
-                    f"功能码不匹配 | Function code mismatch: expected {function_code}, got {received_function_code}"
+                    cn=f"功能码不匹配: 预期 {function_code}, 得到 {received_function_code}",
+                    en=f"Function code mismatch: expected {function_code}, got {received_function_code}"
                 )
 
             return response_pdu
 
         except asyncio.TimeoutError:
-            raise TimeoutError(f"异步接收ASCII响应超时 | Async receive ASCII response timeout: {self.timeout}s")
+            raise TimeoutError(
+                cn=f"异步接收ASCII响应超时: {self.timeout}s",
+                en=f"Async receive ASCII response timeout: {self.timeout}s"
+            )
 
     @staticmethod
     def _calculate_lrc(data: bytes) -> int:
@@ -303,7 +343,7 @@ class AsyncAsciiTransport(AsyncBaseTransport):
 
     def __repr__(self) -> str:
         """返回传输层的字符串表示 | Return string representation of transport layer"""
-        status = "已连接 | Connected" if asyncio.run(self.is_open()) else "未连接 | Disconnected"
+        status = "Connected" if asyncio.run(self.is_open()) else "Disconnected"
         return (
             f"AsyncAsciiTransport(port='{self.port}', baudrate={self.baudrate}, "
             f"timeout={self.timeout}, status='{status}')"

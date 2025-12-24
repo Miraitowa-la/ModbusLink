@@ -114,7 +114,10 @@ class AsyncBaseModbusServer(ABC):
         """
         try:
             if len(pdu) < 1:
-                raise InvalidResponseError("PDU长度不足 | PDU length insufficient")
+                raise InvalidResponseError(
+                    cn="PDU长度不足",
+                    en="PDU length insufficient"
+                )
 
             # 检查从站地址 | Check slave address
             if slave_id != self.slave_id and slave_id != 0:  # 0是广播地址 | 0 is broadcast address

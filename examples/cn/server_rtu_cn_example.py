@@ -7,8 +7,15 @@ import math
 import random
 import asyncio
 import logging
-from src.modbuslink import AsyncRtuModbusServer, ModbusDataStore
-from src.modbuslink.utils.logging import ModbusLogger
+from src.modbuslink import (
+    AsyncRtuModbusServer,
+    ModbusDataStore,
+    ModbusLogger,
+    Language,
+    set_language,
+)
+
+set_language(Language.CN)
 
 
 async def setup_industrial_data(data_store: ModbusDataStore) -> None:

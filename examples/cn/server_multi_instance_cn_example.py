@@ -9,9 +9,13 @@ from src.modbuslink import (
     AsyncTcpModbusServer,
     AsyncRtuModbusServer,
     AsyncAsciiModbusServer,
-    ModbusDataStore
+    ModbusDataStore,
+    ModbusLogger,
+    Language,
+    set_language,
 )
-from src.modbuslink.utils.logging import ModbusLogger
+
+set_language(Language.CN)
 
 
 class MultiServerManager:

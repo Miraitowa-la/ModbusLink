@@ -12,6 +12,7 @@ from typing import Optional
 
 from .base import BaseTransport
 from ..common.exceptions import ConnectionError, TimeoutError, InvalidResponseError
+from ..common.language import get_message
 from ..utils.logging import get_logger
 
 
@@ -40,18 +41,22 @@ class TcpTransport(BaseTransport):
 
         Raises:
             ValueError: 当参数无效时 | When parameters are invalid
-            TypeError: 当参数类型错误时 | When parameter types are incorrect
         """
         if not host or not isinstance(host, str):
-            raise ValueError(
-                "主机地址不能为空且必须是字符串 | Host address cannot be empty and must be a string"
-            )
+            raise ValueError(get_message(
+                cn="主机地址不能为空且必须是字符串",
+                en="Host address cannot be empty and must be a string"
+            ))
         if not isinstance(port, int) or port <= 0 or port > 65535:
-            raise ValueError(
-                "端口必须是1-65535之间的整数 | Port must be an integer between 1-65535"
-            )
+            raise ValueError(get_message(
+                cn="端口必须是1-65535之间的整数",
+                en="Port must be an integer between 1-65535"
+            ))
         if not isinstance(timeout, (int, float)) or timeout <= 0:
-            raise ValueError("超时时间必须是正数 | Timeout must be a positive number")
+            raise ValueError(get_message(
+                cn="超时时间必须是正数",
+                en="Timeout must be a positive number"
+            ))
 
         self.host = host
         self.port = port
@@ -74,7 +79,10 @@ class TcpTransport(BaseTransport):
             )
 
         except socket.error as e:
-            raise ConnectionError(f"TCP连接失败 | TCP connection failed: {e}")
+            raise ConnectionError(
+                cn=f"TCP连接失败: {e}",
+                en=f"TCP connection failed: {e}"
+            )
 
     def close(self) -> None:
         """关闭TCP连接 | Close TCP connection"""
@@ -121,7 +129,10 @@ class TcpTransport(BaseTransport):
         6. 返回响应PDU | Return response PDU
         """
         if not self.is_open():
-            raise ConnectionError("TCP连接未建立 | TCP connection not established")
+            raise ConnectionError(
+                cn="TCP连接未建立",
+                en="TCP connection not established"
+            )
 
         # 1. 生成事务ID并构建MBAP头 | Generate transaction ID and build MBAP header
         current_transaction_id = self._transaction_id
@@ -154,7 +165,10 @@ class TcpTransport(BaseTransport):
         try:
             # 3. 发送请求 | Send request
             if self._socket is None:
-                raise ConnectionError("TCP连接未建立 | TCP connection not established")
+                raise ConnectionError(
+                    cn="TCP连接未建立",
+                    en="TCP connection not established"
+                )
             self._socket.sendall(request_frame)
 
             # 4. 接收响应MBAP头（7字节） | Receive response MBAP header (7 bytes)
@@ -171,17 +185,20 @@ class TcpTransport(BaseTransport):
             # 6. 验证MBAP头 | Validate MBAP header
             if response_transaction_id != current_transaction_id:
                 raise InvalidResponseError(
-                    f"事务ID不匹配 | Transaction ID mismatch: 期望 | Expected {current_transaction_id}, 收到 | Received {response_transaction_id}"
+                    cn=f"事务ID不匹配: 期望 {current_transaction_id}, 得到 {response_transaction_id}",
+                    en=f"Transaction ID mismatch: Expected {current_transaction_id}, Received {response_transaction_id}"
                 )
 
             if response_protocol_id != 0x0000:
                 raise InvalidResponseError(
-                    f"协议ID无效 | Invalid Protocol ID: 期望 | Expected 0x0000, 收到 | Received 0x{response_protocol_id:04X}"
+                    cn=f"协议ID无效: 期望 0x0000, 得到 0x{response_protocol_id:04X}",
+                    en=f"Invalid Protocol ID: Expected 0x0000, Received 0x{response_protocol_id:04X}"
                 )
 
             if response_unit_id != slave_id:
                 raise InvalidResponseError(
-                    f"单元ID不匹配 | Unit ID mismatch: 期望 | Expected {slave_id}, 收到 | Received {response_unit_id}"
+                    cn=f"单元ID不匹配 : 期望 {slave_id}, 得到 {response_unit_id}",
+                    en=f"Unit ID mismatch: Expected {slave_id}, Received {response_unit_id}"
                 )
 
             # 7. 接收响应PDU | Receive response PDU
@@ -190,7 +207,8 @@ class TcpTransport(BaseTransport):
             )  # 减去Unit ID的1字节 | Subtract 1 byte for Unit ID
             if pdu_length <= 0:
                 raise InvalidResponseError(
-                    f"PDU长度无效 | Invalid PDU length: {pdu_length}"
+                    cn=f"PDU长度无效: {pdu_length}",
+                    en=f"Invalid PDU length: {pdu_length}"
                 )
 
             response_pdu = self._receive_exact(pdu_length)
@@ -216,10 +234,14 @@ class TcpTransport(BaseTransport):
 
         except socket.timeout:
             raise TimeoutError(
-                f"TCP通信超时 | TCP communication timeout ({self.timeout}秒 | seconds)"
+                cn=f"TCP通信超时 ({self.timeout}秒)",
+                en=f"TCP communication timeout ({self.timeout}seconds)"
             )
         except socket.error as e:
-            raise ConnectionError(f"TCP通信错误 | TCP communication error: {e}")
+            raise ConnectionError(
+                cn=f"TCP通信错误: {e}",
+                en=f"TCP communication error: {e}"
+            )
 
     def _receive_exact(self, length: int) -> bytes:
         """
@@ -240,24 +262,30 @@ class TcpTransport(BaseTransport):
             try:
                 if self._socket is None:
                     raise ConnectionError(
-                        "TCP连接未建立 | TCP connection not established"
+                        cn="TCP连接未建立",
+                        en="TCP connection not established"
                     )
                 chunk = self._socket.recv(length - len(data))
                 if not chunk:
                     raise ConnectionError(
-                        "连接被远程主机关闭 | Connection closed by remote host"
+                        cn="连接被远程主机关闭",
+                        en="Connection closed by remote host"
                     )
                 data += chunk
             except socket.timeout:
                 raise TimeoutError(
-                    f"接收数据超时 | Data receive timeout，已接收 | Received {len(data)}/{length} 字节 | bytes"
+                    cn=f"接收数据超时，已接收 {len(data)}/{length} 字节",
+                    en=f"Data receive timeout，Received {len(data)}/{length} bytes"
                 )
             except socket.error as e:
-                raise ConnectionError(f"接收数据错误 | Data receive error: {e}")
+                raise ConnectionError(
+                    cn=f"接收数据错误 : {e}",
+                    en=f"Data receive error: {e}"
+                )
 
         return data
 
     def __repr__(self) -> str:
         """字符串表示 | String representation"""
-        status = "已连接 | Connected" if self.is_open() else "未连接 | Disconnected"
+        status = "Connected" if self.is_open() else "Disconnected"
         return f"TcpTransport({self.host}:{self.port}, {status})"

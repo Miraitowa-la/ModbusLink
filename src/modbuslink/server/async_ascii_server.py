@@ -191,7 +191,10 @@ class AsyncAsciiModbusServer(AsyncBaseModbusServer):
                     continue
 
                 except Exception as e:
-                    self._logger.error(f"服务器循环异常 | Server loop exception: {e}")
+                    self._logger.error(
+                        cn=f"服务器循环异常: {e}",
+                        en=f"Server loop exception: {e}"
+                    )
                     if buffer:
                         buffer.clear()
                     await asyncio.sleep(0.1)  # 短暂延迟后继续 | Brief delay before continuing
@@ -386,4 +389,7 @@ class AsyncAsciiModbusServer(AsyncBaseModbusServer):
                 )
                 raise
         else:
-            raise ConnectionError("服务器未启动 | Server not started")
+            raise ConnectionError(
+                cn="服务器未启动",
+                en="Server not started"
+            )

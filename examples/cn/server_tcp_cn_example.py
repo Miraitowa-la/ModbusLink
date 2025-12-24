@@ -6,8 +6,15 @@ ModbusLink 异步TCP服务器示例
 import random
 import asyncio
 import logging
-from src.modbuslink import AsyncTcpModbusServer, ModbusDataStore
-from src.modbuslink.utils.logging import ModbusLogger
+from src.modbuslink import (
+    AsyncTcpModbusServer,
+    ModbusDataStore,
+    ModbusLogger,
+    Language,
+    set_language,
+)
+
+set_language(Language.CN)
 
 
 async def setup_data_store(data_store: ModbusDataStore) -> None:

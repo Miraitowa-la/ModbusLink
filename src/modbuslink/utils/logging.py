@@ -9,27 +9,11 @@ Provides unified logging configuration and management functionality.
 import logging
 import sys
 from typing import Optional
+from ..common.language import Language, set_language, get_language
 
 
-# 定义语言常量 | Define language constants
-class Language:
-    CN = "CN"
-    EN = "EN"
-
-
-# 全局语言设置，默认为中文 | Global language settings, default is Chinese
-_CURRENT_LANGUAGE = Language.CN
-
-
-def set_language(lang: str) -> None:
-    """
-    设置日志语言 | Set log language
-
-    Args:
-        lang: Language.CN or Language.EN
-    """
-    global _CURRENT_LANGUAGE
-    _CURRENT_LANGUAGE = lang
+# Re-export for backwards compatibility
+__all__ = ['Language', 'set_language', 'get_language', 'BilingualLogger', 'ModbusLogger', 'get_logger']
 
 
 class BilingualLogger:
@@ -45,7 +29,7 @@ class BilingualLogger:
         self._logger = logging.getLogger(name)
 
     def _get_msg(self, cn: str, en: str) -> str:
-        return cn if _CURRENT_LANGUAGE == Language.CN else en
+        return cn if get_language() == Language.CN else en
 
     def debug(self, cn: str, en: str, *args, **kwargs):
         msg = self._get_msg(cn, en)
@@ -176,7 +160,7 @@ class ModbusLogger:
         # 设置客户端日志级别为DEBUG | Set client layer log level to DEBUG
         logging.getLogger("modbuslink.client").setLevel(logging.DEBUG)
 
-        msg = "协议调试模式已启用" if _CURRENT_LANGUAGE == Language.CN else "Protocol debug mode enabled"
+        msg = "协议调试模式已启用" if get_language() == Language.CN else "Protocol debug mode enabled"
         logging.getLogger("modbuslink").info(msg)
 
     @staticmethod
@@ -188,7 +172,7 @@ class ModbusLogger:
         # 恢复客户端日志级别 | Restore client layer log level
         logging.getLogger("modbuslink.client").setLevel(logging.INFO)
 
-        msg = "协议调试模式已禁用" if _CURRENT_LANGUAGE == Language.CN else "Protocol debug mode disabled"
+        msg = "协议调试模式已禁用" if get_language() == Language.CN else "Protocol debug mode disabled"
         logging.getLogger("modbuslink").info(msg)
 
 

@@ -8,6 +8,7 @@ Provides encoding/decoding functionality for various data types with support for
 
 import struct
 from typing import List
+from ..common.language import get_message
 
 
 class PayloadCoder:
@@ -50,9 +51,10 @@ class PayloadCoder:
             ValueError: 当寄存器数量不为2时 | When register count is not 2
         """
         if len(registers) != 2:
-            raise ValueError(
-                "需要恰好2个寄存器来解码float32 | Exactly 2 registers required for float32 decoding"
-            )
+            raise ValueError(get_message(
+                cn="需要恰好2个寄存器来解码float32",
+                en="Exactly 2 registers required for float32 decoding"
+            ))
 
         # 根据字序排列寄存器 | Arrange registers according to word order
         if word_order == PayloadCoder.HIGH_WORD_FIRST:
@@ -133,9 +135,10 @@ class PayloadCoder:
             ValueError: 当寄存器数量不为2时 | When register count is not 2
         """
         if len(registers) != 2:
-            raise ValueError(
-                "需要恰好2个寄存器来解码int32 | Exactly 2 registers required for int32 decoding"
-            )
+            raise ValueError(get_message(
+                cn="需要恰好2个寄存器来解码int32",
+                en="Exactly 2 registers required for int32 decoding"
+            ))
 
         # 根据字序排列寄存器 | Arrange registers according to word order
         if word_order == PayloadCoder.HIGH_WORD_FIRST:
@@ -222,9 +225,10 @@ class PayloadCoder:
             ValueError: 当寄存器数量不为4时 | When register count is not 4
         """
         if len(registers) != 4:
-            raise ValueError(
-                "需要恰好4个寄存器来解码int64 | Exactly 4 registers required for int64 decoding"
-            )
+            raise ValueError(get_message(
+                cn="需要恰好4个寄存器来解码int64",
+                en="Exactly 4 registers required for int64 decoding"
+            ))
 
         # 根据字序排列寄存器 | Arrange registers according to word order
         if word_order == PayloadCoder.HIGH_WORD_FIRST:
@@ -322,7 +326,10 @@ class PayloadCoder:
                 "\x00"
             )  # 去除尾部空字符 | Remove trailing null characters
         except UnicodeDecodeError as e:
-            raise ValueError(f"字符串解码失败 | String decoding failed: {e}")
+            raise ValueError(get_message(
+                cn=f"字符串解码失败",
+                en="String decoding failed: {e}"
+            ))
 
     @staticmethod
     def encode_string(
@@ -354,14 +361,18 @@ class PayloadCoder:
         try:
             encoded_bytes = value.encode(encoding)
         except UnicodeEncodeError as e:
-            raise ValueError(f"字符串编码失败 | String encoding failed: {e}")
+            raise ValueError(get_message(
+                cn=f"字符串编码失败",
+                en="String encoding failed: {e}"
+            ))
 
         # 检查字节长度是否超过寄存器容量 | Check if byte length exceeds register capacity
         max_bytes = register_count * 2
         if len(encoded_bytes) > max_bytes:
-            raise ValueError(
-                f"字符串太长，需要{len(encoded_bytes)}字节，但只有{max_bytes}字节可用 | String too long, needs {len(encoded_bytes)} bytes but only {max_bytes} bytes available"
-            )
+            raise ValueError(get_message(
+                cn=f"字符串太长，需要{len(encoded_bytes)}字节，但只有{max_bytes}字节可用",
+                en=f"String too long, needs {len(encoded_bytes)} bytes but only {max_bytes} bytes available"
+            ))
 
         # 填充到指定长度 | Pad to specified length
         padded_bytes = encoded_bytes.ljust(max_bytes, b"\x00")

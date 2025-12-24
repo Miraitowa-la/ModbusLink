@@ -12,14 +12,17 @@ from src.modbuslink import (
     ConnectionError,
     TimeoutError,
     ModbusException,
+    ModbusLogger,
+    Language,
+    set_language,
 )
-from src.modbuslink.utils.logging import ModbusLogger, Language
+
+set_language(Language.EN)
 
 # Set logging
 ModbusLogger.setup_logging(
     level=logging.INFO,
     enable_debug=True,
-    language=Language.EN,
 )
 
 

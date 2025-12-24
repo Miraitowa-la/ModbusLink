@@ -12,8 +12,12 @@ from src.modbuslink import (
     ConnectionError,
     TimeoutError,
     ModbusException,
+    ModbusLogger,
+    Language,
+    set_language,
 )
-from src.modbuslink.utils.logging import ModbusLogger
+
+set_language(Language.CN)
 
 # 设置日志
 ModbusLogger.setup_logging(

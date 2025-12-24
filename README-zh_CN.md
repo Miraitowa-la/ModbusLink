@@ -600,15 +600,19 @@ else:
 **调试通信问题**，协议级监控：
 
 ```python
-from modbuslink.utils import ModbusLogger, Language
+from modbuslink.common import Language, set_language
+from modbuslink.utils import ModbusLogger
 import logging
 
-# 设置全面日志，使用中文输出
+# 设置全局语言（同时影响日志和异常消息）
+set_language(Language.CN)  # 使用 Language.EN 切换为英文
+
+# 设置全面日志
 ModbusLogger.setup_logging(
     level=logging.DEBUG,
     enable_debug=True,
-    log_file='modbus_debug.log',
-    language=Language.CN  # 使用 Language.EN 切换为英文
+    # log_file='modbus_debug.log'  # 使用 Language.EN 切换为英文
+    # 原有的书写方式仍可使用，但建议采用上述方法对其进行修改(全局的)。
 )
 
 # 启用数据包级调试
@@ -756,6 +760,7 @@ ModbusLink/
 │   │   └── logging.py             # 高级日志系统
 │   │
 │   └── common/                    # 🛠️ 通用组件
+│       ├── language.py            # 统一语言配置
 │       └── exceptions.py          # 自定义异常体系
 │
 ├── examples/                      # 📚 使用示例

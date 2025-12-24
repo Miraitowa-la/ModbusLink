@@ -600,15 +600,20 @@ else:
 **Debug communication issues** with protocol-level monitoring:
 
 ```python
-from modbuslink.utils import ModbusLogger, Language
+from modbuslink.common import Language, set_language
+from modbuslink.utils import ModbusLogger
 import logging
 
-# Setup comprehensive logging with English output
+# Set global language (affects both logging and exception messages)
+set_language(Language.EN)  # Use Language.CN for Chinese (default)
+
+# Setup comprehensive logging
 ModbusLogger.setup_logging(
     level=logging.DEBUG,
     enable_debug=True,
     log_file='modbus_debug.log',
-    language=Language.EN  # Use Language.CN for Chinese (default)
+    # language=Language.EN  # Use Language.CN for Chinese (default)
+    # The original way of writing can still be used, but it is recommended to modify it using the method mentioned above(global).
 )
 
 # Enable packet-level debugging
@@ -756,6 +761,7 @@ ModbusLink/
 │   │   └── logging.py             # Advanced logging system
 │   │
 │   └── common/                    # 🛠️ Common Components
+│       ├── language.py            # Unified language configuration
 │       └── exceptions.py          # Custom exception hierarchy
 │
 ├── examples/                      # 📚 Usage Examples

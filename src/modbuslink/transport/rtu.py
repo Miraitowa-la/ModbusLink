@@ -18,6 +18,7 @@ from ..common.exceptions import (
     CRCError,
     InvalidResponseError,
 )
+from ..common.language import get_message
 from ..utils.crc import CRC16Modbus
 from ..utils.logging import get_logger
 
@@ -65,7 +66,6 @@ class RtuTransport(BaseTransport):
 
         Raises:
             ValueError: 当参数无效时 | When parameters are invalid
-            TypeError: 当参数类型错误时 | When parameter types are incorrect
         
         Example:
             基本RS485模式 | Basic RS485 mode::
@@ -84,13 +84,20 @@ class RtuTransport(BaseTransport):
                 transport = RtuTransport('/dev/ttyUSB0', rs485_mode=rs485_settings)
         """
         if not port or not isinstance(port, str):
-            raise ValueError(
-                "串口名称不能为空且必须是字符串 | Port name cannot be empty and must be a string"
-            )
+            raise ValueError(get_message(
+                cn="串口名称不能为空且必须是字符串",
+                en="Port name cannot be empty and must be a string"
+            ))
         if not isinstance(baudrate, int) or baudrate <= 0:
-            raise ValueError("波特率必须是正整数 | Baudrate must be a positive integer")
+            raise ValueError(get_message(
+                cn="波特率必须是正整数",
+                en="Baudrate must be a positive integer"
+            ))
         if not isinstance(timeout, (int, float)) or timeout <= 0:
-            raise ValueError("超时时间必须是正数 | Timeout must be a positive number")
+            raise ValueError(get_message(
+                cn="超时时间必须是正数",
+                en="Timeout must be a positive number"
+            ))
 
         self.port = port
         self.baudrate = baudrate
@@ -117,7 +124,8 @@ class RtuTransport(BaseTransport):
 
             if not self._serial.is_open:
                 raise ConnectionError(
-                    f"无法打开串口 | Unable to open serial port {self.port}"
+                    cn=f"无法打开串口 {self.port}",
+                    en=f"Unable to open serial port {self.port}"
                 )
 
             # 配置RS485模式 | Configure RS485 mode
@@ -143,7 +151,10 @@ class RtuTransport(BaseTransport):
             )
 
         except serial.SerialException as e:
-            raise ConnectionError(f"串口连接失败 | Serial port connection failed: {e}")
+            raise ConnectionError(
+                cn=f"串口连接失败: {e}",
+                en=f"Serial port connection failed: {e}"
+            )
 
     def close(self) -> None:
         """关闭串口连接 | Close serial port connection"""
@@ -174,7 +185,8 @@ class RtuTransport(BaseTransport):
         """
         if not self.is_open():
             raise ConnectionError(
-                "串口连接未建立 | Serial port connection not established"
+                cn="串口连接未建立",
+                en="Serial port connection not established"
             )
 
         # 1. 构建请求帧 | Build request frame
@@ -191,7 +203,8 @@ class RtuTransport(BaseTransport):
             # 2. 清空接收缓冲区并发送请求 | Clear receive buffer and send request
             if self._serial is None:
                 raise ConnectionError(
-                    "串口连接未建立 | Serial connection not established"
+                    cn="串口连接未建立",
+                    en="Serial connection not established"
                 )
             self._serial.reset_input_buffer()
             self._serial.write(request_adu)
@@ -206,12 +219,16 @@ class RtuTransport(BaseTransport):
 
             # 4. 验证CRC | Validate CRC
             if not CRC16Modbus.validate(response_adu):
-                raise CRCError("响应CRC校验失败 | Response CRC validation failed")
+                raise CRCError(
+                    cn="响应CRC校验失败",
+                    en="esponse CRC validation failed"
+                )
 
             # 5. 验证从站地址 | Validate slave address
             if response_adu[0] != slave_id:
                 raise InvalidResponseError(
-                    f"从站地址不匹配 | Slave address mismatch: 期望 | Expected {slave_id}, 收到 | Received {response_adu[0]}"
+                    cn=f"从站地址不匹配: 期望 {slave_id}, 收到 {response_adu[0]}",
+                    en=f"Slave address mismatch: Expected {slave_id}, Received {response_adu[0]}"
                 )
 
             # 6. 检查是否为异常响应 | Check if it's an exception response
@@ -227,11 +244,13 @@ class RtuTransport(BaseTransport):
 
         except serial.SerialTimeoutException:
             raise TimeoutError(
-                f"RTU通信超时 | RTU communication timeout ({self.timeout}秒 | seconds)"
+                cn=f"RTU通信超时 ({self.timeout}秒)",
+                en=f"RTU communication timeout ({self.timeout}seconds)"
             )
         except serial.SerialException as e:
             raise ConnectionError(
-                f"串口通信错误 | Serial port communication error: {e}"
+                cn=f"串口通信错误: {e}",
+                en=f"Serial port communication error: {e}"
             )
 
     def _receive_response(self, expected_slave_id: int, function_code: int) -> bytes:
@@ -244,24 +263,32 @@ class RtuTransport(BaseTransport):
         """
         # 首先读取最小响应（地址 + 功能码） | First read minimum response (address + function code)
         if self._serial is None:
-            raise ConnectionError("串口连接未建立 | Serial connection not established")
+            raise ConnectionError(
+                cn="串口连接未建立",
+                en="Serial connection not established"
+            )
         response = bytes(self._serial.read(2))
         if len(response) < 2:
-            raise TimeoutError("接收响应超时 | Receive response timeout")
+            raise TimeoutError(
+                cn="接收响应超时",
+                en="Receive response timeout"
+            )
 
         # 检查是否为异常响应 | Check if it's an exception response
         if response[1] & 0x80:  # 异常响应 | Exception response
             # 异常响应格式：地址 + 异常功能码 + 异常码 + CRC (共5字节) | Exception response format: address + exception function code + exception code + CRC (total 5 bytes)
             if self._serial is None:
                 raise ConnectionError(
-                    "串口连接未建立 | Serial connection not established"
+                    cn="串口连接未建立",
+                    en="Serial connection not established"
                 )
             remaining = bytes(
                 self._serial.read(3)
             )  # 异常码 + CRC | Exception code + CRC
             if len(remaining) < 3:
                 raise TimeoutError(
-                    "接收异常响应超时 | Receive exception response timeout"
+                    cn="接收异常响应超时",
+                    en="Receive exception response timeout"
                 )
             return response + remaining
 
@@ -273,21 +300,29 @@ class RtuTransport(BaseTransport):
             # 格式：地址 + 功能码 + 字节数 + 数据 + CRC | Format: address + function code + byte count + data + CRC
             if self._serial is None:
                 raise ConnectionError(
-                    "串口连接未建立 | Serial connection not established"
+                    cn="串口连接未建立",
+                    en="Serial connection not established"
                 )
             byte_count_data = bytes(self._serial.read(1))
             if len(byte_count_data) < 1:
-                raise TimeoutError("接收字节数超时 | Receive byte count timeout")
+                raise TimeoutError(
+                    cn="接收字节数超时",
+                    en="Receive byte count timeout"
+                )
             byte_count = byte_count_data[0]
             if self._serial is None:
                 raise ConnectionError(
-                    "串口连接未建立 | Serial connection not established"
+                    cn="串口连接未建立",
+                    en="Serial connection not established"
                 )
             remaining_data = bytes(
                 self._serial.read(byte_count + 2)
             )  # 数据 + CRC | Data + CRC
             if len(remaining_data) < byte_count + 2:
-                raise TimeoutError("接收数据超时 | Receive data timeout")
+                raise TimeoutError(
+                    cn="接收数据超时",
+                    en="Receive data timeout"
+                )
             return response + byte_count_data + remaining_data
 
         elif function_code in [
@@ -297,21 +332,29 @@ class RtuTransport(BaseTransport):
             # 格式：地址 + 功能码 + 字节数 + 数据 + CRC | Format: address + function code + byte count + data + CRC
             if self._serial is None:
                 raise ConnectionError(
-                    "串口连接未建立 | Serial connection not established"
+                    cn="串口连接未建立",
+                    en="Serial connection not established"
                 )
             byte_count_data = bytes(self._serial.read(1))
             if len(byte_count_data) < 1:
-                raise TimeoutError("接收字节数超时 | Receive byte count timeout")
+                raise TimeoutError(
+                    cn="接收字节数超时",
+                    en="Receive byte count timeout"
+                )
             byte_count = byte_count_data[0]
             if self._serial is None:
                 raise ConnectionError(
-                    "串口连接未建立 | Serial connection not established"
+                    cn="串口连接未建立",
+                    en="Serial connection not established"
                 )
             remaining_data = bytes(
                 self._serial.read(byte_count + 2)
             )  # 数据 + CRC | Data + CRC
             if len(remaining_data) < byte_count + 2:
-                raise TimeoutError("接收数据超时 | Receive data timeout")
+                raise TimeoutError(
+                    cn="接收数据超时",
+                    en="Receive data timeout"
+                )
             return response + byte_count_data + remaining_data
 
         elif function_code in [
@@ -321,13 +364,18 @@ class RtuTransport(BaseTransport):
             # 格式：地址 + 功能码 + 地址 + 值 + CRC (共8字节) | Format: address + function code + address + value + CRC (total 8 bytes)
             if self._serial is None:
                 raise ConnectionError(
-                    "串口连接未建立 | Serial connection not established"
+                    cn="串口连接未建立",
+                    en="Serial connection not established"
                 )
             remaining = bytes(
                 self._serial.read(6)
             )  # 地址 + 值 + CRC | Address + value + CRC
             if len(remaining) < 6:
-                raise TimeoutError("接收写响应超时 | Receive write response timeout")
+                raise TimeoutError(
+                    cn="接收写响应超时",
+                    en="Receive write response timeout"
+
+                )
             return response + remaining
 
         elif function_code in [
@@ -337,20 +385,25 @@ class RtuTransport(BaseTransport):
             # 格式：地址 + 功能码 + 起始地址 + 数量 + CRC (共8字节) | Format: address + function code + starting address + quantity + CRC (total 8 bytes)
             if self._serial is None:
                 raise ConnectionError(
-                    "串口连接未建立 | Serial connection not established"
+                    cn="串口连接未建立",
+                    en="Serial connection not established"
                 )
             remaining = bytes(
                 self._serial.read(6)
             )  # 起始地址 + 数量 + CRC | Starting address + quantity + CRC
             if len(remaining) < 6:
-                raise TimeoutError("接收写响应超时 | Receive write response timeout")
+                raise TimeoutError(
+                    cn="接收写响应超时",
+                    en="Receive write response timeout"
+                )
             return response + remaining
 
         else:
             # 未知功能码，尝试读取更多数据 | Unknown function code, try to read more data
             if self._serial is None:
                 raise ConnectionError(
-                    "串口连接未建立 | Serial connection not established"
+                    cn="串口连接未建立",
+                    en="Serial connection not established"
                 )
             remaining = bytes(
                 self._serial.read(10)
@@ -359,6 +412,6 @@ class RtuTransport(BaseTransport):
 
     def __repr__(self) -> str:
         """字符串表示 | String representation"""
-        status = "已连接 | Connected" if self.is_open() else "未连接 | Disconnected"
+        status = "Connected" if self.is_open() else "Disconnected"
         rs485_info = ", RS485" if self.rs485_mode else ""
         return f"RtuTransport({self.port}@{self.baudrate}bps{rs485_info}, {status})"

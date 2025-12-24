@@ -10,6 +10,7 @@ discrete inputs, holding registers, and input registers.
 from typing import List
 import threading
 from ..utils.logging import get_logger
+from ..common.language import get_message
 
 
 class ModbusDataStore:
@@ -74,9 +75,15 @@ class ModbusDataStore:
         """
         with self._lock:
             if address < 0 or address >= len(self._coils):
-                raise ValueError(f"线圈地址超出范围 | Coil address out of range: {address}")
+                raise ValueError(get_message(
+                    cn=f"线圈地址超出范围: {address}",
+                    en=f"Coil address out of range: {address}"
+                ))
             if count <= 0 or address + count > len(self._coils):
-                raise ValueError(f"线圈数量无效 | Invalid coil count: {count}")
+                raise ValueError(get_message(
+                    cn=f"线圈数量无效: {count}",
+                    en=f"Invalid coil count: {count}"
+                ))
 
             result = self._coils[address:address + count]
             self._logger.debug(
@@ -98,9 +105,15 @@ class ModbusDataStore:
         """
         with self._lock:
             if address < 0 or address >= len(self._coils):
-                raise ValueError(f"线圈地址超出范围 | Coil address out of range: {address}")
+                raise ValueError(get_message(
+                    cn=f"线圈地址超出范围: {address}",
+                    en=f"Coil address out of range: {address}"
+                ))
             if not values or address + len(values) > len(self._coils):
-                raise ValueError(f"线圈数据无效 | Invalid coil data")
+                raise ValueError(get_message(
+                    cn=f"线圈数据无效",
+                    en=f"Invalid coil data"
+                ))
 
             for i, value in enumerate(values):
                 self._coils[address + i] = value
@@ -126,9 +139,15 @@ class ModbusDataStore:
         """
         with self._lock:
             if address < 0 or address >= len(self._discrete_inputs):
-                raise ValueError(f"离散输入地址超出范围 | Discrete input address out of range: {address}")
+                raise ValueError(get_message(
+                    cn=f"离散输入地址超出范围: {address}",
+                    en=f"Discrete input address out of range: {address}"
+                ))
             if count <= 0 or address + count > len(self._discrete_inputs):
-                raise ValueError(f"离散输入数量无效 | Invalid discrete input count: {count}")
+                raise ValueError(get_message(
+                    cn=f"离散输入数量无效: {count}",
+                    en=f"Invalid discrete input count: {count}"
+                ))
 
             result = self._discrete_inputs[address:address + count]
             self._logger.debug(
@@ -150,9 +169,15 @@ class ModbusDataStore:
         """
         with self._lock:
             if address < 0 or address >= len(self._discrete_inputs):
-                raise ValueError(f"离散输入地址超出范围 | Discrete input address out of range: {address}")
+                raise ValueError(get_message(
+                    cn=f"离散输入地址超出范围: {address}",
+                    en=f"Discrete input address out of range: {address}"
+                ))
             if not values or address + len(values) > len(self._discrete_inputs):
-                raise ValueError(f"离散输入数据无效 | Invalid discrete input data")
+                raise ValueError(get_message(
+                    cn=f"离散输入数据无效",
+                    en=f"Invalid discrete input data"
+                ))
 
             for i, value in enumerate(values):
                 self._discrete_inputs[address + i] = value
@@ -178,9 +203,15 @@ class ModbusDataStore:
         """
         with self._lock:
             if address < 0 or address >= len(self._holding_registers):
-                raise ValueError(f"保持寄存器地址超出范围 | Holding register address out of range: {address}")
+                raise ValueError(get_message(
+                    cn=f"保持寄存器地址超出范围: {address}",
+                    en=f"Holding register address out of range: {address}"
+                ))
             if count <= 0 or address + count > len(self._holding_registers):
-                raise ValueError(f"保持寄存器数量无效 | Invalid holding register count: {count}")
+                raise ValueError(get_message(
+                    cn=f"保持寄存器数量无效: {count}",
+                    en=f"Invalid holding register count: {count}"
+                ))
 
             result = self._holding_registers[address:address + count]
             self._logger.debug(
@@ -202,13 +233,22 @@ class ModbusDataStore:
         """
         with self._lock:
             if address < 0 or address >= len(self._holding_registers):
-                raise ValueError(f"保持寄存器地址超出范围 | Holding register address out of range: {address}")
+                raise ValueError(get_message(
+                    cn=f"保持寄存器地址超出范围: {address}",
+                    en=f"Holding register address out of range: {address}"
+                ))
             if not values or address + len(values) > len(self._holding_registers):
-                raise ValueError(f"保持寄存器数据无效 | Invalid holding register data")
+                raise ValueError(get_message(
+                    cn=f"保持寄存器数据无效",
+                    en=f"Invalid holding register data"
+                ))
 
             for i, value in enumerate(values):
                 if not (0 <= value <= 65535):
-                    raise ValueError(f"寄存器值超出范围 | Register value out of range: {value}")
+                    raise ValueError(get_message(
+                        cn=f"寄存器值超出范围: {value}",
+                        en=f"Register value out of range: {value}"
+                    ))
                 self._holding_registers[address + i] = value
 
             self._logger.debug(
@@ -232,9 +272,15 @@ class ModbusDataStore:
         """
         with self._lock:
             if address < 0 or address >= len(self._input_registers):
-                raise ValueError(f"输入寄存器地址超出范围 | Input register address out of range: {address}")
+                raise ValueError(get_message(
+                    cn=f"输入寄存器地址超出范围: {address}",
+                    en=f"Input register address out of range: {address}"
+                ))
             if count <= 0 or address + count > len(self._input_registers):
-                raise ValueError(f"输入寄存器数量无效 | Invalid input register count: {count}")
+                raise ValueError(get_message(
+                    cn=f"输入寄存器数量无效: {count}",
+                    en=f"Invalid input register count: {count}"
+                ))
 
             result = self._input_registers[address:address + count]
             self._logger.debug(
@@ -256,13 +302,22 @@ class ModbusDataStore:
         """
         with self._lock:
             if address < 0 or address >= len(self._input_registers):
-                raise ValueError(f"输入寄存器地址超出范围 | Input register address out of range: {address}")
+                raise ValueError(get_message(
+                    cn=f"输入寄存器地址超出范围: {address}",
+                    en=f"Input register address out of range: {address}"
+                ))
             if not values or address + len(values) > len(self._input_registers):
-                raise ValueError(f"输入寄存器数据无效 | Invalid input register data")
+                raise ValueError(get_message(
+                    cn=f"输入寄存器数据无效",
+                    en=f"Invalid input register data"
+                ))
 
             for i, value in enumerate(values):
                 if not (0 <= value <= 65535):
-                    raise ValueError(f"寄存器值超出范围 | Register value out of range: {value}")
+                    raise ValueError(get_message(
+                        cn=f"寄存器值超出范围: {value}",
+                        en=f"Register value out of range: {value}"
+                    ))
                 self._input_registers[address + i] = value
 
             self._logger.debug(

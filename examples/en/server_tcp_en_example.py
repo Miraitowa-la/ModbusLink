@@ -5,8 +5,15 @@ Demonstrates how to create and use async Modbus TCP server.
 import random
 import asyncio
 import logging
-from src.modbuslink import AsyncTcpModbusServer, ModbusDataStore
-from src.modbuslink.utils.logging import ModbusLogger, Language
+from src.modbuslink import (
+    AsyncTcpModbusServer,
+    ModbusDataStore,
+    ModbusLogger,
+    Language,
+    set_language,
+)
+
+set_language(Language.EN)
 
 
 async def setup_data_store(data_store: ModbusDataStore) -> None:

@@ -1,10 +1,4 @@
-"""
-ModbusLink 服务器模块
-提供Modbus服务器功能，包括TCP、RTU和ASCII服务器实现。
-
-ModbusLink Server Module
-Provides Modbus server functionality, including TCP, RTU and ASCII server implementations.
-"""
+"""ModbusLink 服务器模块 | ModbusLink Server Module"""
 
 from .data_store import ModbusDataStore
 from .async_base_server import AsyncBaseModbusServer

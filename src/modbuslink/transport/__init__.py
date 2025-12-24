@@ -4,9 +4,9 @@ from .base import BaseTransport
 from .async_base import AsyncBaseTransport
 from .rtu import RtuTransport
 from .tcp import TcpTransport
+from .ascii import AsciiTransport
 from .async_tcp import AsyncTcpTransport
 from .async_rtu import AsyncRtuTransport
-from .ascii import AsciiTransport
 from .async_ascii import AsyncAsciiTransport
 
 __all__ = [
@@ -14,8 +14,8 @@ __all__ = [
     "AsyncBaseTransport",
     "RtuTransport",
     "TcpTransport",
+    "AsciiTransport",
     "AsyncTcpTransport",
     "AsyncRtuTransport",
-    "AsciiTransport",
     "AsyncAsciiTransport",
 ]

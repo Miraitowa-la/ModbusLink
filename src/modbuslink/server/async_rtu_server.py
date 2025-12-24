@@ -111,7 +111,10 @@ class AsyncRtuModbusServer(AsyncBaseModbusServer):
                 cn=f"启动RTU服务器失败: {e}",
                 en=f"Failed to start RTU server: {e}"
             )
-            raise ConnectionError(f"无法打开串口 | Cannot open serial port: {e}")
+            raise ConnectionError(
+                cn=f"无法打开串口: {e}",
+                en=f"Cannot open serial port: {e}"
+            )
 
     async def stop(self) -> None:
         """停止异步RTU服务器 | Stop Async RTU Server"""
@@ -309,4 +312,7 @@ class AsyncRtuModbusServer(AsyncBaseModbusServer):
                 )
                 raise
         else:
-            raise ConnectionError("服务器未启动 | Server not started")
+            raise ConnectionError(
+                cn="服务器未启动",
+                en="Server not started"
+            )

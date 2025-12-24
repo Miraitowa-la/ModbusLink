@@ -12,6 +12,7 @@ from typing import Optional
 
 from .async_base import AsyncBaseTransport
 from ..common.exceptions import ConnectionError, TimeoutError, InvalidResponseError
+from ..common.language import get_message
 from ..utils.logging import get_logger
 
 
@@ -40,18 +41,22 @@ class AsyncTcpTransport(AsyncBaseTransport):
 
         Raises:
             ValueError: 当参数无效时 | When parameters are invalid
-            TypeError: 当参数类型错误时 | When parameter types are incorrect
         """
         if not host or not isinstance(host, str):
-            raise ValueError(
-                "主机地址不能为空且必须是字符串 | Host address cannot be empty and must be a string"
-            )
+            raise ValueError(get_message(
+                cn="主机地址不能为空且必须是字符串",
+                en="Host address cannot be empty and must be a string"
+            ))
         if not isinstance(port, int) or port <= 0 or port > 65535:
-            raise ValueError(
-                "端口必须是1-65535之间的整数 | Port must be an integer between 1-65535"
-            )
+            raise ValueError(get_message(
+                cn="端口必须是1-65535之间的整数",
+                en="Port must be an integer between 1-65535"
+            ))
         if not isinstance(timeout, (int, float)) or timeout <= 0:
-            raise ValueError("超时时间必须是正数 | Timeout must be a positive number")
+            raise ValueError(get_message(
+                cn="超时时间必须是正数",
+                en="Timeout must be a positive number"
+            ))
 
         self.host = host
         self.port = port
@@ -76,10 +81,14 @@ class AsyncTcpTransport(AsyncBaseTransport):
 
         except asyncio.TimeoutError:
             raise TimeoutError(
-                f"异步TCP连接超时 | Async TCP connection timeout: {self.host}:{self.port}"
+                cn=f"异步TCP连接超时: {self.host}:{self.port}",
+                en=f"Async TCP connection timeout: {self.host}:{self.port}"
             )
         except Exception as e:
-            raise ConnectionError(f"异步TCP连接失败 | Async TCP connection failed: {e}")
+            raise ConnectionError(
+                cn=f"异步TCP连接失败: {e}",
+                en=f"Async TCP connection failed: {e}"
+            )
 
     async def close(self) -> None:
         """异步关闭TCP连接 | Async close TCP connection"""
@@ -124,7 +133,8 @@ class AsyncTcpTransport(AsyncBaseTransport):
         """
         if not await self.is_open():
             raise ConnectionError(
-                "异步TCP连接未建立 | Async TCP connection not established"
+                cn="异步TCP连接未建立",
+                en="Async TCP connection not established"
             )
 
         # 1. 生成事务ID并构建MBAP头 | Generate transaction ID and build MBAP header
@@ -156,7 +166,10 @@ class AsyncTcpTransport(AsyncBaseTransport):
         try:
             # 3. 异步发送请求 | Async send request
             if self._writer is None:
-                raise ConnectionError("连接未建立 | Connection not established")
+                raise ConnectionError(
+                    cn="连接未建立",
+                    en="Connection not established"
+                )
             self._writer.write(request_frame)
             await asyncio.wait_for(self._writer.drain(), timeout=self.timeout)
 
@@ -174,17 +187,20 @@ class AsyncTcpTransport(AsyncBaseTransport):
             # 6. 验证MBAP头 | Validate MBAP header
             if response_transaction_id != current_transaction_id:
                 raise InvalidResponseError(
-                    f"事务ID不匹配 | Transaction ID mismatch: 期望 | Expected {current_transaction_id}, 收到 | Received {response_transaction_id}"
+                    cn=f"事务ID不匹配: 期望 {current_transaction_id}, 得到 {response_transaction_id}",
+                    en=f"Transaction ID mismatch: Expected {current_transaction_id}, Received {response_transaction_id}"
                 )
 
             if response_protocol_id != 0x0000:
                 raise InvalidResponseError(
-                    f"协议ID无效 | Invalid Protocol ID: 期望 | Expected 0x0000, 收到 | Received 0x{response_protocol_id:04X}"
+                    cn=f"协议ID无效: 期望 0x0000, 得到 0x{response_protocol_id:04X}",
+                    en=f"Invalid Protocol ID: Expected 0x0000, Received 0x{response_protocol_id:04X}"
                 )
 
             if response_unit_id != slave_id:
                 raise InvalidResponseError(
-                    f"单元ID不匹配 | Unit ID mismatch: 期望 | Expected {slave_id}, 收到 | Received {response_unit_id}"
+                    cn=f"单元ID不匹配: 期望 {slave_id}, 得到 {response_unit_id}",
+                    en=f"Unit ID mismatch: Expected {slave_id}, Received {response_unit_id}"
                 )
 
             # 7. 异步接收响应PDU | Async receive response PDU
@@ -193,7 +209,8 @@ class AsyncTcpTransport(AsyncBaseTransport):
             )  # 减去Unit ID的1字节 | Subtract 1 byte for Unit ID
             if pdu_length <= 0:
                 raise InvalidResponseError(
-                    f"PDU长度无效 | Invalid PDU length: {pdu_length}"
+                    cn=f"PDU长度无效: {pdu_length}",
+                    en=f"Invalid PDU length: {pdu_length}"
                 )
 
             response_pdu = await self._receive_exact(pdu_length)
@@ -219,13 +236,15 @@ class AsyncTcpTransport(AsyncBaseTransport):
 
         except asyncio.TimeoutError:
             raise TimeoutError(
-                f"异步TCP通信超时 | Async TCP communication timeout ({self.timeout}秒 | seconds)"
+                cn=f"异步TCP通信超时 ({self.timeout}秒)",
+                en=f"Async TCP communication timeout ({self.timeout}seconds)"
             )
         except Exception as e:
             if isinstance(e, (ConnectionError, TimeoutError, InvalidResponseError)):
                 raise
             raise ConnectionError(
-                f"异步TCP通信错误 | Async TCP communication error: {e}"
+                cn=f"异步TCP通信错误: {e}",
+                en=f"Async TCP communication error: {e}"
             )
 
     async def _receive_exact(self, length: int) -> bytes:
@@ -244,29 +263,35 @@ class AsyncTcpTransport(AsyncBaseTransport):
         """
         try:
             if self._reader is None:
-                raise ConnectionError("连接未建立 | Connection not established")
+                raise ConnectionError(
+                    cn="连接未建立",
+                    en="Connection not established"
+                )
             data = await asyncio.wait_for(
                 self._reader.readexactly(length), timeout=self.timeout
             )
             return data
         except asyncio.IncompleteReadError as e:
             raise ConnectionError(
-                f"连接被远程主机关闭 | Connection closed by remote host，已接收 | Received {len(e.partial)}/{length} 字节 | bytes"
+                cn=f"连接被远程主机关闭，已接收 {len(e.partial)}/{length} 字节",
+                en=f"Connection closed by remote host，Received {len(e.partial)}/{length} bytes"
             )
         except asyncio.TimeoutError:
             raise TimeoutError(
-                f"接收数据超时 | Data receive timeout，需要 | Need {length} 字节 | bytes"
+                cn=f"接收数据超时，需要 {length} 字节",
+                en=f"Data receive timeout，Need {length} bytes"
             )
         except Exception as e:
-            raise ConnectionError(f"接收数据错误 | Data receive error: {e}")
+            raise ConnectionError(
+                cn=f"接收数据错误: {e}",
+                en=f"Data receive error: {e}"
+            )
 
     def __repr__(self) -> str:
         """字符串表示 | String representation"""
         # 注意：这里不能使用 await is_open()，因为 __repr__ 不是异步方法
         # Note: Cannot use await is_open() here because __repr__ is not an async method
         status = (
-            "已连接 | Connected"
-            if (self._writer and not self._writer.is_closing())
-            else "未连接 | Disconnected"
+            "Connected" if (self._writer and not self._writer.is_closing()) else "Disconnected"
         )
         return f"AsyncTcpTransport({self.host}:{self.port}, {status})"

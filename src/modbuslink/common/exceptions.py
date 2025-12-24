@@ -7,6 +7,7 @@ Defines all exception types used in the ModbusLink library.
 """
 
 from typing import Optional
+from .language import get_message
 
 
 class ModbusLinkError(Exception):
@@ -28,7 +29,14 @@ class ConnectionError(ModbusLinkError):
     Connection error exception
     Raised when unable to establish or maintain connection with Modbus device.
     """
-    pass
+
+    def __init__(self, cn: str = "", en: str = ""):
+        self.cn = cn
+        self.en = en
+        super().__init__(get_message(cn, en))
+
+    def __str__(self) -> str:
+        return get_message(self.cn, self.en)
 
 
 class TimeoutError(ModbusLinkError):
@@ -39,7 +47,14 @@ class TimeoutError(ModbusLinkError):
     Timeout error exception
     Raised when operation exceeds the specified timeout period.
     """
-    pass
+
+    def __init__(self, cn: str = "", en: str = ""):
+        self.cn = cn
+        self.en = en
+        super().__init__(get_message(cn, en))
+
+    def __str__(self) -> str:
+        return get_message(self.cn, self.en)
 
 
 class CRCError(ModbusLinkError):
@@ -50,7 +65,14 @@ class CRCError(ModbusLinkError):
     CRC validation error exception
     Raised when CRC validation of received data frame fails.
     """
-    pass
+
+    def __init__(self, cn: str = "", en: str = ""):
+        self.cn = cn
+        self.en = en
+        super().__init__(get_message(cn, en))
+
+    def __str__(self) -> str:
+        return get_message(self.cn, self.en)
 
 
 class InvalidResponseError(ModbusLinkError):
@@ -58,11 +80,17 @@ class InvalidResponseError(ModbusLinkError):
     无效响应错误异常
     当接收到的响应格式不正确或不符合预期时抛出。
 
-
     Invalid response error exception
     Raised when received response format is incorrect or unexpected.
     """
-    pass
+
+    def __init__(self, cn: str = "", en: str = ""):
+        self.cn = cn
+        self.en = en
+        super().__init__(get_message(cn, en))
+
+    def __str__(self) -> str:
+        return get_message(self.cn, self.en)
 
 
 class ModbusException(ModbusLinkError):
@@ -78,31 +106,47 @@ class ModbusException(ModbusLinkError):
         function_code: 原始功能码 | Original function code
     """
 
+    # 异常码名称映射 | Exception code name mapping
+    _EXCEPTION_NAMES_CN = {
+        0x01: "非法功能码",
+        0x02: "非法数据地址",
+        0x03: "非法数据值",
+        0x04: "从站设备故障",
+        0x05: "确认",
+        0x06: "从站设备忙",
+        0x08: "存储奇偶性差错",
+        0x0A: "不可用网关路径",
+        0x0B: "网关目标设备响应失败",
+    }
+
+    _EXCEPTION_NAMES_EN = {
+        0x01: "Illegal Function Code",
+        0x02: "Illegal Data Address",
+        0x03: "Illegal Data Value",
+        0x04: "Slave Device Failure",
+        0x05: "Acknowledge",
+        0x06: "Slave Device Busy",
+        0x08: "Memory Parity Error",
+        0x0A: "Gateway Path Unavailable",
+        0x0B: "Gateway Target Device Failed to Respond",
+    }
+
     def __init__(
             self, exception_code: int, function_code: int, message: Optional[str] = None
     ):
         self.exception_code = exception_code
         self.function_code = function_code
-
-        if message is None:
-            message = f"Modbus异常 | Modbus Exception: 功能码 | Function Code 0x{function_code:02X}, 异常码 | Exception Code 0x{exception_code:02X}"
-
-        super().__init__(message)
+        self._custom_message = message
+        super().__init__(str(self))
 
     def __str__(self) -> str:
-        exception_names = {
-            0x01: "非法功能码 | Illegal Function Code",
-            0x02: "非法数据地址 | Illegal Data Address",
-            0x03: "非法数据值 | Illegal Data Value",
-            0x04: "从站设备故障 | Slave Device Failure",
-            0x05: "确认 | Acknowledge",
-            0x06: "从站设备忙 | Slave Device Busy",
-            0x08: "存储奇偶性差错 | Memory Parity Error",
-            0x0A: "不可用网关路径 | Gateway Path Unavailable",
-            0x0B: "网关目标设备响应失败 | Gateway Target Device Failed to Respond",
-        }
+        if self._custom_message:
+            return self._custom_message
 
-        exception_name = exception_names.get(
-            self.exception_code, "未知异常 | Unknown Exception"
-        )
-        return f"Modbus异常 | Modbus Exception (功能码 | Function Code: 0x{self.function_code:02X}, 异常码 | Exception Code: 0x{self.exception_code:02X} - {exception_name})"
+        exception_name_cn = self._EXCEPTION_NAMES_CN.get(self.exception_code, "未知异常")
+        exception_name_en = self._EXCEPTION_NAMES_EN.get(self.exception_code, "Unknown Exception")
+
+        cn_msg = f"Modbus异常 (功能码: 0x{self.function_code:02X}, 异常码: 0x{self.exception_code:02X} - {exception_name_cn})"
+        en_msg = f"Modbus Exception (Function Code: 0x{self.function_code:02X}, Exception Code: 0x{self.exception_code:02X} - {exception_name_en})"
+
+        return get_message(cn_msg, en_msg)

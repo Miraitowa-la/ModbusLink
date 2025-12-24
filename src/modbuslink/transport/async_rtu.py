@@ -20,6 +20,7 @@ from ..common.exceptions import (
     CRCError,
     InvalidResponseError,
 )
+from ..common.language import get_message
 from ..utils.crc import CRC16Modbus
 from ..utils.logging import get_logger
 
@@ -67,7 +68,6 @@ class AsyncRtuTransport(AsyncBaseTransport):
 
         Raises:
             ValueError: 当参数无效时 | When parameters are invalid
-            TypeError: 当参数类型错误时 | When parameter types are incorrect
         
         Example:
             基本RS485模式 | Basic RS485 mode::
@@ -86,13 +86,20 @@ class AsyncRtuTransport(AsyncBaseTransport):
                 transport = AsyncRtuTransport('/dev/ttyUSB0', rs485_mode=rs485_settings)
         """
         if not port or not isinstance(port, str):
-            raise ValueError(
-                "串口名称不能为空且必须是字符串 | Port name cannot be empty and must be a string"
-            )
+            raise ValueError(get_message(
+                cn="串口名称不能为空且必须是字符串",
+                en="Port name cannot be empty and must be a string"
+            ))
         if not isinstance(baudrate, int) or baudrate <= 0:
-            raise ValueError("波特率必须是正整数 | Baudrate must be a positive integer")
+            raise ValueError(get_message(
+                cn="波特率必须是正整数",
+                en="Baudrate must be a positive integer"
+            ))
         if not isinstance(timeout, (int, float)) or timeout <= 0:
-            raise ValueError("超时时间必须是正数 | Timeout must be a positive number")
+            raise ValueError(get_message(
+                cn="超时时间必须是正数",
+                en="Timeout must be a positive number"
+            ))
 
         self.port = port
         self.baudrate = baudrate
@@ -150,7 +157,10 @@ class AsyncRtuTransport(AsyncBaseTransport):
             )
 
         except Exception as e:
-            raise ConnectionError(f"异步串口连接失败 | Async serial port connection failed: {e}")
+            raise ConnectionError(
+                cn=f"异步串口连接失败: {e}",
+                en=f"Async serial port connection failed: {e}"
+            )
 
     async def close(self) -> None:
         """异步关闭串口连接 | Async close serial port connection"""
@@ -191,7 +201,8 @@ class AsyncRtuTransport(AsyncBaseTransport):
         """
         if not await self.is_open():
             raise ConnectionError(
-                "异步串口连接未建立 | Async serial port connection not established"
+                cn="异步串口连接未建立",
+                en="Async serial port connection not established"
             )
 
         # 1. 构建请求帧 | Build request frame
@@ -207,7 +218,10 @@ class AsyncRtuTransport(AsyncBaseTransport):
         try:
             # 2. 清空接收缓冲区并发送请求 | Clear receive buffer and send request
             if self._reader.at_eof():
-                raise ConnectionError("异步串口连接已断开 | Async serial connection lost")
+                raise ConnectionError(
+                    cn="异步串口连接已断开",
+                    en="Async serial connection lost"
+                )
 
             # 清空可能存在的旧数据 | Clear any existing old data
             while True:
@@ -232,12 +246,16 @@ class AsyncRtuTransport(AsyncBaseTransport):
 
         except asyncio.TimeoutError:
             raise TimeoutError(
-                f"异步RTU通信超时 | Async RTU communication timeout: {self.timeout}s"
+                cn=f"异步RTU通信超时: {self.timeout}s",
+                en=f"Async RTU communication timeout: {self.timeout}s"
             )
         except Exception as e:
             if isinstance(e, (ConnectionError, TimeoutError, CRCError, InvalidResponseError)):
                 raise
-            raise ConnectionError(f"异步RTU通信错误 | Async RTU communication error: {e}")
+            raise ConnectionError(
+                cn=f"异步RTU通信错误: {e}",
+                en=f"Async RTU communication error: {e}"
+            )
 
     async def _receive_response(self, expected_slave_id: int, function_code: int) -> bytes:
         """
@@ -261,12 +279,16 @@ class AsyncRtuTransport(AsyncBaseTransport):
                 self._reader.read(1), timeout=self.timeout
             )
             if len(slave_addr_bytes) != 1:
-                raise InvalidResponseError("未接收到从站地址 | No slave address received")
+                raise InvalidResponseError(
+                    cn="未接收到从站地址",
+                    en="No slave address received"
+                )
 
             received_slave_id = slave_addr_bytes[0]
             if received_slave_id != expected_slave_id:
                 raise InvalidResponseError(
-                    f"从站地址不匹配 | Slave address mismatch: expected {expected_slave_id}, got {received_slave_id}"
+                    cn=f"从站地址不匹配: 预期 {expected_slave_id}, 得到 {received_slave_id}",
+                    en=f"Slave address mismatch: expected {expected_slave_id}, got {received_slave_id}"
                 )
 
             # 接收功能码 | Receive function code
@@ -274,7 +296,10 @@ class AsyncRtuTransport(AsyncBaseTransport):
                 self._reader.read(1), timeout=self.timeout
             )
             if len(func_code_bytes) != 1:
-                raise InvalidResponseError("未接收到功能码 | No function code received")
+                raise InvalidResponseError(
+                    cn="未接收到功能码",
+                    en="No function code received"
+                )
 
             received_function_code = func_code_bytes[0]
 
@@ -285,22 +310,28 @@ class AsyncRtuTransport(AsyncBaseTransport):
                     self._reader.read(1), timeout=self.timeout
                 )
                 if len(exception_code_bytes) != 1:
-                    raise InvalidResponseError("未接收到异常码 | No exception code received")
+                    raise InvalidResponseError(
+                        cn="未接收到异常码",
+                        en="No exception code received"
+                    )
 
                 # 接收CRC | Receive CRC
                 crc_bytes = await asyncio.wait_for(
                     self._reader.read(2), timeout=self.timeout
                 )
                 if len(crc_bytes) != 2:
-                    raise InvalidResponseError("CRC数据不完整 | Incomplete CRC data")
+                    raise InvalidResponseError(
+                        cn="CRC数据不完整",
+                        en="Incomplete CRC data"
+                    )
 
                 # 验证CRC | Validate CRC
                 response_without_crc = slave_addr_bytes + func_code_bytes + exception_code_bytes
                 expected_crc = CRC16Modbus.calculate(response_without_crc)
                 if crc_bytes != expected_crc:
                     raise CRCError(
-                        f"异常响应CRC校验失败 | Exception response CRC validation failed: "
-                        f"expected {expected_crc.hex()}, got {crc_bytes.hex()}"
+                        cn=f"异常响应CRC校验失败: 预期 {expected_crc.hex()}, 得到 {crc_bytes.hex()}",
+                        en=f"Exception response CRC validation failed: expected {expected_crc.hex()}, got {crc_bytes.hex()}"
                     )
 
                 # 返回异常响应PDU | Return exception response PDU
@@ -309,7 +340,8 @@ class AsyncRtuTransport(AsyncBaseTransport):
             # 正常响应处理 | Normal response handling
             if received_function_code != function_code:
                 raise InvalidResponseError(
-                    f"功能码不匹配 | Function code mismatch: expected {function_code}, got {received_function_code}"
+                    cn=f"功能码不匹配: 预取 {function_code}, 得到 {received_function_code}",
+                    en=f"Function code mismatch: expected {function_code}, got {received_function_code}"
                 )
 
             # 根据功能码确定数据长度 | Determine data length based on function code
@@ -318,7 +350,10 @@ class AsyncRtuTransport(AsyncBaseTransport):
                     self._reader.read(1), timeout=self.timeout
                 )
                 if len(data_length_bytes) != 1:
-                    raise InvalidResponseError("未接收到数据长度 | No data length received")
+                    raise InvalidResponseError(
+                        cn="未接收到数据长度",
+                        en="No data length received"
+                    )
                 data_length = data_length_bytes[0]
 
             elif function_code in [0x03, 0x04]:  # 读保持寄存器/输入寄存器 | Read holding/input registers
@@ -326,7 +361,10 @@ class AsyncRtuTransport(AsyncBaseTransport):
                     self._reader.read(1), timeout=self.timeout
                 )
                 if len(data_length_bytes) != 1:
-                    raise InvalidResponseError("未接收到数据长度 | No data length received")
+                    raise InvalidResponseError(
+                        cn="未接收到数据长度",
+                        en="No data length received"
+                    )
                 data_length = data_length_bytes[0]
 
             elif function_code in [0x05, 0x06]:  # 写单个线圈/寄存器 | Write single coil/register
@@ -338,7 +376,10 @@ class AsyncRtuTransport(AsyncBaseTransport):
                 data_length_bytes = b''
 
             else:
-                raise InvalidResponseError(f"不支持的功能码 | Unsupported function code: {function_code}")
+                raise InvalidResponseError(
+                    cn=f"不支持的功能码: {function_code}",
+                    en=f"Unsupported function code: {function_code}"
+                )
 
             # 接收数据部分 | Receive data part
             data_bytes = await asyncio.wait_for(
@@ -346,7 +387,8 @@ class AsyncRtuTransport(AsyncBaseTransport):
             )
             if len(data_bytes) != data_length:
                 raise InvalidResponseError(
-                    f"数据长度不匹配 | Data length mismatch: expected {data_length}, got {len(data_bytes)}"
+                    cn=f"数据长度不匹配: 预取 {data_length}, 得到 {len(data_bytes)}",
+                    en=f"Data length mismatch: expected {data_length}, got {len(data_bytes)}"
                 )
 
             # 接收CRC | Receive CRC
@@ -354,22 +396,28 @@ class AsyncRtuTransport(AsyncBaseTransport):
                 self._reader.read(2), timeout=self.timeout
             )
             if len(crc_bytes) != 2:
-                raise InvalidResponseError("CRC数据不完整 | Incomplete CRC data")
+                raise InvalidResponseError(
+                    cn="CRC数据不完整",
+                    en="Incomplete CRC data"
+                )
 
             # 验证CRC | Validate CRC
             response_without_crc = slave_addr_bytes + func_code_bytes + data_length_bytes + data_bytes
             expected_crc = CRC16Modbus.calculate(response_without_crc)
             if crc_bytes != expected_crc:
                 raise CRCError(
-                    f"CRC校验失败 | CRC validation failed: "
-                    f"expected {expected_crc.hex()}, got {crc_bytes.hex()}"
+                    cn=f"CRC校验失败: 预期 {expected_crc.hex()}, 得到 {crc_bytes.hex()}",
+                    en=f"CRC validation failed: expected {expected_crc.hex()}, got {crc_bytes.hex()}"
                 )
 
             # 返回PDU（功能码 + 数据） | Return PDU (function code + data)
             return func_code_bytes + data_length_bytes + data_bytes
 
         except asyncio.TimeoutError:
-            raise TimeoutError(f"异步接收响应超时 | Async receive response timeout: {self.timeout}s")
+            raise TimeoutError(
+                cn=f"异步接收响应超时: {self.timeout}s",
+                en=f"Async receive response timeout: {self.timeout}s"
+            )
 
     def __repr__(self) -> str:
         """返回传输层的字符串表示 | Return string representation of transport layer"""

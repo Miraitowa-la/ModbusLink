@@ -13,9 +13,13 @@ from src.modbuslink import (
     TimeoutError,
     CRCError,
     ModbusException,
-    InvalidResponseError
+    InvalidResponseError,
+    ModbusLogger,
+    Language,
+    set_language,
 )
-from src.modbuslink.utils.logging import ModbusLogger
+
+set_language(Language.CN)
 
 # 设置日志
 ModbusLogger.setup_logging(
@@ -440,7 +444,6 @@ async def main():
     print("  - 校验位: 偶校验、奇校验或无校验")
     print("  - 停止位: 1或2位")
     print("\n请修改串口参数以匹配您的设备：")
-    print("Please modify serial port parameters to match your device:")
     print("  - port: COM10 (Windows) 或 /dev/ttyUSB0 (Linux)")
     print("  - baudrate: 9600")
     print("  - slave_id: 1")
