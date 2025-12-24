@@ -611,7 +611,8 @@ set_language(Language.CN)  # 使用 Language.EN 切换为英文
 ModbusLogger.setup_logging(
     level=logging.DEBUG,
     enable_debug=True,
-    # log_file='modbus_debug.log'  # 使用 Language.EN 切换为英文
+    log_file='modbus_debug.log'
+    # language=Language.EN # 使用 Language.EN 切换为英文
     # 原有的书写方式仍可使用，但建议采用上述方法对其进行修改(全局的)。
 )
 
