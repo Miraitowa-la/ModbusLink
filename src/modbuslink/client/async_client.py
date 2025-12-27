@@ -649,6 +649,228 @@ class AsyncModbusClient:
             slave_id, start_address, registers, callback
         )
 
+    async def read_uint32(
+            self,
+            slave_id: int,
+            start_address: int,
+            byte_order: str = "big",
+            word_order: str = "high",
+            callback: Optional[Callable[[int], None]] = None,
+    ) -> int:
+        """
+        异步读取32位无符号整数（占用2个连续寄存器） | Async Read 32-bit unsigned integer (occupies 2 consecutive registers)
+
+        Args:
+            slave_id: 从站地址 | Slave address
+            start_address: 起始寄存器地址 | Starting register address
+            byte_order: 字节序，'big'或'little' | Byte order, 'big' or 'little'
+            word_order: 字序，'high'或'low' | Word order, 'high' or 'low'
+            callback: 可选的回调函数，在收到响应后调用 | Optional callback function, called after receiving response
+
+        Returns:
+            32位无符号整数值 | 32-bit unsigned integer value
+        """
+        registers = await self.read_holding_registers(slave_id, start_address, 2)
+        result = PayloadCoder.decode_uint32(registers, byte_order, word_order)
+
+        # 如果提供了回调函数，在后台任务中调用 | If callback is provided, call it in background task
+        if callback:
+            asyncio.create_task(self._call_callback(callback, result))
+
+        return result
+
+    async def write_uint32(
+            self,
+            slave_id: int,
+            start_address: int,
+            value: int,
+            byte_order: str = "big",
+            word_order: str = "high",
+            callback: Optional[Callable[[], None]] = None,
+    ) -> None:
+        """
+        异步写入32位无符号整数（占用2个连续寄存器） | Async Write 32-bit unsigned integer (occupies 2 consecutive registers)
+
+        Args:
+            slave_id: 从站地址 | Slave address
+            start_address: 起始寄存器地址 | Starting register address
+            value: 要写入的无符号整数值 | Unsigned integer value to write
+            byte_order: 字节序，'big'或'little' | Byte order, 'big' or 'little'
+            word_order: 字序，'high'或'low' | Word order, 'high' or 'low'
+            callback: 可选的回调函数，在操作完成后调用 | Optional callback function, called after operation completes
+        """
+        registers = PayloadCoder.encode_uint32(value, byte_order, word_order)
+        await self.write_multiple_registers(
+            slave_id, start_address, registers, callback
+        )
+
+    async def read_int64(
+            self,
+            slave_id: int,
+            start_address: int,
+            byte_order: str = "big",
+            word_order: str = "high",
+            callback: Optional[Callable[[int], None]] = None,
+    ) -> int:
+        """
+        异步读取64位有符号整数（占用4个连续寄存器） | Async Read 64-bit signed integer (occupies 4 consecutive registers)
+
+        Args:
+            slave_id: 从站地址 | Slave address
+            start_address: 起始寄存器地址 | Starting register address
+            byte_order: 字节序，'big'或'little' | Byte order, 'big' or 'little'
+            word_order: 字序，'high'或'low' | Word order, 'high' or 'low'
+            callback: 可选的回调函数，在收到响应后调用 | Optional callback function, called after receiving response
+
+        Returns:
+            64位有符号整数值 | 64-bit signed integer value
+        """
+        registers = await self.read_holding_registers(slave_id, start_address, 4)
+        result = PayloadCoder.decode_int64(registers, byte_order, word_order)
+
+        # 如果提供了回调函数，在后台任务中调用 | If callback is provided, call it in background task
+        if callback:
+            asyncio.create_task(self._call_callback(callback, result))
+
+        return result
+
+    async def write_int64(
+            self,
+            slave_id: int,
+            start_address: int,
+            value: int,
+            byte_order: str = "big",
+            word_order: str = "high",
+            callback: Optional[Callable[[], None]] = None,
+    ) -> None:
+        """
+        异步写入64位有符号整数（占用4个连续寄存器） | Async Write 64-bit signed integer (occupies 4 consecutive registers)
+
+        Args:
+            slave_id: 从站地址 | Slave address
+            start_address: 起始寄存器地址 | Starting register address
+            value: 要写入的整数值 | Integer value to write
+            byte_order: 字节序，'big'或'little' | Byte order, 'big' or 'little'
+            word_order: 字序，'high'或'low' | Word order, 'high' or 'low'
+            callback: 可选的回调函数，在操作完成后调用 | Optional callback function, called after operation completes
+        """
+        registers = PayloadCoder.encode_int64(value, byte_order, word_order)
+        await self.write_multiple_registers(
+            slave_id, start_address, registers, callback
+        )
+
+    async def read_uint64(
+            self,
+            slave_id: int,
+            start_address: int,
+            byte_order: str = "big",
+            word_order: str = "high",
+            callback: Optional[Callable[[int], None]] = None,
+    ) -> int:
+        """
+        异步读取64位无符号整数（占用4个连续寄存器） | Async Read 64-bit unsigned integer (occupies 4 consecutive registers)
+
+        Args:
+            slave_id: 从站地址 | Slave address
+            start_address: 起始寄存器地址 | Starting register address
+            byte_order: 字节序，'big'或'little' | Byte order, 'big' or 'little'
+            word_order: 字序，'high'或'low' | Word order, 'high' or 'low'
+            callback: 可选的回调函数，在收到响应后调用 | Optional callback function, called after receiving response
+
+        Returns:
+            64位无符号整数值 | 64-bit unsigned integer value
+        """
+        registers = await self.read_holding_registers(slave_id, start_address, 4)
+        result = PayloadCoder.decode_uint64(registers, byte_order, word_order)
+
+        # 如果提供了回调函数，在后台任务中调用 | If callback is provided, call it in background task
+        if callback:
+            asyncio.create_task(self._call_callback(callback, result))
+
+        return result
+
+    async def write_uint64(
+            self,
+            slave_id: int,
+            start_address: int,
+            value: int,
+            byte_order: str = "big",
+            word_order: str = "high",
+            callback: Optional[Callable[[], None]] = None,
+    ) -> None:
+        """
+        异步写入64位无符号整数（占用4个连续寄存器） | Async Write 64-bit unsigned integer (occupies 4 consecutive registers)
+
+        Args:
+            slave_id: 从站地址 | Slave address
+            start_address: 起始寄存器地址 | Starting register address
+            value: 要写入的无符号整数值 | Unsigned integer value to write
+            byte_order: 字节序，'big'或'little' | Byte order, 'big' or 'little'
+            word_order: 字序，'high'或'low' | Word order, 'high' or 'low'
+            callback: 可选的回调函数，在操作完成后调用 | Optional callback function, called after operation completes
+        """
+        registers = PayloadCoder.encode_uint64(value, byte_order, word_order)
+        await self.write_multiple_registers(
+            slave_id, start_address, registers, callback
+        )
+
+    async def read_string(
+            self,
+            slave_id: int,
+            start_address: int,
+            length: int,
+            encoding: str = "utf-8",
+            callback: Optional[Callable[[str], None]] = None,
+    ) -> str:
+        """
+        异步读取字符串（从连续寄存器中） | Async Read string (from consecutive registers)
+
+        Args:
+            slave_id: 从站地址 | Slave address
+            start_address: 起始寄存器地址 | Starting register address
+            length: 字符串字节长度 | String byte length
+            encoding: 字符编码，默认'utf-8' | Character encoding, default 'utf-8'
+            callback: 可选的回调函数，在收到响应后调用 | Optional callback function, called after receiving response
+
+        Returns:
+            解码后的字符串 | Decoded string
+        """
+        register_count = (length + 1) // 2  # 每个寄存器2字节 | 2 bytes per register
+        registers = await self.read_holding_registers(slave_id, start_address, register_count)
+        result = PayloadCoder.decode_string(registers, PayloadCoder.BIG_ENDIAN, encoding)
+
+        # 如果提供了回调函数，在后台任务中调用 | If callback is provided, call it in background task
+        if callback:
+            asyncio.create_task(self._call_callback(callback, result))
+
+        return result
+
+    async def write_string(
+            self,
+            slave_id: int,
+            start_address: int,
+            value: str,
+            encoding: str = "utf-8",
+            callback: Optional[Callable[[], None]] = None,
+    ) -> None:
+        """
+        异步写入字符串（到连续寄存器中） | Async Write string (to consecutive registers)
+
+        Args:
+            slave_id: 从站地址 | Slave address
+            start_address: 起始寄存器地址 | Starting register address
+            value: 要写入的字符串 | String to write
+            encoding: 字符编码，默认'utf-8' | Character encoding, default 'utf-8'
+            callback: 可选的回调函数，在操作完成后调用 | Optional callback function, called after operation completes
+        """
+        # 计算所需的寄存器数量 | Calculate required register count
+        byte_length = len(value.encode(encoding))
+        register_count = (byte_length + 1) // 2  # 向上取整 | Round up
+        registers = PayloadCoder.encode_string(
+            value, register_count, PayloadCoder.BIG_ENDIAN, encoding
+        )
+        await self.write_multiple_registers(slave_id, start_address, registers, callback)
+
     async def __aenter__(self) -> Self:
         """异步上下文管理器入口 | Async context manager entry"""
         await self.transport.open()

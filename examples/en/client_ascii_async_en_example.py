@@ -141,31 +141,31 @@ async def advanced_data_types_example():
             read_pressure = await client.read_int32(slave_id=1, start_address=22)
             print(f"   Read pressure: {read_pressure}")
 
-            # Write 32-bit unsigned integer(It seems there is a problem. It will be fixed later.)
-            # print("\n5. Writing 32-bit unsigned integer...")
-            # counter = 65535  # Smaller value suitable for ASCII transport
-            # await client.write_uint32(slave_id=1, start_address=24, value=counter)
-            # print(f"   Written counter value: {counter}")
+            # Write 32-bit unsigned integer
+            print("\n5. Writing 32-bit unsigned integer...")
+            counter = 65535  # Smaller value suitable for ASCII transport
+            await client.write_uint32(slave_id=1, start_address=24, value=counter)
+            print(f"   Written counter value: {counter}")
 
-            # Read 32-bit unsigned integer(It seems there is a problem. It will be fixed later.)
-            # print("\n6. Reading 32-bit unsigned integer...")
-            # read_counter = await client.read_uint32(slave_id=1, start_address=24)
-            # print(f"   Read counter value: {read_counter}")
+            # Read 32-bit unsigned integer
+            print("\n6. Reading 32-bit unsigned integer...")
+            read_counter = await client.read_uint32(slave_id=1, start_address=24)
+            print(f"   Read counter value: {read_counter}")
 
-            # Write string(It seems there is a problem. It will be fixed later.)
-            # print("\n7. Writing string...")
-            # device_name = "AsyncASCII_Dev"
-            # await client.write_string(slave_id=1, start_address=30, value=device_name)
-            # print(f"   Written device name: '{device_name}'")
+            # Write string
+            print("\n7. Writing string...")
+            device_name = "AsyncASCII_Dev"
+            await client.write_string(slave_id=1, start_address=30, value=device_name)
+            print(f"   Written device name: '{device_name}'")
 
-            # Read string(It seems there is a problem. It will be fixed later.)
-            # print("\n8. Reading string...")
-            # read_name = await client.read_string(
-            #     slave_id=1,
-            #     start_address=30,
-            #     length=len(device_name.encode("utf-8")),
-            # )
-            # print(f"   Read device name: '{read_name}'")
+            # Read string
+            print("\n8. Reading string...")
+            read_name = await client.read_string(
+                slave_id=1,
+                start_address=30,
+                length=len(device_name.encode("utf-8")),
+            )
+            print(f"   Read device name: '{read_name}'")
 
             # Test different byte and word orders
             print(

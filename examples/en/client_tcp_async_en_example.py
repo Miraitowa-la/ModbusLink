@@ -130,18 +130,6 @@ async def advanced_data_types_example():
             # Read 32-bit float
             print("\n2. Reading 32-bit float...")
             read_temp = await client.read_float32(slave_id=1, start_address=20)
-            print(f"   Read temperature: {read_temp}°C")
-
-            # Write 64-bit float(It seems there is a problem. It will be fixed later.)
-            # print("\n3. Writing 64-bit float...")
-            # precision_value = 3.141592653589793
-            # await client.write_float64(slave_id=1, start_address=24, value=precision_value)
-            # print(f"   Written precision value: {precision_value}")
-
-            # Read 64-bit float(It seems there is a problem. It will be fixed later.)
-            # print("\n4. Reading 64-bit float...")
-            # read_precision = await client.read_float64(slave_id=1, start_address=24)
-            # print(f"   Read precision value: {read_precision}")
 
             # Write 32-bit signed integer
             print("\n5. Writing 32-bit signed integer...")
@@ -154,31 +142,20 @@ async def advanced_data_types_example():
             read_pressure = await client.read_int32(slave_id=1, start_address=28)
             print(f"   Read pressure: {read_pressure}")
 
-            # Write 32-bit unsigned integer(It seems there is a problem. It will be fixed later.)
-            # print("\n7. Writing 32-bit unsigned integer...")
-            # counter = 4294967295  # Maximum 32-bit unsigned integer
-            # await client.write_uint32(slave_id=1, start_address=30, value=counter)
-            # print(f"   Written counter value: {counter}")
+            # Write string
+            print("\n9. Writing string...")
+            device_name = "AsyncTCP_Device_2024"
+            await client.write_string(slave_id=1, start_address=40, value=device_name)
+            print(f"   Written device name: '{device_name}'")
 
-            # Read 32-bit unsigned integer(It seems there is a problem. It will be fixed later.)
-            # print("\n8. Reading 32-bit unsigned integer...")
-            # read_counter = await client.read_uint32(slave_id=1, start_address=30)
-            # print(f"   Read counter value: {read_counter}")
-
-            # Write string(It seems there is a problem. It will be fixed later.)
-            # print("\n9. Writing string...")
-            # device_name = "AsyncTCP_Device_2024"
-            # await client.write_string(slave_id=1, start_address=40, value=device_name)
-            # print(f"   Written device name: '{device_name}'")
-
-            # Read string(It seems there is a problem. It will be fixed later.)
-            # print("\n10. Reading string...")
-            # read_name = await client.read_string(
-            #     slave_id=1,
-            #     start_address=40,
-            #     length=len(device_name.encode("utf-8")),
-            # )
-            # print(f"   Read device name: '{read_name}'")
+            # Read string
+            print("\n10. Reading string...")
+            read_name = await client.read_string(
+                slave_id=1,
+                start_address=40,
+                length=len(device_name.encode("utf-8")),
+            )
+            print(f"   Read device name: '{read_name}'")
 
             # Test different byte and word orders
             print(

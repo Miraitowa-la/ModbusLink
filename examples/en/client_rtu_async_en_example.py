@@ -127,20 +127,20 @@ async def advanced_data_types_example():
             read_pressure = await client.read_int32(slave_id=1, start_address=22)
             print(f"   Read pressure: {read_pressure}")
 
-            # Write string(貌似有点问题后面在修复)
-            # print("\n5. Writing string...")
-            # device_name = "AsyncRTU_Device"
-            # await client.write_string(slave_id=1, start_address=30, value=device_name)
-            # print(f"   Written device name: '{device_name}'")
+            # Write string
+            print("\n5. Writing string...")
+            device_name = "AsyncRTU_Device"
+            await client.write_string(slave_id=1, start_address=30, value=device_name)
+            print(f"   Written device name: '{device_name}'")
 
-            # Read string(貌似有点问题后面在修复)
-            # print("\n6. Reading string...")
-            # read_name = await client.read_string(
-            #     slave_id=1,
-            #     start_address=30,
-            #     length=len(device_name.encode("utf-8")),
-            # )
-            # print(f"   Read device name: '{read_name}'")
+            # Read string
+            print("\n6. Reading string...")
+            read_name = await client.read_string(
+                slave_id=1,
+                start_address=30,
+                length=len(device_name.encode("utf-8")),
+            )
+            print(f"   Read device name: '{read_name}'")
 
             # Test different byte and word orders
             print(

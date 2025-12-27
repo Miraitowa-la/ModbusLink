@@ -141,31 +141,31 @@ async def advanced_data_types_example():
             read_pressure = await client.read_int32(slave_id=1, start_address=22)
             print(f"   读取压力值: {read_pressure}")
 
-            # 写入32位无符号整数(貌似有点问题后面在修复)
-            # print("\n5. 写入32位无符号整数...")
-            # counter = 65535  # 适合ASCII传输的较小值
-            # await client.write_uint32(slave_id=1, start_address=24, value=counter)
-            # print(f"   写入计数器值: {counter}")
+            # 写入32位无符号整数
+            print("\n5. 写入32位无符号整数...")
+            counter = 65535  # 适合ASCII传输的较小值
+            await client.write_uint32(slave_id=1, start_address=24, value=counter)
+            print(f"   写入计数器值: {counter}")
 
-            # 读取32位无符号整数(貌似有点问题后面在修复)
-            # print("\n6. 读取32位无符号整数...")
-            # read_counter = await client.read_uint32(slave_id=1, start_address=24)
-            # print(f"   读取计数器值: {read_counter}")
+            # 读取32位无符号整数
+            print("\n6. 读取32位无符号整数...")
+            read_counter = await client.read_uint32(slave_id=1, start_address=24)
+            print(f"   读取计数器值: {read_counter}")
 
-            # 写入字符串(貌似有点问题后面在修复)
-            # print("\n7. 写入字符串...")
-            # device_name = "AsyncASCII_Dev"
-            # await client.write_string(slave_id=1, start_address=30, value=device_name)
-            # print(f"   写入设备名称: '{device_name}'")
+            # 写入字符串
+            print("\n7. 写入字符串...")
+            device_name = "AsyncASCII_Dev"
+            await client.write_string(slave_id=1, start_address=30, value=device_name)
+            print(f"   写入设备名称: '{device_name}'")
 
-            # 读取字符串(貌似有点问题后面在修复)
-            # print("\n8. 读取字符串...")
-            # read_name = await client.read_string(
-            #     slave_id=1,
-            #     start_address=30,
-            #     length=len(device_name.encode("utf-8")),
-            # )
-            # print(f"   读取设备名称: '{read_name}'")
+            # 读取字符串
+            print("\n8. 读取字符串...")
+            read_name = await client.read_string(
+                slave_id=1,
+                start_address=30,
+                length=len(device_name.encode("utf-8")),
+            )
+            print(f"   读取设备名称: '{read_name}'")
 
             # 测试不同的字节序和字序
             print(

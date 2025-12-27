@@ -128,53 +128,31 @@ async def advanced_data_types_example():
             read_temp = await client.read_float32(slave_id=1, start_address=20)
             print(f"   读取温度值: {read_temp}°C")
 
-            # 写入64位浮点数(貌似有点问题后面在修复)
-            # print("\n3. 写入64位浮点数...")
-            # precision_value = 3.141592653589793
-            # await client.write_float64(slave_id=1, start_address=24, value=precision_value)
-            # print(f"   写入高精度值: {precision_value}")
-
-            # 读取64位浮点数(貌似有点问题后面在修复)
-            # print("\n4. 读取64位浮点数...")
-            # read_precision = await client.read_float64(slave_id=1, start_address=24)
-            # print(f"   读取高精度值: {read_precision}")
-
             # 写入32位有符号整数
-            print("\n5. 写入32位有符号整数...")
+            print("\n3. 写入32位有符号整数...")
             pressure = -12345
             await client.write_int32(slave_id=1, start_address=28, value=pressure)
             print(f"   写入压力值: {pressure}")
 
             # 读取32位有符号整数
-            print("\n6. 读取32位有符号整数...")
+            print("\n4. 读取32位有符号整数...")
             read_pressure = await client.read_int32(slave_id=1, start_address=28)
             print(f"   读取压力值: {read_pressure}")
 
-            # 写入32位无符号整数(貌似有点问题后面在修复)
-            # print("\n7. 写入32位无符号整数...")
-            # counter = 4294967295  # 最大32位无符号整数
-            # await client.write_uint32(slave_id=1, start_address=30, value=counter)
-            # print(f"   写入计数器值: {counter}")
+            # 写入字符串
+            print("\n5. 写入字符串...")
+            device_name = "AsyncTCP_Device_2024"
+            await client.write_string(slave_id=1, start_address=40, value=device_name)
+            print(f"   写入设备名称: '{device_name}'")
 
-            # 读取32位无符号整数(貌似有点问题后面在修复)
-            # print("\n8. 读取32位无符号整数...")
-            # read_counter = await client.read_uint32(slave_id=1, start_address=30)
-            # print(f"   读取计数器值: {read_counter}")
-
-            # 写入字符串(貌似有点问题后面在修复)
-            # print("\n9. 写入字符串...")
-            # device_name = "AsyncTCP_Device_2024"
-            # await client.write_string(slave_id=1, start_address=40, value=device_name)
-            # print(f"   写入设备名称: '{device_name}'")
-
-            # 读取字符串(貌似有点问题后面在修复)
-            # print("\n10. 读取字符串...")
-            # read_name = await client.read_string(
-            #     slave_id=1,
-            #     start_address=40,
-            #     length=len(device_name.encode("utf-8")),
-            # )
-            # print(f"   读取设备名称: '{read_name}'")
+            # 读取字符串
+            print("\n6. 读取字符串...")
+            read_name = await client.read_string(
+                slave_id=1,
+                start_address=40,
+                length=len(device_name.encode("utf-8")),
+            )
+            print(f"   读取设备名称: '{read_name}'")
 
             # 测试不同的字节序和字序
             print(
