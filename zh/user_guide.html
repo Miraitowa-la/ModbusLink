@@ -1,0 +1,631 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>用户指南 &mdash; ModbusLink 1.2.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=d1fcaa3c"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=beaddf03"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="示例" href="examples.html" />
+    <link rel="prev" title="架构设计" href="architecture.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            ModbusLink
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">快速入门</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">快速开始</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id4">30秒快速体验</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id5">主流传输方式</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id6">高级数据类型</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id7">高性能异步操作</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id8">本地测试环境</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id9">错误处理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id10">下一步</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">架构设计</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">用户指南</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id2">架构概述</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">传输层</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#tcp">TCP 传输</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rtu">RTU 传输</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">异步 TCP 传输</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ascii">ASCII 传输</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">异步 RTU 传输</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">异步 ASCII 传输</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id7">客户端层</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id8">同步客户端</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id9">异步客户端</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id10">支持的功能码</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id11">读取操作</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id12">写入操作</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id13">高级数据类型</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id14">32位浮点数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id15">32位整数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id16">32位无符号整数</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id17">字节序和字序</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id18">回调机制</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id19">并发操作</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id20">性能优化</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id21">错误处理</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id22">异常类型</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id23">错误处理示例</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id24">日志记录</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id25">最佳实践</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">示例和实践</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">示例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html">最佳实践指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id3">连接管理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id6">错误处理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id9">性能优化</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id12">数据验证</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id15">监控和诊断</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id17">配置管理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id18">生产环境最佳实践</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id21">测试策略</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id24">总结</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">故障排除指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id3">连接问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id11">协议错误</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id13">性能问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id16">数据问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id19">调试和监控</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id23">常见错误汇总</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id25">预防措施</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id27">获取帮助</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API 参考</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ModbusLink</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">用户指南</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/user_guide.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>用户指南<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<p>本综合指南涵盖了使用 ModbusLink 的所有方面。</p>
+<section id="id2">
+<h2>架构概述<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<p>ModbusLink 建立在清晰的分层架构之上，分离关注点并促进代码重用：</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>┌─────────────────────────────────────┐
+│           客户端层                   │
+│  (ModbusClient, AsyncModbusClient)  │
+├─────────────────────────────────────┤
+│          传输层                     │
+│   (TcpTransport, RtuTransport,      │
+│    AsciiTransport, AsyncTcpTransport,│
+│    AsyncRtuTransport, AsyncAsciiTransport)│
+├─────────────────────────────────────┤
+│           工具层                     │
+│  (CRC16, PayloadCoder, Logger)      │
+└─────────────────────────────────────┘
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h2>传输层<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<p>传输层处理底层通信细节。</p>
+<section id="tcp">
+<h3>TCP 传输<a class="headerlink" href="#tcp" title="Link to this heading"></a></h3>
+<p>TCP 传输处理带有 MBAP 头管理的 Modbus TCP 通信：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">TcpTransport</span>
+
+<span class="n">transport</span> <span class="o">=</span> <span class="n">TcpTransport</span><span class="p">(</span>
+    <span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span>
+    <span class="n">port</span><span class="o">=</span><span class="mi">502</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="o">=</span><span class="mf">10.0</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="rtu">
+<h3>RTU 传输<a class="headerlink" href="#rtu" title="Link to this heading"></a></h3>
+<p>RTU 传输处理带有 CRC16 验证的 Modbus RTU 通信：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">RtuTransport</span>
+
+<span class="n">transport</span> <span class="o">=</span> <span class="n">RtuTransport</span><span class="p">(</span>
+    <span class="n">port</span><span class="o">=</span><span class="s1">&#39;/dev/ttyUSB0&#39;</span><span class="p">,</span>  <span class="c1"># Windows 上使用 &#39;COM1&#39;</span>
+    <span class="n">baudrate</span><span class="o">=</span><span class="mi">9600</span><span class="p">,</span>
+    <span class="n">bytesize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">parity</span><span class="o">=</span><span class="s1">&#39;N&#39;</span><span class="p">,</span>
+    <span class="n">stopbits</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="o">=</span><span class="mf">1.0</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id4">
+<h3>异步 TCP 传输<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<p>对于高性能应用，使用异步 TCP 传输：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncTcpTransport</span>
+
+<span class="n">transport</span> <span class="o">=</span> <span class="n">AsyncTcpTransport</span><span class="p">(</span>
+    <span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span>
+    <span class="n">port</span><span class="o">=</span><span class="mi">502</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="o">=</span><span class="mf">10.0</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="ascii">
+<h3>ASCII 传输<a class="headerlink" href="#ascii" title="Link to this heading"></a></h3>
+<p>ASCII 传输处理带有 LRC 校验的 Modbus ASCII 通信：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsciiTransport</span>
+
+<span class="n">transport</span> <span class="o">=</span> <span class="n">AsciiTransport</span><span class="p">(</span>
+    <span class="n">port</span><span class="o">=</span><span class="s1">&#39;COM1&#39;</span><span class="p">,</span>
+    <span class="n">baudrate</span><span class="o">=</span><span class="mi">9600</span><span class="p">,</span>
+    <span class="n">bytesize</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
+    <span class="n">parity</span><span class="o">=</span><span class="s1">&#39;E&#39;</span><span class="p">,</span>
+    <span class="n">stopbits</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="o">=</span><span class="mf">1.0</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id5">
+<h3>异步 RTU 传输<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<p>对于高性能 RTU 应用，使用异步 RTU 传输：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncRtuTransport</span>
+
+<span class="n">transport</span> <span class="o">=</span> <span class="n">AsyncRtuTransport</span><span class="p">(</span>
+    <span class="n">port</span><span class="o">=</span><span class="s1">&#39;COM1&#39;</span><span class="p">,</span>
+    <span class="n">baudrate</span><span class="o">=</span><span class="mi">9600</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="o">=</span><span class="mf">3.0</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id6">
+<h3>异步 ASCII 传输<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<p>对于高性能 ASCII 应用，使用异步 ASCII 传输：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncAsciiTransport</span>
+
+<span class="n">transport</span> <span class="o">=</span> <span class="n">AsyncAsciiTransport</span><span class="p">(</span>
+    <span class="n">port</span><span class="o">=</span><span class="s1">&#39;COM1&#39;</span><span class="p">,</span>
+    <span class="n">baudrate</span><span class="o">=</span><span class="mi">9600</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="o">=</span><span class="mf">3.0</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id7">
+<h2>客户端层<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<p>客户端层提供高级 Modbus 操作。</p>
+<section id="id8">
+<h3>同步客户端<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModbusClient</span><span class="p">,</span> <span class="n">TcpTransport</span>
+
+<span class="n">transport</span> <span class="o">=</span> <span class="n">TcpTransport</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">502</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+<span class="c1"># 上下文管理器（推荐）</span>
+<span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+    <span class="n">registers</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span>
+    <span class="p">)</span>
+
+<span class="c1"># 手动连接管理</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+    <span class="n">registers</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span>
+    <span class="p">)</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="id9">
+<h3>异步客户端<a class="headerlink" href="#id9" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncModbusClient</span><span class="p">,</span> <span class="n">AsyncTcpTransport</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="n">transport</span> <span class="o">=</span> <span class="n">AsyncTcpTransport</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">502</span><span class="p">)</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">AsyncModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+    <span class="c1"># 上下文管理器（推荐）</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+        <span class="n">registers</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span>
+            <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span>
+        <span class="p">)</span>
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id10">
+<h2>支持的功能码<a class="headerlink" href="#id10" title="Link to this heading"></a></h2>
+<section id="id11">
+<h3>读取操作<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<p><strong>读取线圈 (0x01)</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">coils</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_coils</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">quantity</span><span class="o">=</span><span class="mi">8</span>
+<span class="p">)</span>
+<span class="c1"># 返回: [True, False, True, False, True, False, True, False]</span>
+</pre></div>
+</div>
+<p><strong>读取离散输入 (0x02)</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">inputs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_discrete_inputs</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">quantity</span><span class="o">=</span><span class="mi">8</span>
+<span class="p">)</span>
+<span class="c1"># 返回: [True, False, True, False, True, False, True, False]</span>
+</pre></div>
+</div>
+<p><strong>读取保持寄存器 (0x03)</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">registers</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span>
+<span class="p">)</span>
+<span class="c1"># 返回: [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000]</span>
+</pre></div>
+</div>
+<p><strong>读取输入寄存器 (0x04)</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">registers</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_input_registers</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span>
+<span class="p">)</span>
+<span class="c1"># 返回: [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]</span>
+</pre></div>
+</div>
+</section>
+<section id="id12">
+<h3>写入操作<a class="headerlink" href="#id12" title="Link to this heading"></a></h3>
+<p><strong>写单个线圈 (0x05)</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">write_single_coil</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">value</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>写单个寄存器 (0x06)</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">write_single_register</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">value</span><span class="o">=</span><span class="mi">1234</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>写多个线圈 (0x0F)</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">write_multiple_coils</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>写多个寄存器 (0x10)</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">write_multiple_registers</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">3000</span><span class="p">,</span> <span class="mi">4000</span><span class="p">,</span> <span class="mi">5000</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id13">
+<h2>高级数据类型<a class="headerlink" href="#id13" title="Link to this heading"></a></h2>
+<p>ModbusLink 提供常见数据类型的内置支持：</p>
+<section id="id14">
+<h3>32位浮点数<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 写入 float32</span>
+<span class="n">client</span><span class="o">.</span><span class="n">write_float32</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">start_address</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">value</span><span class="o">=</span><span class="mf">3.14159</span><span class="p">,</span>
+    <span class="n">byte_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span><span class="p">,</span>
+    <span class="n">word_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span>
+<span class="p">)</span>
+
+<span class="c1"># 读取 float32</span>
+<span class="n">temperature</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_float32</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">start_address</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">byte_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span><span class="p">,</span>
+    <span class="n">word_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id15">
+<h3>32位整数<a class="headerlink" href="#id15" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 写入 int32</span>
+<span class="n">client</span><span class="o">.</span><span class="n">write_int32</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">start_address</span><span class="o">=</span><span class="mi">102</span><span class="p">,</span>
+    <span class="n">value</span><span class="o">=-</span><span class="mi">123456</span><span class="p">,</span>
+    <span class="n">byte_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span><span class="p">,</span>
+    <span class="n">word_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span>
+<span class="p">)</span>
+
+<span class="c1"># 读取 int32</span>
+<span class="n">counter</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_int32</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">start_address</span><span class="o">=</span><span class="mi">102</span><span class="p">,</span>
+    <span class="n">byte_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span><span class="p">,</span>
+    <span class="n">word_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id16">
+<h3>32位无符号整数<a class="headerlink" href="#id16" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 写入 uint32</span>
+<span class="n">client</span><span class="o">.</span><span class="n">write_uint32</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">start_address</span><span class="o">=</span><span class="mi">104</span><span class="p">,</span>
+    <span class="n">value</span><span class="o">=</span><span class="mi">4294967295</span><span class="p">,</span>
+    <span class="n">byte_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span><span class="p">,</span>
+    <span class="n">word_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span>
+<span class="p">)</span>
+
+<span class="c1"># 读取 uint32</span>
+<span class="n">value</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_uint32</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">start_address</span><span class="o">=</span><span class="mi">104</span><span class="p">,</span>
+    <span class="n">byte_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span><span class="p">,</span>
+    <span class="n">word_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id17">
+<h3>字节序和字序<a class="headerlink" href="#id17" title="Link to this heading"></a></h3>
+<p>ModbusLink 支持不同的字节序和字序：</p>
+<ul class="simple">
+<li><p><strong>字节序</strong>: ‘big’（大端序）或 ‘little’（小端序）</p></li>
+<li><p><strong>字序</strong>: ‘big’（高字在前）或 ‘little’（低字在前）</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 不同组合</span>
+<span class="n">value1</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_float32</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">byte_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span><span class="p">,</span> <span class="n">word_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>      <span class="c1"># &gt;AB</span>
+<span class="n">value2</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_float32</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">byte_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span><span class="p">,</span> <span class="n">word_order</span><span class="o">=</span><span class="s1">&#39;little&#39;</span><span class="p">)</span>   <span class="c1"># &gt;BA</span>
+<span class="n">value3</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_float32</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">byte_order</span><span class="o">=</span><span class="s1">&#39;little&#39;</span><span class="p">,</span> <span class="n">word_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>   <span class="c1"># &lt;AB</span>
+<span class="n">value4</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_float32</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">byte_order</span><span class="o">=</span><span class="s1">&#39;little&#39;</span><span class="p">,</span> <span class="n">word_order</span><span class="o">=</span><span class="s1">&#39;little&#39;</span><span class="p">)</span> <span class="c1"># &lt;BA</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id18">
+<h2>回调机制<a class="headerlink" href="#id18" title="Link to this heading"></a></h2>
+<p>异步客户端支持操作完成通知的回调函数：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">on_read_complete</span><span class="p">(</span><span class="n">registers</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;读取完成: </span><span class="si">{</span><span class="n">registers</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">on_write_complete</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;写入完成&quot;</span><span class="p">)</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+        <span class="c1"># 带回调的读取</span>
+        <span class="n">registers</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span>
+            <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">quantity</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+            <span class="n">callback</span><span class="o">=</span><span class="n">on_read_complete</span>
+        <span class="p">)</span>
+
+        <span class="c1"># 带回调的写入</span>
+        <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">write_single_register</span><span class="p">(</span>
+            <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="mi">1234</span><span class="p">,</span>
+            <span class="n">callback</span><span class="o">=</span><span class="n">on_write_complete</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id19">
+<h2>并发操作<a class="headerlink" href="#id19" title="Link to this heading"></a></h2>
+<p>异步客户端支持并发操作以提高性能：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">concurrent_operations</span><span class="p">():</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+        <span class="c1"># 创建多个任务</span>
+        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">read_coils</span><span class="p">(</span><span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="mi">8</span><span class="p">),</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">read_input_registers</span><span class="p">(</span><span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">write_single_register</span><span class="p">(</span><span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">9999</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="c1"># 并发执行所有任务</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;并发结果: </span><span class="si">{</span><span class="n">results</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id20">
+<h2>性能优化<a class="headerlink" href="#id20" title="Link to this heading"></a></h2>
+<p>为了获得最佳性能，请考虑以下建议：</p>
+<ol class="arabic simple">
+<li><p><strong>使用异步客户端</strong>: 对于高并发应用，异步客户端提供更好的性能。</p></li>
+<li><p><strong>批量操作</strong>: 尽可能使用批量读写操作而不是单个操作。</p></li>
+<li><p><strong>连接复用</strong>: 保持连接打开并重复使用，而不是频繁连接/断开。</p></li>
+<li><p><strong>合理设置超时</strong>: 根据网络条件调整超时值。</p></li>
+</ol>
+</section>
+<section id="id21">
+<h2>错误处理<a class="headerlink" href="#id21" title="Link to this heading"></a></h2>
+<p>ModbusLink 提供全面的错误处理：</p>
+<section id="id22">
+<h3>异常类型<a class="headerlink" href="#id22" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ModbusLinkError</span><span class="p">,</span>      <span class="c1"># 基础异常</span>
+    <span class="ne">ConnectionError</span><span class="p">,</span>      <span class="c1"># 连接问题</span>
+    <span class="ne">TimeoutError</span><span class="p">,</span>         <span class="c1"># 请求超时</span>
+    <span class="n">CRCError</span><span class="p">,</span>            <span class="c1"># CRC 验证失败</span>
+    <span class="n">InvalidResponseError</span><span class="p">,</span> <span class="c1"># 无效响应格式</span>
+    <span class="n">ModbusException</span>      <span class="c1"># Modbus 协议错误</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id23">
+<h3>错误处理示例<a class="headerlink" href="#id23" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+    <span class="n">registers</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="k">except</span> <span class="ne">ConnectionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;连接失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">TimeoutError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;请求超时: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">CRCError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CRC 验证失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">ModbusException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Modbus 错误码 </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">error_code</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">ModbusLinkError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ModbusLink 错误: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;意外错误: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id24">
+<h2>日志记录<a class="headerlink" href="#id24" title="Link to this heading"></a></h2>
+<p>ModbusLink 包含全面的日志系统：</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink.utils.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_logging</span>
+
+<span class="c1"># 启用调试日志</span>
+<span class="n">setup_logging</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+
+<span class="c1"># 或手动配置</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
+    <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> - </span><span class="si">%(name)s</span><span class="s1"> - </span><span class="si">%(levelname)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id25">
+<h2>最佳实践<a class="headerlink" href="#id25" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>使用上下文管理器</strong>: 始终使用 <code class="docutils literal notranslate"><span class="pre">with</span></code> 语句或 <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span></code> 进行自动资源管理。</p></li>
+<li><p><strong>处理异常</strong>: 为健壮的应用程序实现适当的异常处理。</p></li>
+<li><p><strong>配置超时</strong>: 根据网络条件设置适当的超时值。</p></li>
+<li><p><strong>使用异步提高性能</strong>: 对于需要高吞吐量的应用程序使用异步客户端。</p></li>
+<li><p><strong>启用日志</strong>: 在生产环境中使用日志进行调试和监控。</p></li>
+<li><p><strong>验证数据</strong>: 在写入设备之前始终验证数据范围和类型。</p></li>
+<li><p><strong>连接管理</strong>: 合理管理连接的生命周期，避免频繁连接断开。</p></li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
+        <a href="architecture.html" class="btn btn-neutral float-left" title="架构设计" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="examples.html" class="btn btn-neutral float-right" title="示例" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, Miraitowa。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,630 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Guide &mdash; ModbusLink 1.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=6efca38a"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Examples" href="examples.html" />
+    <link rel="prev" title="Architecture Design" href="architecture.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            ModbusLink
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#second-demo">30-Second Demo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#main-transport-methods">Main Transport Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#advanced-data-types">Advanced Data Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#high-performance-async-operations">High-Performance Async Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#local-testing-environment">Local Testing Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#error-handling">Error Handling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#next-steps">Next Steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture Design</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">User Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#architecture-overview">Architecture Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#transport-layer">Transport Layer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#tcp-transport">TCP Transport</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rtu-transport">RTU Transport</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#async-tcp-transport">Async TCP Transport</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ascii-transport">ASCII Transport</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#async-rtu-transport">Async RTU Transport</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#async-ascii-transport">Async ASCII Transport</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#client-layer">Client Layer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#synchronous-client">Synchronous Client</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#asynchronous-client">Asynchronous Client</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#supported-function-codes">Supported Function Codes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#read-operations">Read Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#write-operations">Write Operations</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced-data-types">Advanced Data Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#bit-float">32-bit Float</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bit-integer">32-bit Integer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bit-unsigned-integer">32-bit Unsigned Integer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#byte-and-word-order">Byte and Word Order</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#callback-mechanism">Callback Mechanism</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#concurrent-operations">Concurrent Operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#performance-optimization">Performance Optimization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#error-handling">Error Handling</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#exception-types">Exception Types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#error-handling-example">Error Handling Example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#logging">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#best-practices">Best Practices</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples &amp; Practices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html">Best Practices Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#connection-management">Connection Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#error-handling">Error Handling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#performance-optimization">Performance Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#data-validation">Data Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#monitoring-and-diagnostics">Monitoring and Diagnostics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#configuration-management">Configuration Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#production-best-practices">Production Best Practices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#testing-strategy">Testing Strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#connection-issues">Connection Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#protocol-errors">Protocol Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#performance-issues">Performance Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#data-issues">Data Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#debugging-and-monitoring">Debugging and Monitoring</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#common-error-reference">Common Error Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#prevention-measures">Prevention Measures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#getting-help">Getting Help</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ModbusLink</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">User Guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/user_guide.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="user-guide">
+<h1>User Guide<a class="headerlink" href="#user-guide" title="Link to this heading"></a></h1>
+<p>This comprehensive guide covers all aspects of using ModbusLink.</p>
+<section id="architecture-overview">
+<h2>Architecture Overview<a class="headerlink" href="#architecture-overview" title="Link to this heading"></a></h2>
+<p>ModbusLink is built on a clean, layered architecture that separates concerns and promotes code reusability:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>┌─────────────────────────────────────┐
+│           Client Layer              │
+│  (ModbusClient, AsyncModbusClient)  │
+├─────────────────────────────────────┤
+│          Transport Layer            │
+│   (TcpTransport, RtuTransport,      │
+│    AsciiTransport, AsyncTcpTransport,│
+│    AsyncRtuTransport, AsyncAsciiTransport)│
+├─────────────────────────────────────┤
+│           Utility Layer             │
+│  (CRC16, PayloadCoder, Logger)      │
+└─────────────────────────────────────┘
+</pre></div>
+</div>
+</section>
+<section id="transport-layer">
+<h2>Transport Layer<a class="headerlink" href="#transport-layer" title="Link to this heading"></a></h2>
+<p>The transport layer handles the low-level communication details.</p>
+<section id="tcp-transport">
+<h3>TCP Transport<a class="headerlink" href="#tcp-transport" title="Link to this heading"></a></h3>
+<p>The TCP transport handles Modbus TCP communication with MBAP header management:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">TcpTransport</span>
+
+<span class="n">transport</span> <span class="o">=</span> <span class="n">TcpTransport</span><span class="p">(</span>
+    <span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span>
+    <span class="n">port</span><span class="o">=</span><span class="mi">502</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="o">=</span><span class="mf">10.0</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="rtu-transport">
+<h3>RTU Transport<a class="headerlink" href="#rtu-transport" title="Link to this heading"></a></h3>
+<p>The RTU transport handles Modbus RTU communication with CRC16 validation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">RtuTransport</span>
+
+<span class="n">transport</span> <span class="o">=</span> <span class="n">RtuTransport</span><span class="p">(</span>
+    <span class="n">port</span><span class="o">=</span><span class="s1">&#39;/dev/ttyUSB0&#39;</span><span class="p">,</span>  <span class="c1"># or &#39;COM1&#39; on Windows</span>
+    <span class="n">baudrate</span><span class="o">=</span><span class="mi">9600</span><span class="p">,</span>
+    <span class="n">bytesize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">parity</span><span class="o">=</span><span class="s1">&#39;N&#39;</span><span class="p">,</span>
+    <span class="n">stopbits</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="o">=</span><span class="mf">1.0</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="async-tcp-transport">
+<h3>Async TCP Transport<a class="headerlink" href="#async-tcp-transport" title="Link to this heading"></a></h3>
+<p>For high-performance applications, use the async TCP transport:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncTcpTransport</span>
+
+<span class="n">transport</span> <span class="o">=</span> <span class="n">AsyncTcpTransport</span><span class="p">(</span>
+    <span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span>
+    <span class="n">port</span><span class="o">=</span><span class="mi">502</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="o">=</span><span class="mf">10.0</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="ascii-transport">
+<h3>ASCII Transport<a class="headerlink" href="#ascii-transport" title="Link to this heading"></a></h3>
+<p>The ASCII transport handles Modbus ASCII communication with LRC validation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsciiTransport</span>
+
+<span class="n">transport</span> <span class="o">=</span> <span class="n">AsciiTransport</span><span class="p">(</span>
+    <span class="n">port</span><span class="o">=</span><span class="s1">&#39;COM1&#39;</span><span class="p">,</span>
+    <span class="n">baudrate</span><span class="o">=</span><span class="mi">9600</span><span class="p">,</span>
+    <span class="n">bytesize</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
+    <span class="n">parity</span><span class="o">=</span><span class="s1">&#39;E&#39;</span><span class="p">,</span>
+    <span class="n">stopbits</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="o">=</span><span class="mf">1.0</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="async-rtu-transport">
+<h3>Async RTU Transport<a class="headerlink" href="#async-rtu-transport" title="Link to this heading"></a></h3>
+<p>For high-performance RTU applications, use the async RTU transport:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncRtuTransport</span>
+
+<span class="n">transport</span> <span class="o">=</span> <span class="n">AsyncRtuTransport</span><span class="p">(</span>
+    <span class="n">port</span><span class="o">=</span><span class="s1">&#39;COM1&#39;</span><span class="p">,</span>
+    <span class="n">baudrate</span><span class="o">=</span><span class="mi">9600</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="o">=</span><span class="mf">3.0</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="async-ascii-transport">
+<h3>Async ASCII Transport<a class="headerlink" href="#async-ascii-transport" title="Link to this heading"></a></h3>
+<p>For high-performance ASCII applications, use the async ASCII transport:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncAsciiTransport</span>
+
+<span class="n">transport</span> <span class="o">=</span> <span class="n">AsyncAsciiTransport</span><span class="p">(</span>
+    <span class="n">port</span><span class="o">=</span><span class="s1">&#39;COM1&#39;</span><span class="p">,</span>
+    <span class="n">baudrate</span><span class="o">=</span><span class="mi">9600</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="o">=</span><span class="mf">3.0</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="client-layer">
+<h2>Client Layer<a class="headerlink" href="#client-layer" title="Link to this heading"></a></h2>
+<p>The client layer provides high-level Modbus operations.</p>
+<section id="synchronous-client">
+<h3>Synchronous Client<a class="headerlink" href="#synchronous-client" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModbusClient</span><span class="p">,</span> <span class="n">TcpTransport</span>
+
+<span class="n">transport</span> <span class="o">=</span> <span class="n">TcpTransport</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">502</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+<span class="c1"># Context manager (recommended)</span>
+<span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+    <span class="n">registers</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span>
+    <span class="p">)</span>
+
+<span class="c1"># Manual connection management</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+    <span class="n">registers</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span>
+    <span class="p">)</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="asynchronous-client">
+<h3>Asynchronous Client<a class="headerlink" href="#asynchronous-client" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncModbusClient</span><span class="p">,</span> <span class="n">AsyncTcpTransport</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="n">transport</span> <span class="o">=</span> <span class="n">AsyncTcpTransport</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">502</span><span class="p">)</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">AsyncModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+    <span class="c1"># Context manager (recommended)</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+        <span class="n">registers</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span>
+            <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span>
+        <span class="p">)</span>
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="supported-function-codes">
+<h2>Supported Function Codes<a class="headerlink" href="#supported-function-codes" title="Link to this heading"></a></h2>
+<section id="read-operations">
+<h3>Read Operations<a class="headerlink" href="#read-operations" title="Link to this heading"></a></h3>
+<p><strong>Read Coils (0x01)</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">coils</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_coils</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">quantity</span><span class="o">=</span><span class="mi">8</span>
+<span class="p">)</span>
+<span class="c1"># Returns: [True, False, True, False, True, False, True, False]</span>
+</pre></div>
+</div>
+<p><strong>Read Discrete Inputs (0x02)</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">inputs</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_discrete_inputs</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">quantity</span><span class="o">=</span><span class="mi">8</span>
+<span class="p">)</span>
+<span class="c1"># Returns: [True, False, True, False, True, False, True, False]</span>
+</pre></div>
+</div>
+<p><strong>Read Holding Registers (0x03)</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">registers</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span>
+<span class="p">)</span>
+<span class="c1"># Returns: [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000]</span>
+</pre></div>
+</div>
+<p><strong>Read Input Registers (0x04)</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">registers</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_input_registers</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span>
+<span class="p">)</span>
+<span class="c1"># Returns: [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]</span>
+</pre></div>
+</div>
+</section>
+<section id="write-operations">
+<h3>Write Operations<a class="headerlink" href="#write-operations" title="Link to this heading"></a></h3>
+<p><strong>Write Single Coil (0x05)</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">write_single_coil</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">value</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Write Single Register (0x06)</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">write_single_register</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">value</span><span class="o">=</span><span class="mi">1234</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Write Multiple Coils (0x0F)</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">write_multiple_coils</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Write Multiple Registers (0x10)</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">client</span><span class="o">.</span><span class="n">write_multiple_registers</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">3000</span><span class="p">,</span> <span class="mi">4000</span><span class="p">,</span> <span class="mi">5000</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="advanced-data-types">
+<h2>Advanced Data Types<a class="headerlink" href="#advanced-data-types" title="Link to this heading"></a></h2>
+<p>ModbusLink provides built-in support for common data types:</p>
+<section id="bit-float">
+<h3>32-bit Float<a class="headerlink" href="#bit-float" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Write float32</span>
+<span class="n">client</span><span class="o">.</span><span class="n">write_float32</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">start_address</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">value</span><span class="o">=</span><span class="mf">3.14159</span><span class="p">,</span>
+    <span class="n">byte_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span><span class="p">,</span>
+    <span class="n">word_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span>
+<span class="p">)</span>
+
+<span class="c1"># Read float32</span>
+<span class="n">temperature</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_float32</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">start_address</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+    <span class="n">byte_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span><span class="p">,</span>
+    <span class="n">word_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="bit-integer">
+<h3>32-bit Integer<a class="headerlink" href="#bit-integer" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Write int32</span>
+<span class="n">client</span><span class="o">.</span><span class="n">write_int32</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">start_address</span><span class="o">=</span><span class="mi">102</span><span class="p">,</span>
+    <span class="n">value</span><span class="o">=-</span><span class="mi">123456</span><span class="p">,</span>
+    <span class="n">byte_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span><span class="p">,</span>
+    <span class="n">word_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span>
+<span class="p">)</span>
+
+<span class="c1"># Read int32</span>
+<span class="n">counter</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_int32</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">start_address</span><span class="o">=</span><span class="mi">102</span><span class="p">,</span>
+    <span class="n">byte_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span><span class="p">,</span>
+    <span class="n">word_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="bit-unsigned-integer">
+<h3>32-bit Unsigned Integer<a class="headerlink" href="#bit-unsigned-integer" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Write uint32</span>
+<span class="n">client</span><span class="o">.</span><span class="n">write_uint32</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">start_address</span><span class="o">=</span><span class="mi">104</span><span class="p">,</span>
+    <span class="n">value</span><span class="o">=</span><span class="mi">4294967295</span><span class="p">,</span>
+    <span class="n">byte_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span><span class="p">,</span>
+    <span class="n">word_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span>
+<span class="p">)</span>
+
+<span class="c1"># Read uint32</span>
+<span class="n">value</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_uint32</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">start_address</span><span class="o">=</span><span class="mi">104</span><span class="p">,</span>
+    <span class="n">byte_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span><span class="p">,</span>
+    <span class="n">word_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="byte-and-word-order">
+<h3>Byte and Word Order<a class="headerlink" href="#byte-and-word-order" title="Link to this heading"></a></h3>
+<p>ModbusLink supports different byte and word orders:</p>
+<ul class="simple">
+<li><p><strong>Byte Order</strong>: ‘big’ (big-endian) or ‘little’ (little-endian)</p></li>
+<li><p><strong>Word Order</strong>: ‘big’ (high word first) or ‘little’ (low word first)</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Different combinations</span>
+<span class="n">value1</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_float32</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">byte_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span><span class="p">,</span> <span class="n">word_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>      <span class="c1"># &gt;AB</span>
+<span class="n">value2</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_float32</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">byte_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span><span class="p">,</span> <span class="n">word_order</span><span class="o">=</span><span class="s1">&#39;little&#39;</span><span class="p">)</span>   <span class="c1"># &gt;BA</span>
+<span class="n">value3</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_float32</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">byte_order</span><span class="o">=</span><span class="s1">&#39;little&#39;</span><span class="p">,</span> <span class="n">word_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span><span class="p">)</span>   <span class="c1"># &lt;AB</span>
+<span class="n">value4</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_float32</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">byte_order</span><span class="o">=</span><span class="s1">&#39;little&#39;</span><span class="p">,</span> <span class="n">word_order</span><span class="o">=</span><span class="s1">&#39;little&#39;</span><span class="p">)</span> <span class="c1"># &lt;BA</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="callback-mechanism">
+<h2>Callback Mechanism<a class="headerlink" href="#callback-mechanism" title="Link to this heading"></a></h2>
+<p>Async clients support callback functions for operation completion notifications:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">on_read_complete</span><span class="p">(</span><span class="n">registers</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Read completed: </span><span class="si">{</span><span class="n">registers</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">on_write_complete</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Write completed&quot;</span><span class="p">)</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+        <span class="c1"># Read with callback</span>
+        <span class="n">registers</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span>
+            <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">quantity</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+            <span class="n">callback</span><span class="o">=</span><span class="n">on_read_complete</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Write with callback</span>
+        <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">write_single_register</span><span class="p">(</span>
+            <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="mi">1234</span><span class="p">,</span>
+            <span class="n">callback</span><span class="o">=</span><span class="n">on_write_complete</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="concurrent-operations">
+<h2>Concurrent Operations<a class="headerlink" href="#concurrent-operations" title="Link to this heading"></a></h2>
+<p>Async clients support concurrent operations for improved performance:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">concurrent_operations</span><span class="p">():</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+        <span class="c1"># Create multiple tasks</span>
+        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">read_coils</span><span class="p">(</span><span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="mi">8</span><span class="p">),</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">read_input_registers</span><span class="p">(</span><span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">write_single_register</span><span class="p">(</span><span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">9999</span><span class="p">),</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Execute all tasks concurrently</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Concurrent results: </span><span class="si">{</span><span class="n">results</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="performance-optimization">
+<h2>Performance Optimization<a class="headerlink" href="#performance-optimization" title="Link to this heading"></a></h2>
+<p>For optimal performance, consider the following recommendations:</p>
+<ol class="arabic simple">
+<li><p><strong>Use Async Clients</strong>: For high-concurrency applications, async clients provide better performance.</p></li>
+<li><p><strong>Batch Operations</strong>: Use batch read/write operations whenever possible instead of individual operations.</p></li>
+<li><p><strong>Connection Reuse</strong>: Keep connections open and reuse them rather than frequent connect/disconnect.</p></li>
+<li><p><strong>Proper Timeouts</strong>: Adjust timeout values based on network conditions.</p></li>
+</ol>
+</section>
+<section id="error-handling">
+<h2>Error Handling<a class="headerlink" href="#error-handling" title="Link to this heading"></a></h2>
+<p>ModbusLink provides comprehensive error handling:</p>
+<section id="exception-types">
+<h3>Exception Types<a class="headerlink" href="#exception-types" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ModbusLinkError</span><span class="p">,</span>      <span class="c1"># Base exception</span>
+    <span class="ne">ConnectionError</span><span class="p">,</span>      <span class="c1"># Connection issues</span>
+    <span class="ne">TimeoutError</span><span class="p">,</span>         <span class="c1"># Request timeout</span>
+    <span class="n">CRCError</span><span class="p">,</span>            <span class="c1"># CRC validation failure</span>
+    <span class="n">InvalidResponseError</span><span class="p">,</span> <span class="c1"># Invalid response format</span>
+    <span class="n">ModbusException</span>      <span class="c1"># Modbus protocol errors</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="error-handling-example">
+<h3>Error Handling Example<a class="headerlink" href="#error-handling-example" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+    <span class="n">registers</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="k">except</span> <span class="ne">ConnectionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connection failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">TimeoutError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Request timed out: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">CRCError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CRC validation failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">ModbusException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Modbus error code </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">error_code</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">ModbusLinkError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ModbusLink error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unexpected error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="logging">
+<h2>Logging<a class="headerlink" href="#logging" title="Link to this heading"></a></h2>
+<p>ModbusLink includes a comprehensive logging system:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink.utils.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_logging</span>
+
+<span class="c1"># Enable debug logging</span>
+<span class="n">setup_logging</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+
+<span class="c1"># Or configure manually</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
+    <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(asctime)s</span><span class="s1"> - </span><span class="si">%(name)s</span><span class="s1"> - </span><span class="si">%(levelname)s</span><span class="s1"> - </span><span class="si">%(message)s</span><span class="s1">&#39;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="best-practices">
+<h2>Best Practices<a class="headerlink" href="#best-practices" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Use Context Managers</strong>: Always use <code class="docutils literal notranslate"><span class="pre">with</span></code> statements or <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">with</span></code> for automatic resource management.</p></li>
+<li><p><strong>Handle Exceptions</strong>: Implement proper exception handling for robust applications.</p></li>
+<li><p><strong>Configure Timeouts</strong>: Set appropriate timeout values based on your network conditions.</p></li>
+<li><p><strong>Use Async for High Performance</strong>: Use async clients for applications requiring high throughput.</p></li>
+<li><p><strong>Enable Logging</strong>: Use logging for debugging and monitoring in production.</p></li>
+<li><p><strong>Validate Data</strong>: Always validate data ranges and types before writing to devices.</p></li>
+<li><p><strong>Connection Management</strong>: Properly manage connection lifecycle to avoid frequent connect/disconnect operations.</p></li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="architecture.html" class="btn btn-neutral float-left" title="Architecture Design" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Miraitowa-la.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

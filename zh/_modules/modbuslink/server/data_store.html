@@ -1,0 +1,552 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>modbuslink.server.data_store &mdash; ModbusLink 1.2.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=d1fcaa3c"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/translations.js?v=beaddf03"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            ModbusLink
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">快速入门</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">快速开始</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#id4">30秒快速体验</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#id5">主流传输方式</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#id6">高级数据类型</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#id7">高性能异步操作</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#id8">本地测试环境</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#id9">错误处理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#id10">下一步</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">架构设计</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide.html">用户指南</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">示例和实践</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">示例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html">最佳实践指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id3">连接管理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id6">错误处理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id9">性能优化</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id12">数据验证</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id15">监控和诊断</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id17">配置管理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id18">生产环境最佳实践</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id21">测试策略</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id24">总结</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html">故障排除指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id3">连接问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id11">协议错误</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id13">性能问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id16">数据问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id19">调试和监控</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id23">常见错误汇总</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id25">预防措施</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id27">获取帮助</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">API 参考</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ModbusLink</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">模块代码</a></li>
+      <li class="breadcrumb-item active">modbuslink.server.data_store</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>modbuslink.server.data_store 源代码</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">ModbusLink 数据存储模块</span>
+<span class="sd">提供Modbus服务器的数据存储功能，包括线圈、离散输入、保持寄存器和输入寄存器的管理。</span>
+
+<span class="sd">ModbusLink Data Store Module</span>
+<span class="sd">Provides data storage functionality for Modbus server, including management of coils,</span>
+<span class="sd">discrete inputs, holding registers, and input registers.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..common.language</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_message</span>
+
+
+<div class="viewcode-block" id="ModbusDataStore">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.server.data_store.ModbusDataStore">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ModbusDataStore</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Modbus数据存储类</span>
+<span class="sd">    提供线程安全的Modbus数据存储功能，支持线圈、离散输入、保持寄存器和输入寄存器的读写操作。</span>
+<span class="sd">    </span>
+<span class="sd">    Modbus Data Store Class</span>
+<span class="sd">    Provides thread-safe Modbus data storage functionality, supporting read/write operations</span>
+<span class="sd">    for coils, discrete inputs, holding registers, and input registers.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ModbusDataStore.__init__">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.server.data_store.ModbusDataStore.__init__">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">coils_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">65536</span><span class="p">,</span>
+                 <span class="n">discrete_inputs_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">65536</span><span class="p">,</span>
+                 <span class="n">holding_registers_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">65536</span><span class="p">,</span>
+                 <span class="n">input_registers_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">65536</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        初始化数据存储 | Initialize Data Store</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            coils_size: 线圈数量 | Number of coils</span>
+<span class="sd">            discrete_inputs_size: 离散输入数量 | Number of discrete inputs</span>
+<span class="sd">            holding_registers_size: 保持寄存器数量 | Number of holding registers</span>
+<span class="sd">            input_registers_size: 输入寄存器数量 | Number of input registers</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="s2">&quot;server.data_store&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">RLock</span><span class="p">()</span>
+
+        <span class="c1"># 初始化数据存储区域 | Initialize data storage areas</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_coils</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">*</span> <span class="n">coils_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_discrete_inputs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">*</span> <span class="n">discrete_inputs_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_holding_registers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">holding_registers_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_input_registers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">input_registers_size</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;数据存储初始化完成: &quot;</span>
+               <span class="sa">f</span><span class="s2">&quot;线圈: </span><span class="si">{</span><span class="n">coils_size</span><span class="si">}</span><span class="s2">, &quot;</span>
+               <span class="sa">f</span><span class="s2">&quot;离散输入: </span><span class="si">{</span><span class="n">discrete_inputs_size</span><span class="si">}</span><span class="s2">, &quot;</span>
+               <span class="sa">f</span><span class="s2">&quot;保持寄存器: </span><span class="si">{</span><span class="n">holding_registers_size</span><span class="si">}</span><span class="s2">, &quot;</span>
+               <span class="sa">f</span><span class="s2">&quot;输入寄存器: </span><span class="si">{</span><span class="n">input_registers_size</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Data store initialized: &quot;</span>
+               <span class="sa">f</span><span class="s2">&quot;Coils: </span><span class="si">{</span><span class="n">coils_size</span><span class="si">}</span><span class="s2">, &quot;</span>
+               <span class="sa">f</span><span class="s2">&quot;Discrete Inputs: </span><span class="si">{</span><span class="n">discrete_inputs_size</span><span class="si">}</span><span class="s2">, &quot;</span>
+               <span class="sa">f</span><span class="s2">&quot;Holding Registers: </span><span class="si">{</span><span class="n">holding_registers_size</span><span class="si">}</span><span class="s2">, &quot;</span>
+               <span class="sa">f</span><span class="s2">&quot;Input Registers: </span><span class="si">{</span><span class="n">input_registers_size</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModbusDataStore.read_coils">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.server.data_store.ModbusDataStore.read_coils">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_coils</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        读取线圈状态 | Read Coil Status</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            address: 起始地址 | Starting address</span>
+<span class="sd">            count: 读取数量 | Number to read</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            线圈状态列表 | List of coil status</span>
+<span class="sd">            </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: 地址或数量无效 | Invalid address or count</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">address</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">address</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coils</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;线圈地址超出范围: </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Coil address out of range: </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">))</span>
+            <span class="k">if</span> <span class="n">count</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">address</span> <span class="o">+</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coils</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;线圈数量无效: </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Invalid coil count: </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">))</span>
+
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_coils</span><span class="p">[</span><span class="n">address</span><span class="p">:</span><span class="n">address</span> <span class="o">+</span> <span class="n">count</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;读取线圈: 地址 </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">, 数量 </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Read coils: Address </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">, Count </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="ModbusDataStore.write_coils">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.server.data_store.ModbusDataStore.write_coils">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_coils</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">bool</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        写入线圈状态 | Write Coil Status</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            address: 起始地址 | Starting address</span>
+<span class="sd">            values: 线圈状态列表 | List of coil status</span>
+<span class="sd">            </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: 地址或数据无效 | Invalid address or data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">address</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">address</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coils</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;线圈地址超出范围: </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Coil address out of range: </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">values</span> <span class="ow">or</span> <span class="n">address</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coils</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;线圈数据无效&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Invalid coil data&quot;</span>
+                <span class="p">))</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_coils</span><span class="p">[</span><span class="n">address</span> <span class="o">+</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;写入线圈: 地址 </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">, 数量 </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Write coils: Address </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">, Count </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModbusDataStore.read_discrete_inputs">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.server.data_store.ModbusDataStore.read_discrete_inputs">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_discrete_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        读取离散输入状态 | Read Discrete Input Status</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            address: 起始地址 | Starting address</span>
+<span class="sd">            count: 读取数量 | Number to read</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            离散输入状态列表 | List of discrete input status</span>
+<span class="sd">            </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: 地址或数量无效 | Invalid address or count</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">address</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">address</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_discrete_inputs</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;离散输入地址超出范围: </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Discrete input address out of range: </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">))</span>
+            <span class="k">if</span> <span class="n">count</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">address</span> <span class="o">+</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_discrete_inputs</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;离散输入数量无效: </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Invalid discrete input count: </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">))</span>
+
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_discrete_inputs</span><span class="p">[</span><span class="n">address</span><span class="p">:</span><span class="n">address</span> <span class="o">+</span> <span class="n">count</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;读取离散输入: 地址 </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">, 数量 </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Read discrete inputs: Address </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">, Count </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="ModbusDataStore.write_discrete_inputs">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.server.data_store.ModbusDataStore.write_discrete_inputs">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_discrete_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">bool</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        写入离散输入状态（通常用于模拟） | Write Discrete Input Status (usually for simulation)</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            address: 起始地址 | Starting address</span>
+<span class="sd">            values: 离散输入状态列表 | List of discrete input status</span>
+<span class="sd">            </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: 地址或数据无效 | Invalid address or data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">address</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">address</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_discrete_inputs</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;离散输入地址超出范围: </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Discrete input address out of range: </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">values</span> <span class="ow">or</span> <span class="n">address</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_discrete_inputs</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;离散输入数据无效&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Invalid discrete input data&quot;</span>
+                <span class="p">))</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_discrete_inputs</span><span class="p">[</span><span class="n">address</span> <span class="o">+</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;写入离散输入: 地址 </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">, 数量 </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Write discrete inputs: Address </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">, Count </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModbusDataStore.read_holding_registers">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.server.data_store.ModbusDataStore.read_holding_registers">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_holding_registers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        读取保持寄存器 | Read Holding Registers</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            address: 起始地址 | Starting address</span>
+<span class="sd">            count: 读取数量 | Number to read</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            保持寄存器值列表 | List of holding register values</span>
+<span class="sd">            </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: 地址或数量无效 | Invalid address or count</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">address</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">address</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_holding_registers</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;保持寄存器地址超出范围: </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Holding register address out of range: </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">))</span>
+            <span class="k">if</span> <span class="n">count</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">address</span> <span class="o">+</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_holding_registers</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;保持寄存器数量无效: </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Invalid holding register count: </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">))</span>
+
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_holding_registers</span><span class="p">[</span><span class="n">address</span><span class="p">:</span><span class="n">address</span> <span class="o">+</span> <span class="n">count</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;读取保持寄存器: 地址 </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">, 数量 </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Read holding registers: Address </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">, Count </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="ModbusDataStore.write_holding_registers">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.server.data_store.ModbusDataStore.write_holding_registers">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_holding_registers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        写入保持寄存器 | Write Holding Registers</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            address: 起始地址 | Starting address</span>
+<span class="sd">            values: 保持寄存器值列表 | List of holding register values</span>
+<span class="sd">            </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: 地址或数据无效 | Invalid address or data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">address</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">address</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_holding_registers</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;保持寄存器地址超出范围: </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Holding register address out of range: </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">values</span> <span class="ow">or</span> <span class="n">address</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_holding_registers</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;保持寄存器数据无效&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Invalid holding register data&quot;</span>
+                <span class="p">))</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="mi">65535</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                        <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;寄存器值超出范围: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Register value out of range: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_holding_registers</span><span class="p">[</span><span class="n">address</span> <span class="o">+</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;写入保持寄存器: 地址 </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">, 数量 </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Write holding registers: Address </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">, Count </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModbusDataStore.read_input_registers">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.server.data_store.ModbusDataStore.read_input_registers">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_input_registers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        读取输入寄存器 | Read Input Registers</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            address: 起始地址 | Starting address</span>
+<span class="sd">            count: 读取数量 | Number to read</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            输入寄存器值列表 | List of input register values</span>
+<span class="sd">            </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: 地址或数量无效 | Invalid address or count</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">address</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">address</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_registers</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;输入寄存器地址超出范围: </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Input register address out of range: </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">))</span>
+            <span class="k">if</span> <span class="n">count</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">address</span> <span class="o">+</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_registers</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;输入寄存器数量无效: </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Invalid input register count: </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">))</span>
+
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_input_registers</span><span class="p">[</span><span class="n">address</span><span class="p">:</span><span class="n">address</span> <span class="o">+</span> <span class="n">count</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;读取输入寄存器: 地址 </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">, 数量 </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Read input registers: Address </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">, Count </span><span class="si">{</span><span class="n">count</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="ModbusDataStore.write_input_registers">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.server.data_store.ModbusDataStore.write_input_registers">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_input_registers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        写入输入寄存器（通常用于模拟） | Write Input Registers (usually for simulation)</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            address: 起始地址 | Starting address</span>
+<span class="sd">            values: 输入寄存器值列表 | List of input register values</span>
+<span class="sd">            </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: 地址或数据无效 | Invalid address or data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">address</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">address</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_registers</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;输入寄存器地址超出范围: </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Input register address out of range: </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">values</span> <span class="ow">or</span> <span class="n">address</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_registers</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;输入寄存器数据无效&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Invalid input register data&quot;</span>
+                <span class="p">))</span>
+
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="mi">65535</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                        <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;寄存器值超出范围: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Register value out of range: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_input_registers</span><span class="p">[</span><span class="n">address</span> <span class="o">+</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;写入输入寄存器: 地址 </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">, 数量 </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Write input registers: Address </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">, Count </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModbusDataStore.get_coils_size">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.server.data_store.ModbusDataStore.get_coils_size">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_coils_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;获取线圈总数 | Get total number of coils&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coils</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModbusDataStore.get_discrete_inputs_size">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.server.data_store.ModbusDataStore.get_discrete_inputs_size">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_discrete_inputs_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;获取离散输入总数 | Get total number of discrete inputs&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_discrete_inputs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModbusDataStore.get_holding_registers_size">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.server.data_store.ModbusDataStore.get_holding_registers_size">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_holding_registers_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;获取保持寄存器总数 | Get total number of holding registers&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_holding_registers</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModbusDataStore.get_input_registers_size">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.server.data_store.ModbusDataStore.get_input_registers_size">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_registers_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;获取输入寄存器总数 | Get total number of input registers&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_registers</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModbusDataStore.reset">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.server.data_store.ModbusDataStore.reset">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        重置所有数据为默认值</span>
+<span class="sd">        </span>
+<span class="sd">        Reset All Data to Default Values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_coils</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_coils</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_discrete_inputs</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_discrete_inputs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_holding_registers</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_holding_registers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_registers</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_input_registers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;数据存储已重置&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Data store reset&quot;</span>
+            <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, Miraitowa。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

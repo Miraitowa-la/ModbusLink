@@ -1,0 +1,246 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>modbuslink.utils.crc &mdash; ModbusLink 1.2.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=d1fcaa3c"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/translations.js?v=beaddf03"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            ModbusLink
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">快速入门</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">快速开始</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#id4">30秒快速体验</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#id5">主流传输方式</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#id6">高级数据类型</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#id7">高性能异步操作</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#id8">本地测试环境</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#id9">错误处理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#id10">下一步</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">架构设计</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide.html">用户指南</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">示例和实践</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">示例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html">最佳实践指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id3">连接管理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id6">错误处理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id9">性能优化</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id12">数据验证</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id15">监控和诊断</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id17">配置管理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id18">生产环境最佳实践</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id21">测试策略</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id24">总结</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html">故障排除指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id3">连接问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id11">协议错误</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id13">性能问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id16">数据问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id19">调试和监控</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id23">常见错误汇总</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id25">预防措施</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id27">获取帮助</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">API 参考</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ModbusLink</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">模块代码</a></li>
+      <li class="breadcrumb-item active">modbuslink.utils.crc</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>modbuslink.utils.crc 源代码</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">ModbusLink CRC16校验工具模块</span>
+<span class="sd">提供Modbus RTU协议所需的CRC16校验功能。</span>
+
+<span class="sd">ModbusLink CRC16 Checksum Utility Module</span>
+<span class="sd">Provides CRC16 checksum functionality required by Modbus RTU protocol.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="CRC16Modbus">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.utils.crc.CRC16Modbus">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CRC16Modbus</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Modbus CRC16校验工具类</span>
+<span class="sd">    实现Modbus RTU协议中使用的CRC16校验算法。</span>
+<span class="sd">    使用多项式0xA001 (反向0x8005)。</span>
+
+<span class="sd">    Modbus CRC16 Checksum Utility Class</span>
+<span class="sd">    Implements the CRC16 checksum algorithm used in Modbus RTU protocol.</span>
+<span class="sd">    Uses polynomial 0xA001 (reverse of 0x8005).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CRC16Modbus.calculate">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.utils.crc.CRC16Modbus.calculate">[文档]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        计算CRC16校验码 | Calculate CRC16 Checksum</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data: 需要计算校验码的数据帧（地址+PDU） | Data frame for checksum calculation (address+PDU)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            2字节的CRC校验码 (little-endian bytes) | 2-byte CRC checksum (little-endian bytes)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">crc</span> <span class="o">=</span> <span class="mh">0xFFFF</span>  <span class="c1"># 初始值为0xFFFF | Initial value is 0xFFFF</span>
+
+        <span class="k">for</span> <span class="n">byte</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">crc</span> <span class="o">^=</span> <span class="n">byte</span>  <span class="c1"># 异或运算 | XOR operation</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>  <span class="c1"># 处理8位 | Process 8 bits</span>
+                <span class="k">if</span> <span class="n">crc</span> <span class="o">&amp;</span> <span class="mh">0x0001</span><span class="p">:</span>  <span class="c1"># 检查最低位 | Check lowest bit</span>
+                    <span class="n">crc</span> <span class="o">&gt;&gt;=</span> <span class="mi">1</span>  <span class="c1"># 右移一位 | Right shift by one bit</span>
+                    <span class="n">crc</span> <span class="o">^=</span> <span class="mh">0xA001</span>  <span class="c1"># 异或多项式 | XOR with polynomial</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">crc</span> <span class="o">&gt;&gt;=</span> <span class="mi">1</span>  <span class="c1"># 右移一位 | Right shift by one bit</span>
+
+        <span class="c1"># 返回little-endian格式的2字节CRC | Return 2-byte CRC in little-endian format</span>
+        <span class="k">return</span> <span class="n">crc</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">byteorder</span><span class="o">=</span><span class="s2">&quot;little&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CRC16Modbus.validate">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.utils.crc.CRC16Modbus.validate">[文档]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="n">frame_with_crc</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        验证包含CRC的完整数据帧 | Validate Complete Data Frame with CRC</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            frame_with_crc: 包含CRC校验码的完整数据帧 | Complete data frame containing CRC checksum</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            如果CRC校验正确返回True，否则返回False | True if CRC verification is correct, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">frame_with_crc</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span>
+        <span class="p">):</span>  <span class="c1"># 至少需要1字节数据 + 2字节CRC | At least 1 byte data + 2 bytes CRC required</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># 分离数据和CRC | Separate data and CRC</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">frame_with_crc</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">received_crc</span> <span class="o">=</span> <span class="n">frame_with_crc</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span>
+
+        <span class="c1"># 计算期望的CRC | Calculate expected CRC</span>
+        <span class="n">expected_crc</span> <span class="o">=</span> <span class="n">CRC16Modbus</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># 比较CRC | Compare CRC</span>
+        <span class="k">return</span> <span class="n">received_crc</span> <span class="o">==</span> <span class="n">expected_crc</span></div>
+
+
+<div class="viewcode-block" id="CRC16Modbus.crc16_to_int">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.utils.crc.CRC16Modbus.crc16_to_int">[文档]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">crc16_to_int</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        计算CRC16校验码并返回整数值</span>
+<span class="sd">        这是一个兼容性方法，用于与旧代码保持兼容。</span>
+<span class="sd">        推荐使用calculate()方法。</span>
+
+<span class="sd">        Calculate CRC16 Checksum and Return Integer Value</span>
+<span class="sd">        This is a compatibility method for maintaining compatibility with old code.</span>
+<span class="sd">        It is recommended to use the calculate() method.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data: 需要计算校验码的数据 | Data for checksum calculation</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            CRC校验码的整数值 | Integer value of CRC checksum</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">crc_bytes</span> <span class="o">=</span> <span class="n">CRC16Modbus</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="o">.</span><span class="n">from_bytes</span><span class="p">(</span><span class="n">crc_bytes</span><span class="p">,</span> <span class="n">byteorder</span><span class="o">=</span><span class="s2">&quot;little&quot;</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, Miraitowa。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

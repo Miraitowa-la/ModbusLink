@@ -1,0 +1,480 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>modbuslink.server.async_rtu_server &mdash; ModbusLink 1.2.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=d1fcaa3c"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/translations.js?v=beaddf03"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            ModbusLink
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">快速入门</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">快速开始</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#id4">30秒快速体验</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#id5">主流传输方式</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#id6">高级数据类型</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#id7">高性能异步操作</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#id8">本地测试环境</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#id9">错误处理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#id10">下一步</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">架构设计</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide.html">用户指南</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">示例和实践</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">示例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html">最佳实践指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id3">连接管理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id6">错误处理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id9">性能优化</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id12">数据验证</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id15">监控和诊断</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id17">配置管理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id18">生产环境最佳实践</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id21">测试策略</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id24">总结</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html">故障排除指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id3">连接问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id11">协议错误</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id13">性能问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id16">数据问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id19">调试和监控</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id23">常见错误汇总</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id25">预防措施</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id27">获取帮助</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">API 参考</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ModbusLink</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">模块代码</a></li>
+      <li class="breadcrumb-item active">modbuslink.server.async_rtu_server</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>modbuslink.server.async_rtu_server 源代码</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">ModbusLink 异步RTU服务器实现</span>
+<span class="sd">提供基于串口的异步Modbus RTU服务器功能。</span>
+
+<span class="sd">ModbusLink Async RTU Server Implementation</span>
+<span class="sd">Provides serial port-based async Modbus RTU server functionality.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">struct</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">serial_asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.async_base_server</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncBaseModbusServer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.data_store</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModbusDataStore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..common.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="ne">ConnectionError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils.crc</span><span class="w"> </span><span class="kn">import</span> <span class="n">CRC16Modbus</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span>
+
+
+<div class="viewcode-block" id="AsyncRtuModbusServer">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.server.async_rtu_server.AsyncRtuModbusServer">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AsyncRtuModbusServer</span><span class="p">(</span><span class="n">AsyncBaseModbusServer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    异步RTU Modbus服务器</span>
+<span class="sd">    实现基于串口的异步Modbus RTU服务器。</span>
+<span class="sd">    使用CRC16校验确保数据完整性。</span>
+<span class="sd">    </span>
+<span class="sd">    Async RTU Modbus Server</span>
+<span class="sd">    Implements serial port-based async Modbus RTU server.</span>
+<span class="sd">    Uses CRC16 checksum to ensure data integrity.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AsyncRtuModbusServer.__init__">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.server.async_rtu_server.AsyncRtuModbusServer.__init__">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">port</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">baudrate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">9600</span><span class="p">,</span>
+                 <span class="n">bytesize</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+                 <span class="n">parity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;N&#39;</span><span class="p">,</span>
+                 <span class="n">stopbits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                 <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+                 <span class="n">data_store</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ModbusDataStore</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        初始化异步RTU Modbus服务器 | Initialize Async RTU Modbus Server</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            port: 串口名称 | Serial port name</span>
+<span class="sd">            baudrate: 波特率 | Baud rate</span>
+<span class="sd">            bytesize: 数据位 | Data bits</span>
+<span class="sd">            parity: 校验位 (&#39;N&#39;, &#39;E&#39;, &#39;O&#39;) | Parity (&#39;N&#39;, &#39;E&#39;, &#39;O&#39;)</span>
+<span class="sd">            stopbits: 停止位 | Stop bits</span>
+<span class="sd">            timeout: 超时时间（秒） | Timeout in seconds</span>
+<span class="sd">            data_store: 数据存储实例 | Data store instance</span>
+<span class="sd">            slave_id: 从站地址 | Slave address</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">data_store</span><span class="p">,</span> <span class="n">slave_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">baudrate</span> <span class="o">=</span> <span class="n">baudrate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bytesize</span> <span class="o">=</span> <span class="n">bytesize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parity</span> <span class="o">=</span> <span class="n">parity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stopbits</span> <span class="o">=</span> <span class="n">stopbits</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reader</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">StreamReader</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">StreamWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_server_task</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="s2">&quot;server.rtu&quot;</span><span class="p">)</span>
+
+        <span class="c1"># 计算字符间隔时间（3.5个字符时间） | Calculate character interval time (3.5 character times)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_char_time</span> <span class="o">=</span> <span class="mf">11.0</span> <span class="o">/</span> <span class="n">baudrate</span>  <span class="c1"># 11位每字符（起始位+8数据位+校验位+停止位） | 11 bits per character</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_frame_timeout</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_char_time</span> <span class="o">*</span> <span class="mf">3.5</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">)</span>  <span class="c1"># 最小1ms | Minimum 1ms</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;RTU服务器初始化: </span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">baudrate</span><span class="si">}</span><span class="s2">, 帧超时: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_frame_timeout</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">,</span>
+            <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;RTU server initialized: </span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">baudrate</span><span class="si">}</span><span class="s2">, Frame timeout: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_frame_timeout</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">s&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AsyncRtuModbusServer.start">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.server.async_rtu_server.AsyncRtuModbusServer.start">[文档]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        启动异步RTU服务器 | Start Async RTU Server</span>
+<span class="sd">        </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ConnectionError: 当无法打开串口时 | When serial port cannot be opened</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_running</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;服务器已在运行&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Server is already running&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># 打开串口连接 | Open serial connection</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reader</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span> <span class="o">=</span> <span class="k">await</span> <span class="n">serial_asyncio</span><span class="o">.</span><span class="n">open_serial_connection</span><span class="p">(</span>
+                <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
+                <span class="n">baudrate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">baudrate</span><span class="p">,</span>
+                <span class="n">bytesize</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bytesize</span><span class="p">,</span>
+                <span class="n">parity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parity</span><span class="p">,</span>
+                <span class="n">stopbits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stopbits</span>
+            <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_running</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="c1"># 启动服务器任务 | Start server task</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_server_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_server_loop</span><span class="p">())</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;RTU服务器启动成功: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;RTU server started successfully: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;启动RTU服务器失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Failed to start RTU server: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;无法打开串口: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Cannot open serial port: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AsyncRtuModbusServer.stop">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.server.async_rtu_server.AsyncRtuModbusServer.stop">[文档]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;停止异步RTU服务器 | Stop Async RTU Server&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_running</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;服务器未运行&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Server is not running&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_running</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># 取消服务器任务 | Cancel server task</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_server_task</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_server_task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_server_task</span>
+            <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_server_task</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># 关闭串口连接 | Close serial connection</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="o">.</span><span class="n">wait_closed</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reader</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;RTU服务器已停止&quot;</span><span class="p">,</span>
+            <span class="n">en</span><span class="o">=</span><span class="s2">&quot;RTU server stopped&quot;</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AsyncRtuModbusServer.is_running">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.server.async_rtu_server.AsyncRtuModbusServer.is_running">[文档]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">is_running</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        检查服务器运行状态 | Check Server Running Status</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            如果服务器正在运行返回True，否则返回False | True if server is running, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_running</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reader</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_server_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;服务器主循环 | Server Main Loop&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;RTU服务器主循环启动&quot;</span><span class="p">,</span>
+            <span class="n">en</span><span class="o">=</span><span class="s2">&quot;RTU server main loop started&quot;</span>
+        <span class="p">)</span>
+
+        <span class="n">buffer</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">()</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_running</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reader</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># 读取数据 | Read data</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_reader</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">256</span><span class="p">),</span>
+                        <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span>
+                    <span class="p">)</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+                        <span class="k">continue</span>
+
+                    <span class="n">buffer</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+                    <span class="c1"># 等待帧间隔 | Wait for frame interval</span>
+                    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_frame_timeout</span><span class="p">)</span>
+
+                    <span class="c1"># 检查是否还有更多数据 | Check if there&#39;s more data</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">additional_data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_reader</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">256</span><span class="p">),</span>
+                            <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_frame_timeout</span>
+                        <span class="p">)</span>
+                        <span class="k">if</span> <span class="n">additional_data</span><span class="p">:</span>
+                            <span class="n">buffer</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">additional_data</span><span class="p">)</span>
+                            <span class="k">continue</span>  <span class="c1"># 继续读取 | Continue reading</span>
+                    <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">TimeoutError</span><span class="p">:</span>
+                        <span class="k">pass</span>  <span class="c1"># 没有更多数据，处理当前帧 | No more data, process current frame</span>
+
+                    <span class="c1"># 处理完整帧 | Process complete frame</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">4</span><span class="p">:</span>  <span class="c1"># 最小帧长度：地址+功能码+CRC | Minimum frame length: address + function code + CRC</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_frame</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">buffer</span><span class="p">))</span>
+
+                    <span class="n">buffer</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+                <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">TimeoutError</span><span class="p">:</span>
+                    <span class="c1"># 超时是正常的，继续循环 | Timeout is normal, continue loop</span>
+                    <span class="k">if</span> <span class="n">buffer</span><span class="p">:</span>
+                        <span class="n">buffer</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                    <span class="k">continue</span>
+
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;服务器循环异常: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Server loop exception: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">buffer</span><span class="p">:</span>
+                        <span class="n">buffer</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>  <span class="c1"># 短暂延迟后继续 | Brief delay before continuing</span>
+
+        <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;RTU服务器主循环被取消&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;RTU server main loop cancelled&quot;</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;RTU服务器主循环异常: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;RTU server main loop exception: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;RTU服务器主循环结束d&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;RTU server main loop ended&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_process_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        处理接收到的RTU帧 | Process Received RTU Frame</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            frame: 接收到的RTU帧 | Received RTU frame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;帧长度不足: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Frame length insufficient: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="c1"># 提取地址、PDU和CRC | Extract address, PDU and CRC</span>
+            <span class="n">slave_id</span> <span class="o">=</span> <span class="n">frame</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">pdu</span> <span class="o">=</span> <span class="n">frame</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">received_crc</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&quot;&lt;H&quot;</span><span class="p">,</span> <span class="n">frame</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:])[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># RTU使用小端序CRC | RTU uses little-endian CRC</span>
+
+            <span class="c1"># 验证CRC | Verify CRC</span>
+            <span class="n">calculated_crc</span> <span class="o">=</span> <span class="n">CRC16Modbus</span><span class="o">.</span><span class="n">crc16_to_int</span><span class="p">(</span><span class="n">frame</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">received_crc</span> <span class="o">!=</span> <span class="n">calculated_crc</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;CRC校验失败: 接收 0x</span><span class="si">{</span><span class="n">received_crc</span><span class="si">:</span><span class="s2">04X</span><span class="si">}</span><span class="s2">, 计算 0x</span><span class="si">{</span><span class="n">calculated_crc</span><span class="si">:</span><span class="s2">04X</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;CRC verification failed: Received 0x</span><span class="si">{</span><span class="n">received_crc</span><span class="si">:</span><span class="s2">04X</span><span class="si">}</span><span class="s2">, Calculated 0x</span><span class="si">{</span><span class="n">calculated_crc</span><span class="si">:</span><span class="s2">04X</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;接收到RTU帧: 从站 </span><span class="si">{</span><span class="n">slave_id</span><span class="si">}</span><span class="s2">, PDU长度 </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">pdu</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Received RTU frame: Slave </span><span class="si">{</span><span class="n">slave_id</span><span class="si">}</span><span class="s2">, PDU Length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">pdu</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+            <span class="c1"># 处理请求 | Process request</span>
+            <span class="n">response_pdu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_request</span><span class="p">(</span><span class="n">slave_id</span><span class="p">,</span> <span class="n">pdu</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">response_pdu</span><span class="p">:</span>  <span class="c1"># 只有非广播请求才响应 | Only respond to non-broadcast requests</span>
+                <span class="c1"># 构建响应帧 | Build response frame</span>
+                <span class="n">response_frame</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="n">slave_id</span><span class="p">)</span> <span class="o">+</span> <span class="n">response_pdu</span>
+                <span class="n">response_crc</span> <span class="o">=</span> <span class="n">CRC16Modbus</span><span class="o">.</span><span class="n">crc16_to_int</span><span class="p">(</span><span class="n">response_frame</span><span class="p">)</span>
+                <span class="n">response_frame</span> <span class="o">+=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;&lt;H&quot;</span><span class="p">,</span> <span class="n">response_crc</span><span class="p">)</span>
+
+                <span class="c1"># 发送响应 | Send response</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">response_frame</span><span class="p">)</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="o">.</span><span class="n">drain</span><span class="p">()</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                        <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;发送RTU响应: 从站 </span><span class="si">{</span><span class="n">slave_id</span><span class="si">}</span><span class="s2">, 帧长度 </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">response_frame</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Sent RTU response: Slave </span><span class="si">{</span><span class="n">slave_id</span><span class="si">}</span><span class="s2">, Frame Length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">response_frame</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;处理RTU帧时出错: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Error processing RTU frame: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="AsyncRtuModbusServer.serve_forever">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.server.async_rtu_server.AsyncRtuModbusServer.serve_forever">[文档]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">serve_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;持续运行服务器直到被停止 | Run Server Forever Until Stopped&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_running</span><span class="p">:</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_server_task</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_server_task</span>
+            <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;服务器被取消&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Server cancelled&quot;</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;服务器运行异常: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Server running exception: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+                <span class="k">raise</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;服务器未启动&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Server not started&quot;</span>
+            <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, Miraitowa。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

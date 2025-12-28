@@ -1,0 +1,1265 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>示例 &mdash; ModbusLink 1.2.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=d1fcaa3c"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=beaddf03"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="最佳实践指南" href="best_practices.html" />
+    <link rel="prev" title="用户指南" href="user_guide.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            ModbusLink
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">快速入门</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">快速开始</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id4">30秒快速体验</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id5">主流传输方式</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id6">高级数据类型</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id7">高性能异步操作</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id8">本地测试环境</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id9">错误处理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#id10">下一步</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">架构设计</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">用户指南</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">示例和实践</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">示例</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id2">基础示例</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#tcp">简单TCP客户端</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rtu">简单RTU客户端</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ascii">简单ASCII客户端</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">高级示例</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id4">异步操作</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">异步RTU操作</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">异步ASCII操作</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">回调机制</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id8">高级数据类型</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id9">性能测试示例</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id10">批量操作性能</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">连接池示例</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id12">错误处理示例</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id13">综合错误处理</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id14">日志配置</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id15">集成示例</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id16">数据采集系统</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id17">服务器示例</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id18">基础TCP服务器</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id19">RTU服务器示例</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id20">ASCII服务器示例</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id21">多服务器示例</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id22">过程控制系统</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html">最佳实践指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id3">连接管理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id6">错误处理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id9">性能优化</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id12">数据验证</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id15">监控和诊断</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id17">配置管理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id18">生产环境最佳实践</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id21">测试策略</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#id24">总结</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">故障排除指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id3">连接问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id11">协议错误</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id13">性能问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id16">数据问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id19">调试和监控</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id23">常见错误汇总</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id25">预防措施</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#id27">获取帮助</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API 参考</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ModbusLink</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">示例</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/examples.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>示例<a class="headerlink" href="#id1" title="Link to this heading"></a></h1>
+<p>本节提供了展示ModbusLink各种功能的综合示例。</p>
+<section id="id2">
+<h2>基础示例<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<section id="tcp">
+<h3>简单TCP客户端<a class="headerlink" href="#tcp" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModbusClient</span><span class="p">,</span> <span class="n">TcpTransport</span>
+
+<span class="c1"># 创建TCP传输层</span>
+<span class="n">transport</span> <span class="o">=</span> <span class="n">TcpTransport</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">502</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="c1"># 连接到服务器</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+
+    <span class="c1"># 读取保持寄存器</span>
+    <span class="n">registers</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;寄存器: </span><span class="si">{</span><span class="n">registers</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># 写入单个寄存器</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">write_single_register</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">value</span><span class="o">=</span><span class="mi">1234</span>
+    <span class="p">)</span>
+
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="rtu">
+<h3>简单RTU客户端<a class="headerlink" href="#rtu" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModbusClient</span><span class="p">,</span> <span class="n">RtuTransport</span>
+
+<span class="c1"># 创建RTU传输层</span>
+<span class="n">transport</span> <span class="o">=</span> <span class="n">RtuTransport</span><span class="p">(</span>
+    <span class="n">port</span><span class="o">=</span><span class="s1">&#39;COM1&#39;</span><span class="p">,</span>
+    <span class="n">baudrate</span><span class="o">=</span><span class="mi">9600</span><span class="p">,</span>
+    <span class="n">bytesize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+    <span class="n">parity</span><span class="o">=</span><span class="s1">&#39;N&#39;</span><span class="p">,</span>
+    <span class="n">stopbits</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+    <span class="c1"># 读取线圈</span>
+    <span class="n">coils</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_coils</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">quantity</span><span class="o">=</span><span class="mi">8</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;线圈: </span><span class="si">{</span><span class="n">coils</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># 写入多个线圈</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">write_multiple_coils</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="ascii">
+<h3>简单ASCII客户端<a class="headerlink" href="#ascii" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModbusClient</span><span class="p">,</span> <span class="n">AsciiTransport</span>
+
+<span class="c1"># 创建ASCII传输层</span>
+<span class="n">transport</span> <span class="o">=</span> <span class="n">AsciiTransport</span><span class="p">(</span>
+    <span class="n">port</span><span class="o">=</span><span class="s1">&#39;COM1&#39;</span><span class="p">,</span>
+    <span class="n">baudrate</span><span class="o">=</span><span class="mi">9600</span><span class="p">,</span>
+    <span class="n">bytesize</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
+    <span class="n">parity</span><span class="o">=</span><span class="s1">&#39;E&#39;</span><span class="p">,</span>
+    <span class="n">stopbits</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+    <span class="c1"># 读取保持寄存器</span>
+    <span class="n">registers</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">quantity</span><span class="o">=</span><span class="mi">4</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;寄存器: </span><span class="si">{</span><span class="n">registers</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># 写入单个寄存器</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">write_single_register</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">value</span><span class="o">=</span><span class="mi">1234</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id3">
+<h2>高级示例<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<section id="id4">
+<h3>异步操作<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncModbusClient</span><span class="p">,</span> <span class="n">AsyncTcpTransport</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">async_modbus_operations</span><span class="p">():</span>
+    <span class="n">transport</span> <span class="o">=</span> <span class="n">AsyncTcpTransport</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">502</span><span class="p">)</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">AsyncModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+        <span class="c1"># 并发读取操作</span>
+        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="p">]</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">registers</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;块 </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">registers</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># 顺序写入操作</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+            <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">write_single_register</span><span class="p">(</span>
+                <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">address</span><span class="o">=</span><span class="n">i</span><span class="p">,</span>
+                <span class="n">value</span><span class="o">=</span><span class="n">i</span> <span class="o">*</span> <span class="mi">100</span>
+            <span class="p">)</span>
+
+<span class="c1"># 运行异步函数</span>
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">async_modbus_operations</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="id5">
+<h3>异步RTU操作<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncModbusClient</span><span class="p">,</span> <span class="n">AsyncRtuTransport</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">async_rtu_operations</span><span class="p">():</span>
+    <span class="n">transport</span> <span class="o">=</span> <span class="n">AsyncRtuTransport</span><span class="p">(</span>
+        <span class="n">port</span><span class="o">=</span><span class="s1">&#39;COM1&#39;</span><span class="p">,</span>
+        <span class="n">baudrate</span><span class="o">=</span><span class="mi">9600</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="o">=</span><span class="mf">3.0</span>
+    <span class="p">)</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">AsyncModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+        <span class="c1"># 异步读取保持寄存器</span>
+        <span class="n">registers</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span>
+            <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;寄存器: </span><span class="si">{</span><span class="n">registers</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># 异步写入多个寄存器</span>
+        <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">write_multiple_registers</span><span class="p">(</span>
+            <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">400</span><span class="p">]</span>
+        <span class="p">)</span>
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">async_rtu_operations</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="id6">
+<h3>异步ASCII操作<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncModbusClient</span><span class="p">,</span> <span class="n">AsyncAsciiTransport</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">async_ascii_operations</span><span class="p">():</span>
+    <span class="n">transport</span> <span class="o">=</span> <span class="n">AsyncAsciiTransport</span><span class="p">(</span>
+        <span class="n">port</span><span class="o">=</span><span class="s1">&#39;COM1&#39;</span><span class="p">,</span>
+        <span class="n">baudrate</span><span class="o">=</span><span class="mi">9600</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="o">=</span><span class="mf">3.0</span>
+    <span class="p">)</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">AsyncModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+        <span class="c1"># 异步读取线圈</span>
+        <span class="n">coils</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">read_coils</span><span class="p">(</span>
+            <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">quantity</span><span class="o">=</span><span class="mi">8</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;线圈: </span><span class="si">{</span><span class="n">coils</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># 异步写入单个线圈</span>
+        <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">write_single_coil</span><span class="p">(</span>
+            <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">async_ascii_operations</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="id7">
+<h3>回调机制<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncModbusClient</span><span class="p">,</span> <span class="n">AsyncTcpTransport</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">on_data_received</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;接收到数据: </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">on_error</span><span class="p">(</span><span class="n">error</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;发生错误: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">callback_example</span><span class="p">():</span>
+    <span class="n">transport</span> <span class="o">=</span> <span class="n">AsyncTcpTransport</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">502</span><span class="p">)</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">AsyncModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+    <span class="c1"># 设置回调</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">set_data_callback</span><span class="p">(</span><span class="n">on_data_received</span><span class="p">)</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">set_error_callback</span><span class="p">(</span><span class="n">on_error</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+        <span class="c1"># 操作将触发回调</span>
+        <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span>
+            <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span>
+        <span class="p">)</span>
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">callback_example</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="id8">
+<h3>高级数据类型<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModbusClient</span><span class="p">,</span> <span class="n">TcpTransport</span>
+
+<span class="n">transport</span> <span class="o">=</span> <span class="n">TcpTransport</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">502</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+    <span class="c1"># Float32 操作</span>
+    <span class="n">temperature</span> <span class="o">=</span> <span class="mf">25.6</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">write_float32</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">start_address</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+        <span class="n">value</span><span class="o">=</span><span class="n">temperature</span>
+    <span class="p">)</span>
+
+    <span class="n">read_temp</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_float32</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">start_address</span><span class="o">=</span><span class="mi">100</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;温度: </span><span class="si">{</span><span class="n">read_temp</span><span class="si">}</span><span class="s2">°C&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Int32 操作，自定义字节/字序</span>
+    <span class="n">counter_value</span> <span class="o">=</span> <span class="o">-</span><span class="mi">123456</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">write_int32</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">start_address</span><span class="o">=</span><span class="mi">102</span><span class="p">,</span>
+        <span class="n">value</span><span class="o">=</span><span class="n">counter_value</span><span class="p">,</span>
+        <span class="n">byte_order</span><span class="o">=</span><span class="s1">&#39;little&#39;</span><span class="p">,</span>
+        <span class="n">word_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span>
+    <span class="p">)</span>
+
+    <span class="n">read_counter</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_int32</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">start_address</span><span class="o">=</span><span class="mi">102</span><span class="p">,</span>
+        <span class="n">byte_order</span><span class="o">=</span><span class="s1">&#39;little&#39;</span><span class="p">,</span>
+        <span class="n">word_order</span><span class="o">=</span><span class="s1">&#39;big&#39;</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;计数器: </span><span class="si">{</span><span class="n">read_counter</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># UInt32 操作</span>
+    <span class="n">timestamp</span> <span class="o">=</span> <span class="mi">1640995200</span>  <span class="c1"># Unix时间戳</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">write_uint32</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">start_address</span><span class="o">=</span><span class="mi">104</span><span class="p">,</span>
+        <span class="n">value</span><span class="o">=</span><span class="n">timestamp</span>
+    <span class="p">)</span>
+
+    <span class="n">read_timestamp</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_uint32</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">start_address</span><span class="o">=</span><span class="mi">104</span>
+    <span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;时间戳: </span><span class="si">{</span><span class="n">read_timestamp</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id9">
+<h2>性能测试示例<a class="headerlink" href="#id9" title="Link to this heading"></a></h2>
+<section id="id10">
+<h3>批量操作性能<a class="headerlink" href="#id10" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncModbusClient</span><span class="p">,</span> <span class="n">AsyncTcpTransport</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">performance_test</span><span class="p">():</span>
+    <span class="n">transport</span> <span class="o">=</span> <span class="n">AsyncTcpTransport</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">502</span><span class="p">)</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">AsyncModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+        <span class="c1"># 测试批量读取性能</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="c1"># 并发读取多个寄存器块</span>
+        <span class="n">tasks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+            <span class="n">task</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span>
+                <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">start_address</span><span class="o">=</span><span class="n">i</span><span class="o">*</span><span class="mi">10</span><span class="p">,</span>
+                <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span>
+            <span class="p">)</span>
+            <span class="n">tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+
+        <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
+        <span class="n">end_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;读取100个寄存器耗时: </span><span class="si">{</span><span class="n">end_time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_time</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">秒&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;平均每个寄存器: </span><span class="si">{</span><span class="p">(</span><span class="n">end_time</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start_time</span><span class="p">)</span><span class="o">*</span><span class="mi">1000</span><span class="o">/</span><span class="mi">100</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">ms&quot;</span><span class="p">)</span>
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">performance_test</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="id11">
+<h3>连接池示例<a class="headerlink" href="#id11" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncModbusClient</span><span class="p">,</span> <span class="n">AsyncTcpTransport</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ModbusConnectionPool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">pool_size</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">host</span> <span class="o">=</span> <span class="n">host</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pool_size</span> <span class="o">=</span> <span class="n">pool_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connections</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Queue</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="n">pool_size</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pool_size</span><span class="p">):</span>
+            <span class="n">transport</span> <span class="o">=</span> <span class="n">AsyncTcpTransport</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+            <span class="n">client</span> <span class="o">=</span> <span class="n">AsyncModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+            <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">return_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">close_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+            <span class="n">client</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+
+<span class="c1"># 使用连接池</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">use_connection_pool</span><span class="p">():</span>
+    <span class="n">pool</span> <span class="o">=</span> <span class="n">ModbusConnectionPool</span><span class="p">(</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="mi">502</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">pool</span><span class="o">.</span><span class="n">initialize</span><span class="p">()</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># 获取连接</span>
+        <span class="n">client</span> <span class="o">=</span> <span class="k">await</span> <span class="n">pool</span><span class="o">.</span><span class="n">get_connection</span><span class="p">()</span>
+
+        <span class="c1"># 执行操作</span>
+        <span class="n">registers</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span>
+            <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;读取结果: </span><span class="si">{</span><span class="n">registers</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># 归还连接</span>
+        <span class="k">await</span> <span class="n">pool</span><span class="o">.</span><span class="n">return_connection</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">pool</span><span class="o">.</span><span class="n">close_all</span><span class="p">()</span>
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">use_connection_pool</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id12">
+<h2>错误处理示例<a class="headerlink" href="#id12" title="Link to this heading"></a></h2>
+<section id="id13">
+<h3>综合错误处理<a class="headerlink" href="#id13" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModbusClient</span><span class="p">,</span> <span class="n">TcpTransport</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink.common.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="ne">ConnectionError</span><span class="p">,</span> <span class="ne">TimeoutError</span><span class="p">,</span> <span class="n">CRCError</span><span class="p">,</span>
+    <span class="n">InvalidResponseError</span><span class="p">,</span> <span class="n">ModbusException</span>
+<span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">robust_modbus_client</span><span class="p">():</span>
+    <span class="n">transport</span> <span class="o">=</span> <span class="n">TcpTransport</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">502</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
+    <span class="n">client</span> <span class="o">=</span> <span class="n">ModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+    <span class="n">max_retries</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">retry_delay</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+    <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_retries</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+
+            <span class="c1"># 执行操作</span>
+            <span class="n">registers</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span>
+                <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span>
+            <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;成功读取寄存器: </span><span class="si">{</span><span class="n">registers</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">break</span>
+
+        <span class="k">except</span> <span class="ne">ConnectionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;连接失败（尝试 </span><span class="si">{</span><span class="n">attempt</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">）: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">attempt</span> <span class="o">&lt;</span> <span class="n">max_retries</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">retry_delay</span><span class="p">)</span>
+                <span class="n">retry_delay</span> <span class="o">*=</span> <span class="mi">2</span>  <span class="c1"># 指数退避</span>
+
+        <span class="k">except</span> <span class="ne">TimeoutError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;操作超时（尝试 </span><span class="si">{</span><span class="n">attempt</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">）: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">attempt</span> <span class="o">&lt;</span> <span class="n">max_retries</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">retry_delay</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="n">CRCError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;检测到CRC错误: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># CRC错误通常表示通信问题</span>
+            <span class="k">break</span>
+
+        <span class="k">except</span> <span class="n">InvalidResponseError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;接收到无效响应: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">break</span>
+
+        <span class="k">except</span> <span class="n">ModbusException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Modbus协议错误: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;异常码: </span><span class="si">{</span><span class="n">e</span><span class="o">.</span><span class="n">exception_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">break</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;意外错误: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">break</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">client</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+<span class="n">robust_modbus_client</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="id14">
+<h3>日志配置<a class="headerlink" href="#id14" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModbusClient</span><span class="p">,</span> <span class="n">TcpTransport</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink.utils.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_logger</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+<span class="c1"># 配置日志</span>
+<span class="n">setup_logger</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;modbuslink&#39;</span><span class="p">,</span>
+    <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+    <span class="n">log_file</span><span class="o">=</span><span class="s1">&#39;modbus_operations.log&#39;</span><span class="p">,</span>
+    <span class="n">console_output</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+
+<span class="c1"># 创建启用日志的客户端</span>
+<span class="n">transport</span> <span class="o">=</span> <span class="n">TcpTransport</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">502</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+    <span class="c1"># 所有操作都将被记录</span>
+    <span class="n">registers</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">quantity</span><span class="o">=</span><span class="mi">10</span>
+    <span class="p">)</span>
+
+    <span class="n">client</span><span class="o">.</span><span class="n">write_single_register</span><span class="p">(</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">value</span><span class="o">=</span><span class="mi">1234</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id15">
+<h2>集成示例<a class="headerlink" href="#id15" title="Link to this heading"></a></h2>
+<section id="id16">
+<h3>数据采集系统<a class="headerlink" href="#id16" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncModbusClient</span><span class="p">,</span> <span class="n">AsyncTcpTransport</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DataAcquisitionSystem</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transport</span> <span class="o">=</span> <span class="n">AsyncTcpTransport</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">AsyncModbusClient</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_buffer</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">start_acquisition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">:</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># 读取多个数据点</span>
+                    <span class="n">temperature</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">read_float32</span><span class="p">(</span>
+                        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">100</span>
+                    <span class="p">)</span>
+                    <span class="n">pressure</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">read_float32</span><span class="p">(</span>
+                        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">102</span>
+                    <span class="p">)</span>
+                    <span class="n">flow_rate</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">read_float32</span><span class="p">(</span>
+                        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">104</span>
+                    <span class="p">)</span>
+
+                    <span class="c1"># 创建数据记录</span>
+                    <span class="n">record</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="s1">&#39;timestamp&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(),</span>
+                        <span class="s1">&#39;temperature&#39;</span><span class="p">:</span> <span class="n">temperature</span><span class="p">,</span>
+                        <span class="s1">&#39;pressure&#39;</span><span class="p">:</span> <span class="n">pressure</span><span class="p">,</span>
+                        <span class="s1">&#39;flow_rate&#39;</span><span class="p">:</span> <span class="n">flow_rate</span>
+                    <span class="p">}</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">data_buffer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;数据已采集: </span><span class="si">{</span><span class="n">record</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                    <span class="c1"># 定期保存数据</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_buffer</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">10</span><span class="p">:</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_data</span><span class="p">()</span>
+
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;采集错误: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">save_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_buffer</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;data_</span><span class="si">{</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">_%H%M%S&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">.json&quot;</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_buffer</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;已保存 </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_buffer</span><span class="p">)</span><span class="si">}</span><span class="s2"> 条记录到 </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_buffer</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+<span class="c1"># 使用方法</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="n">daq</span> <span class="o">=</span> <span class="n">DataAcquisitionSystem</span><span class="p">(</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="mi">502</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">daq</span><span class="o">.</span><span class="n">start_acquisition</span><span class="p">(</span><span class="n">interval</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id17">
+<h2>服务器示例<a class="headerlink" href="#id17" title="Link to this heading"></a></h2>
+<section id="id18">
+<h3>基础TCP服务器<a class="headerlink" href="#id18" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncTcpModbusServer</span><span class="p">,</span> <span class="n">ModbusDataStore</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="c1"># 设置日志</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+
+    <span class="c1"># 创建数据存储</span>
+    <span class="n">data_store</span> <span class="o">=</span> <span class="n">ModbusDataStore</span><span class="p">(</span>
+        <span class="n">coils_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+        <span class="n">discrete_inputs_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+        <span class="n">holding_registers_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+        <span class="n">input_registers_size</span><span class="o">=</span><span class="mi">1000</span>
+    <span class="p">)</span>
+
+    <span class="c1"># 设置初始数据</span>
+    <span class="n">data_store</span><span class="o">.</span><span class="n">write_coils</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">])</span>
+    <span class="n">data_store</span><span class="o">.</span><span class="n">write_holding_registers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">400</span><span class="p">,</span> <span class="mi">500</span><span class="p">])</span>
+    <span class="n">data_store</span><span class="o">.</span><span class="n">write_input_registers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="mi">250</span><span class="p">,</span> <span class="mi">251</span><span class="p">,</span> <span class="mi">252</span><span class="p">,</span> <span class="mi">253</span><span class="p">,</span> <span class="mi">254</span><span class="p">])</span>
+    <span class="n">data_store</span><span class="o">.</span><span class="n">write_discrete_inputs</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">])</span>
+
+    <span class="c1"># 创建TCP服务器</span>
+    <span class="n">server</span> <span class="o">=</span> <span class="n">AsyncTcpModbusServer</span><span class="p">(</span>
+        <span class="n">host</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+        <span class="n">port</span><span class="o">=</span><span class="mi">5020</span><span class="p">,</span>
+        <span class="n">data_store</span><span class="o">=</span><span class="n">data_store</span><span class="p">,</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">max_connections</span><span class="o">=</span><span class="mi">5</span>
+    <span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;启动TCP服务器: localhost:5020&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;从站地址: 1&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># 启动服务器</span>
+        <span class="k">await</span> <span class="n">server</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;TCP服务器启动成功!&quot;</span><span class="p">)</span>
+
+        <span class="c1"># 永久运行</span>
+        <span class="k">await</span> <span class="n">server</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
+
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">收到停止信号&quot;</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;正在停止服务器...&quot;</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">server</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;服务器已停止&quot;</span><span class="p">)</span>
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="id19">
+<h3>RTU服务器示例<a class="headerlink" href="#id19" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncRtuModbusServer</span><span class="p">,</span> <span class="n">ModbusDataStore</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">simulate_industrial_data</span><span class="p">(</span><span class="n">data_store</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;模拟工业设备数据&quot;&quot;&quot;</span>
+    <span class="n">cycle</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">cycle</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="c1"># 模拟温度传感器数据</span>
+            <span class="n">base_temps</span> <span class="o">=</span> <span class="p">[</span><span class="mi">248</span><span class="p">,</span> <span class="mi">179</span><span class="p">,</span> <span class="mi">318</span><span class="p">,</span> <span class="mi">447</span><span class="p">,</span> <span class="mi">682</span><span class="p">]</span>
+            <span class="n">temp_variations</span> <span class="o">=</span> <span class="p">[</span><span class="n">base</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">cycle</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">))</span> <span class="k">for</span> <span class="n">base</span> <span class="ow">in</span> <span class="n">base_temps</span><span class="p">]</span>
+            <span class="n">data_store</span><span class="o">.</span><span class="n">write_input_registers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">temp_variations</span><span class="p">)</span>
+
+            <span class="c1"># 模拟压力传感器数据</span>
+            <span class="n">base_pressures</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1015</span><span class="p">,</span> <span class="mi">1027</span><span class="p">,</span> <span class="mi">996</span><span class="p">,</span> <span class="mi">1043</span><span class="p">,</span> <span class="mi">1004</span><span class="p">]</span>
+            <span class="n">pressure_variations</span> <span class="o">=</span> <span class="p">[</span><span class="n">base</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">cycle</span> <span class="o">*</span> <span class="mf">0.15</span><span class="p">))</span> <span class="k">for</span> <span class="n">base</span> <span class="ow">in</span> <span class="n">base_pressures</span><span class="p">]</span>
+            <span class="n">data_store</span><span class="o">.</span><span class="n">write_input_registers</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">pressure_variations</span><span class="p">)</span>
+
+            <span class="c1"># 模拟电机转速变化</span>
+            <span class="n">current_speeds</span> <span class="o">=</span> <span class="n">data_store</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+            <span class="n">new_speeds</span> <span class="o">=</span> <span class="p">[</span><span class="n">speed</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span> <span class="k">for</span> <span class="n">speed</span> <span class="ow">in</span> <span class="n">current_speeds</span><span class="p">]</span>
+            <span class="n">new_speeds</span> <span class="o">=</span> <span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mi">4000</span><span class="p">,</span> <span class="n">speed</span><span class="p">))</span> <span class="k">for</span> <span class="n">speed</span> <span class="ow">in</span> <span class="n">new_speeds</span><span class="p">]</span>
+            <span class="n">data_store</span><span class="o">.</span><span class="n">write_holding_registers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">new_speeds</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">cycle</span> <span class="o">%</span> <span class="mi">20</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;工业数据更新 #</span><span class="si">{</span><span class="n">cycle</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  温度: </span><span class="si">{</span><span class="n">temp_variations</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  压力: </span><span class="si">{</span><span class="n">pressure_variations</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  电机转速: </span><span class="si">{</span><span class="n">new_speeds</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;数据模拟错误: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="c1"># 创建数据存储</span>
+    <span class="n">data_store</span> <span class="o">=</span> <span class="n">ModbusDataStore</span><span class="p">(</span>
+        <span class="n">coils_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+        <span class="n">discrete_inputs_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+        <span class="n">holding_registers_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+        <span class="n">input_registers_size</span><span class="o">=</span><span class="mi">1000</span>
+    <span class="p">)</span>
+
+    <span class="c1"># 初始化工业设备数据</span>
+    <span class="n">data_store</span><span class="o">.</span><span class="n">write_coils</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">])</span>  <span class="c1"># 电机状态</span>
+    <span class="n">data_store</span><span class="o">.</span><span class="n">write_coils</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">])</span>  <span class="c1"># 阀门状态</span>
+    <span class="n">data_store</span><span class="o">.</span><span class="n">write_holding_registers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">2800</span><span class="p">,</span> <span class="mi">3600</span><span class="p">,</span> <span class="mi">1200</span><span class="p">,</span> <span class="mi">750</span><span class="p">])</span>  <span class="c1"># 电机参数</span>
+    <span class="n">data_store</span><span class="o">.</span><span class="n">write_input_registers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="mi">248</span><span class="p">,</span> <span class="mi">179</span><span class="p">,</span> <span class="mi">318</span><span class="p">,</span> <span class="mi">447</span><span class="p">,</span> <span class="mi">682</span><span class="p">])</span>  <span class="c1"># 温度传感器</span>
+    <span class="n">data_store</span><span class="o">.</span><span class="n">write_discrete_inputs</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">])</span>  <span class="c1"># 限位开关</span>
+
+    <span class="c1"># 创建RTU服务器</span>
+    <span class="n">server</span> <span class="o">=</span> <span class="n">AsyncRtuModbusServer</span><span class="p">(</span>
+        <span class="n">port</span><span class="o">=</span><span class="s2">&quot;COM3&quot;</span><span class="p">,</span>  <span class="c1"># 根据实际情况修改</span>
+        <span class="n">baudrate</span><span class="o">=</span><span class="mi">9600</span><span class="p">,</span>
+        <span class="n">data_store</span><span class="o">=</span><span class="n">data_store</span><span class="p">,</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">parity</span><span class="o">=</span><span class="s2">&quot;N&quot;</span><span class="p">,</span>
+        <span class="n">stopbits</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">bytesize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="o">=</span><span class="mf">1.0</span>
+    <span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;RTU服务器配置:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  串口: COM3&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  波特率: 9600&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  数据位: 8, 停止位: 1, 校验位: 无&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  从站地址: 1&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># 启动服务器</span>
+        <span class="k">await</span> <span class="n">server</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;RTU服务器启动成功!&quot;</span><span class="p">)</span>
+
+        <span class="c1"># 启动数据模拟任务</span>
+        <span class="n">simulation_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">simulate_industrial_data</span><span class="p">(</span><span class="n">data_store</span><span class="p">))</span>
+        <span class="n">server_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">server</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">())</span>
+
+        <span class="c1"># 等待任务完成</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">simulation_task</span><span class="p">,</span> <span class="n">server_task</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">收到停止信号&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">服务器运行错误: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;正在停止服务器...&quot;</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">server</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;服务器已停止&quot;</span><span class="p">)</span>
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="id20">
+<h3>ASCII服务器示例<a class="headerlink" href="#id20" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncAsciiModbusServer</span><span class="p">,</span> <span class="n">ModbusDataStore</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">simulate_laboratory_experiment</span><span class="p">(</span><span class="n">data_store</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;模拟实验室实验过程&quot;&quot;&quot;</span>
+    <span class="n">experiment_time</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">experiment_time</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="c1"># 模拟温度控制过程</span>
+            <span class="n">target_temps</span> <span class="o">=</span> <span class="n">data_store</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+            <span class="n">current_temps</span> <span class="o">=</span> <span class="n">data_store</span><span class="o">.</span><span class="n">read_input_registers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+
+            <span class="c1"># 温度逐渐趋向目标值</span>
+            <span class="n">new_temps</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">current</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">current_temps</span><span class="p">,</span> <span class="n">target_temps</span><span class="p">)):</span>
+                <span class="n">diff</span> <span class="o">=</span> <span class="n">target</span> <span class="o">-</span> <span class="n">current</span>
+                <span class="n">change</span> <span class="o">=</span> <span class="n">diff</span> <span class="o">*</span> <span class="mf">0.1</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">experiment_time</span> <span class="o">*</span> <span class="mf">0.05</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span>
+                <span class="n">new_temp</span> <span class="o">=</span> <span class="n">current</span> <span class="o">+</span> <span class="n">change</span>
+                <span class="n">new_temps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="n">new_temp</span><span class="p">))))</span>
+
+            <span class="n">data_store</span><span class="o">.</span><span class="n">write_input_registers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">new_temps</span><span class="p">)</span>
+
+            <span class="c1"># 模拟湿度变化</span>
+            <span class="n">base_humidity</span> <span class="o">=</span> <span class="p">[</span><span class="mi">45</span><span class="p">,</span> <span class="mi">52</span><span class="p">,</span> <span class="mi">38</span><span class="p">,</span> <span class="mi">48</span><span class="p">,</span> <span class="mi">55</span><span class="p">]</span>
+            <span class="n">humidity_variations</span> <span class="o">=</span> <span class="p">[</span><span class="n">base</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">experiment_time</span> <span class="o">*</span> <span class="mf">0.08</span><span class="p">))</span> <span class="k">for</span> <span class="n">base</span> <span class="ow">in</span> <span class="n">base_humidity</span><span class="p">]</span>
+            <span class="n">humidity_variations</span> <span class="o">=</span> <span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">h</span><span class="p">))</span> <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">humidity_variations</span><span class="p">]</span>
+            <span class="n">data_store</span><span class="o">.</span><span class="n">write_input_registers</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">humidity_variations</span><span class="p">)</span>
+
+            <span class="c1"># 模拟pH值变化</span>
+            <span class="n">base_ph</span> <span class="o">=</span> <span class="p">[</span><span class="mi">700</span><span class="p">,</span> <span class="mi">650</span><span class="p">,</span> <span class="mi">720</span><span class="p">,</span> <span class="mi">680</span><span class="p">,</span> <span class="mi">710</span><span class="p">]</span>
+            <span class="n">ph_variations</span> <span class="o">=</span> <span class="p">[</span><span class="n">base</span> <span class="o">+</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">experiment_time</span> <span class="o">*</span> <span class="mf">0.03</span><span class="p">))</span> <span class="k">for</span> <span class="n">base</span> <span class="ow">in</span> <span class="n">base_ph</span><span class="p">]</span>
+            <span class="n">ph_variations</span> <span class="o">=</span> <span class="p">[</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mi">1400</span><span class="p">,</span> <span class="n">ph</span><span class="p">))</span> <span class="k">for</span> <span class="n">ph</span> <span class="ow">in</span> <span class="n">ph_variations</span><span class="p">]</span>
+            <span class="n">data_store</span><span class="o">.</span><span class="n">write_input_registers</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">ph_variations</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">experiment_time</span> <span class="o">%</span> <span class="mi">15</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;实验过程模拟 #</span><span class="si">{</span><span class="n">experiment_time</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  温度: </span><span class="si">{</span><span class="n">new_temps</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  湿度: </span><span class="si">{</span><span class="n">humidity_variations</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  pH: </span><span class="si">{</span><span class="p">[</span><span class="n">ph</span><span class="o">/</span><span class="mf">100.0</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">ph</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">ph_variations</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">3.0</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;实验模拟错误: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">3.0</span><span class="p">)</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="c1"># 创建数据存储</span>
+    <span class="n">data_store</span> <span class="o">=</span> <span class="n">ModbusDataStore</span><span class="p">(</span>
+        <span class="n">coils_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+        <span class="n">discrete_inputs_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+        <span class="n">holding_registers_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+        <span class="n">input_registers_size</span><span class="o">=</span><span class="mi">1000</span>
+    <span class="p">)</span>
+
+    <span class="c1"># 初始化实验室设备数据</span>
+    <span class="n">data_store</span><span class="o">.</span><span class="n">write_coils</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">])</span>  <span class="c1"># 加热器控制</span>
+    <span class="n">data_store</span><span class="o">.</span><span class="n">write_coils</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">])</span>  <span class="c1"># 风扇控制</span>
+    <span class="n">data_store</span><span class="o">.</span><span class="n">write_holding_registers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="mi">250</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">220</span><span class="p">,</span> <span class="mi">350</span><span class="p">])</span>  <span class="c1"># 目标温度</span>
+    <span class="n">data_store</span><span class="o">.</span><span class="n">write_input_registers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="mi">248</span><span class="p">,</span> <span class="mi">298</span><span class="p">,</span> <span class="mi">178</span><span class="p">,</span> <span class="mi">218</span><span class="p">,</span> <span class="mi">348</span><span class="p">])</span>  <span class="c1"># 实际温度</span>
+    <span class="n">data_store</span><span class="o">.</span><span class="n">write_discrete_inputs</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">])</span>  <span class="c1"># 门开关状态</span>
+
+    <span class="c1"># 创建ASCII服务器</span>
+    <span class="n">server</span> <span class="o">=</span> <span class="n">AsyncAsciiModbusServer</span><span class="p">(</span>
+        <span class="n">port</span><span class="o">=</span><span class="s2">&quot;COM4&quot;</span><span class="p">,</span>  <span class="c1"># 根据实际情况修改</span>
+        <span class="n">baudrate</span><span class="o">=</span><span class="mi">9600</span><span class="p">,</span>
+        <span class="n">data_store</span><span class="o">=</span><span class="n">data_store</span><span class="p">,</span>
+        <span class="n">slave_id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">parity</span><span class="o">=</span><span class="s2">&quot;E&quot;</span><span class="p">,</span>
+        <span class="n">stopbits</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">bytesize</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="o">=</span><span class="mf">2.0</span>
+    <span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ASCII服务器配置:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  串口: COM4&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  波特率: 9600&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  数据位: 7, 停止位: 1, 校验位: 偶校验&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  从站地址: 2&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># 启动服务器</span>
+        <span class="k">await</span> <span class="n">server</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ASCII服务器启动成功!&quot;</span><span class="p">)</span>
+
+        <span class="c1"># 启动实验模拟任务</span>
+        <span class="n">simulation_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">simulate_laboratory_experiment</span><span class="p">(</span><span class="n">data_store</span><span class="p">))</span>
+        <span class="n">server_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">server</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">())</span>
+
+        <span class="c1"># 等待任务完成</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">simulation_task</span><span class="p">,</span> <span class="n">server_task</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">收到停止信号&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">服务器运行错误: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;正在停止服务器...&quot;</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">server</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;服务器已停止&quot;</span><span class="p">)</span>
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="id21">
+<h3>多服务器示例<a class="headerlink" href="#id21" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AsyncTcpModbusServer</span><span class="p">,</span>
+    <span class="n">AsyncRtuModbusServer</span><span class="p">,</span>
+    <span class="n">AsyncAsciiModbusServer</span><span class="p">,</span>
+    <span class="n">ModbusDataStore</span>
+<span class="p">)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">MultiServerManager</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;多服务器管理器&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">servers</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_stores</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">setup_servers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;设置所有服务器&quot;&quot;&quot;</span>
+        <span class="c1"># TCP服务器</span>
+        <span class="n">tcp_data_store</span> <span class="o">=</span> <span class="n">ModbusDataStore</span><span class="p">(</span><span class="n">coils_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">discrete_inputs_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+                                       <span class="n">holding_registers_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">input_registers_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+        <span class="n">tcp_data_store</span><span class="o">.</span><span class="n">write_coils</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="n">tcp_data_store</span><span class="o">.</span><span class="n">write_holding_registers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">150</span><span class="p">)))</span>
+
+        <span class="n">tcp_server</span> <span class="o">=</span> <span class="n">AsyncTcpModbusServer</span><span class="p">(</span>
+            <span class="n">host</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">5020</span><span class="p">,</span> <span class="n">data_store</span><span class="o">=</span><span class="n">tcp_data_store</span><span class="p">,</span> <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">servers</span><span class="p">[</span><span class="s2">&quot;tcp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tcp_server</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_stores</span><span class="p">[</span><span class="s2">&quot;tcp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tcp_data_store</span>
+
+        <span class="c1"># RTU服务器</span>
+        <span class="n">rtu_data_store</span> <span class="o">=</span> <span class="n">ModbusDataStore</span><span class="p">(</span><span class="n">coils_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">discrete_inputs_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+                                       <span class="n">holding_registers_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">input_registers_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+        <span class="n">rtu_data_store</span><span class="o">.</span><span class="n">write_coils</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">]</span> <span class="o">*</span> <span class="mi">8</span><span class="p">)</span>
+        <span class="n">rtu_data_store</span><span class="o">.</span><span class="n">write_holding_registers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="mi">1500</span><span class="p">,</span> <span class="mi">2800</span><span class="p">,</span> <span class="mi">3600</span><span class="p">,</span> <span class="mi">1200</span><span class="p">,</span> <span class="mi">750</span><span class="p">])</span>
+
+        <span class="n">rtu_server</span> <span class="o">=</span> <span class="n">AsyncRtuModbusServer</span><span class="p">(</span>
+            <span class="n">port</span><span class="o">=</span><span class="s2">&quot;COM3&quot;</span><span class="p">,</span> <span class="n">baudrate</span><span class="o">=</span><span class="mi">9600</span><span class="p">,</span> <span class="n">data_store</span><span class="o">=</span><span class="n">rtu_data_store</span><span class="p">,</span> <span class="n">slave_id</span><span class="o">=</span><span class="mi">2</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">servers</span><span class="p">[</span><span class="s2">&quot;rtu&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rtu_server</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_stores</span><span class="p">[</span><span class="s2">&quot;rtu&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rtu_data_store</span>
+
+        <span class="c1"># ASCII服务器</span>
+        <span class="n">ascii_data_store</span> <span class="o">=</span> <span class="n">ModbusDataStore</span><span class="p">(</span><span class="n">coils_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">discrete_inputs_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+                                         <span class="n">holding_registers_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">input_registers_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+        <span class="n">ascii_data_store</span><span class="o">.</span><span class="n">write_coils</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span> <span class="o">*</span> <span class="mi">8</span><span class="p">)</span>
+        <span class="n">ascii_data_store</span><span class="o">.</span><span class="n">write_holding_registers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="mi">250</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">220</span><span class="p">,</span> <span class="mi">350</span><span class="p">])</span>
+
+        <span class="n">ascii_server</span> <span class="o">=</span> <span class="n">AsyncAsciiModbusServer</span><span class="p">(</span>
+            <span class="n">port</span><span class="o">=</span><span class="s2">&quot;COM4&quot;</span><span class="p">,</span> <span class="n">baudrate</span><span class="o">=</span><span class="mi">9600</span><span class="p">,</span> <span class="n">data_store</span><span class="o">=</span><span class="n">ascii_data_store</span><span class="p">,</span> <span class="n">slave_id</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="n">parity</span><span class="o">=</span><span class="s2">&quot;E&quot;</span><span class="p">,</span> <span class="n">stopbits</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bytesize</span><span class="o">=</span><span class="mi">7</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">servers</span><span class="p">[</span><span class="s2">&quot;ascii&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ascii_server</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_stores</span><span class="p">[</span><span class="s2">&quot;ascii&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ascii_data_store</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">start_all_servers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;启动所有服务器&quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;启动所有服务器...&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">server_type</span><span class="p">,</span> <span class="n">server</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">servers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">await</span> <span class="n">server</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_type</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">服务器启动成功&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_type</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">服务器启动失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">stop_all_servers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;停止所有服务器&quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;停止所有服务器...&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">server_type</span><span class="p">,</span> <span class="n">server</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">servers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">await</span> <span class="n">server</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_type</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">服务器已停止&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_type</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">服务器停止失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">simulate_data_changes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;模拟数据变化&quot;&quot;&quot;</span>
+        <span class="n">cycle</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">cycle</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="c1"># 更新各服务器数据</span>
+                <span class="k">for</span> <span class="n">server_type</span><span class="p">,</span> <span class="n">store</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_stores</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">server_type</span> <span class="o">==</span> <span class="s2">&quot;tcp&quot;</span><span class="p">:</span>
+                        <span class="c1"># 网络监控数据</span>
+                        <span class="n">traffic_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
+                        <span class="n">store</span><span class="o">.</span><span class="n">write_input_registers</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="n">traffic_data</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">server_type</span> <span class="o">==</span> <span class="s2">&quot;rtu&quot;</span><span class="p">:</span>
+                        <span class="c1"># 工业过程数据</span>
+                        <span class="n">temp_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)]</span>
+                        <span class="n">store</span><span class="o">.</span><span class="n">write_input_registers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">temp_data</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">server_type</span> <span class="o">==</span> <span class="s2">&quot;ascii&quot;</span><span class="p">:</span>
+                        <span class="c1"># 实验室数据</span>
+                        <span class="n">lab_data</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">180</span><span class="p">,</span> <span class="mi">350</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)]</span>
+                        <span class="n">store</span><span class="o">.</span><span class="n">write_input_registers</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">lab_data</span><span class="p">)</span>
+
+                    <span class="c1"># 更新计数器</span>
+                    <span class="n">store</span><span class="o">.</span><span class="n">write_holding_registers</span><span class="p">(</span><span class="mi">999</span><span class="p">,</span> <span class="p">[</span><span class="n">cycle</span><span class="p">])</span>
+
+                <span class="k">if</span> <span class="n">cycle</span> <span class="o">%</span> <span class="mi">20</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;数据模拟周期 #</span><span class="si">{</span><span class="n">cycle</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span>
+
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;数据模拟错误: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">serve_forever</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;永久运行&quot;&quot;&quot;</span>
+        <span class="c1"># 启动数据模拟任务</span>
+        <span class="n">simulation_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">simulate_data_changes</span><span class="p">())</span>
+
+        <span class="c1"># 启动所有服务器的serve_forever任务</span>
+        <span class="n">server_tasks</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">server_type</span><span class="p">,</span> <span class="n">server</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">servers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="k">await</span> <span class="n">server</span><span class="o">.</span><span class="n">is_running</span><span class="p">():</span>
+                    <span class="n">server_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">server</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()))</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">server_type</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">服务器serve_forever启动失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># 等待所有任务完成</span>
+        <span class="n">all_tasks</span> <span class="o">=</span> <span class="p">[</span><span class="n">simulation_task</span><span class="p">]</span> <span class="o">+</span> <span class="n">server_tasks</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">all_tasks</span><span class="p">,</span> <span class="n">return_exceptions</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="n">manager</span> <span class="o">=</span> <span class="n">MultiServerManager</span><span class="p">()</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># 配置和启动服务器</span>
+        <span class="k">await</span> <span class="n">manager</span><span class="o">.</span><span class="n">setup_servers</span><span class="p">()</span>
+        <span class="k">await</span> <span class="n">manager</span><span class="o">.</span><span class="n">start_all_servers</span><span class="p">()</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">连接信息:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  TCP服务器: localhost:5020 (从站地址 1)&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  RTU服务器: COM3@9600,8,N,1 (从站地址 2)&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  ASCII服务器: COM4@9600,7,E,1 (从站地址 3)&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">按 Ctrl+C 停止所有服务器&quot;</span><span class="p">)</span>
+
+        <span class="c1"># 永久运行</span>
+        <span class="k">await</span> <span class="n">manager</span><span class="o">.</span><span class="n">serve_forever</span><span class="p">()</span>
+
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">收到停止信号&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">多服务器运行错误: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">manager</span><span class="o">.</span><span class="n">stop_all_servers</span><span class="p">()</span>
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="id22">
+<h3>过程控制系统<a class="headerlink" href="#id22" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncModbusClient</span><span class="p">,</span> <span class="n">AsyncTcpTransport</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ProcessController</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transport</span> <span class="o">=</span> <span class="n">AsyncTcpTransport</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">AsyncModbusClient</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setpoints</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;temperature&#39;</span><span class="p">:</span> <span class="mf">25.0</span><span class="p">,</span>
+            <span class="s1">&#39;pressure&#39;</span><span class="p">:</span> <span class="mf">1013.25</span>
+        <span class="p">}</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">control_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">:</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># 读取过程变量</span>
+                    <span class="n">current_temp</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">read_float32</span><span class="p">(</span>
+                        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">100</span>
+                    <span class="p">)</span>
+                    <span class="n">current_pressure</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">read_float32</span><span class="p">(</span>
+                        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">102</span>
+                    <span class="p">)</span>
+
+                    <span class="c1"># 简单比例控制</span>
+                    <span class="n">temp_error</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">setpoints</span><span class="p">[</span><span class="s1">&#39;temperature&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">current_temp</span>
+                    <span class="n">pressure_error</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">setpoints</span><span class="p">[</span><span class="s1">&#39;pressure&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">current_pressure</span>
+
+                    <span class="c1"># 计算控制输出</span>
+                    <span class="n">heater_output</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">50</span> <span class="o">+</span> <span class="n">temp_error</span> <span class="o">*</span> <span class="mi">10</span><span class="p">))</span>
+                    <span class="n">pump_output</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">50</span> <span class="o">+</span> <span class="n">pressure_error</span> <span class="o">*</span> <span class="mi">5</span><span class="p">))</span>
+
+                    <span class="c1"># 写入控制输出</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">write_float32</span><span class="p">(</span>
+                        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">heater_output</span>
+                    <span class="p">)</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">write_float32</span><span class="p">(</span>
+                        <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">202</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">pump_output</span>
+                    <span class="p">)</span>
+
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;温度: </span><span class="si">{</span><span class="n">current_temp</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">°C (设定值: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">setpoints</span><span class="p">[</span><span class="s1">&#39;temperature&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">°C), &quot;</span>
+                          <span class="sa">f</span><span class="s2">&quot;加热器: </span><span class="si">{</span><span class="n">heater_output</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;压力: </span><span class="si">{</span><span class="n">current_pressure</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> mbar (设定值: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">setpoints</span><span class="p">[</span><span class="s1">&#39;pressure&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> mbar), &quot;</span>
+                          <span class="sa">f</span><span class="s2">&quot;泵: </span><span class="si">{</span><span class="n">pump_output</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">)</span>
+
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;控制错误: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>  <span class="c1"># 1秒控制循环</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_temperature_setpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setpoints</span><span class="p">[</span><span class="s1">&#39;temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_pressure_setpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setpoints</span><span class="p">[</span><span class="s1">&#39;pressure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+<span class="c1"># 使用方法</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="n">controller</span> <span class="o">=</span> <span class="n">ProcessController</span><span class="p">(</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="mi">502</span><span class="p">)</span>
+
+    <span class="c1"># 启动控制循环</span>
+    <span class="n">control_task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">controller</span><span class="o">.</span><span class="n">control_loop</span><span class="p">())</span>
+
+    <span class="c1"># 模拟设定值变化</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">controller</span><span class="o">.</span><span class="n">set_temperature_setpoint</span><span class="p">(</span><span class="mf">30.0</span><span class="p">)</span>
+
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">controller</span><span class="o">.</span><span class="n">set_pressure_setpoint</span><span class="p">(</span><span class="mf">1020.0</span><span class="p">)</span>
+
+    <span class="c1"># 运行一段时间</span>
+    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+    <span class="n">control_task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
+        <a href="user_guide.html" class="btn btn-neutral float-left" title="用户指南" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="best_practices.html" class="btn btn-neutral float-right" title="最佳实践指南" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, Miraitowa。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

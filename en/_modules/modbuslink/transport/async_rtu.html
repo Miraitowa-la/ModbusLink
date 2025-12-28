@@ -1,0 +1,595 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>modbuslink.transport.async_rtu &mdash; ModbusLink 1.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=6efca38a"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            ModbusLink
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#second-demo">30-Second Demo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#main-transport-methods">Main Transport Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#advanced-data-types">Advanced Data Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#high-performance-async-operations">High-Performance Async Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#local-testing-environment">Local Testing Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#error-handling">Error Handling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#next-steps">Next Steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">Architecture Design</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide.html">User Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples &amp; Practices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html">Best Practices Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#connection-management">Connection Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#error-handling">Error Handling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#performance-optimization">Performance Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#data-validation">Data Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#monitoring-and-diagnostics">Monitoring and Diagnostics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#configuration-management">Configuration Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#production-best-practices">Production Best Practices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#testing-strategy">Testing Strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html">Troubleshooting Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#connection-issues">Connection Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#protocol-errors">Protocol Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#performance-issues">Performance Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#data-issues">Data Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#debugging-and-monitoring">Debugging and Monitoring</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#common-error-reference">Common Error Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#prevention-measures">Prevention Measures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#getting-help">Getting Help</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ModbusLink</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">modbuslink.transport.async_rtu</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for modbuslink.transport.async_rtu</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">ModbusLink 异步RTU传输层实现</span>
+<span class="sd">实现基于asyncio的异步Modbus RTU协议传输，包括CRC16校验。</span>
+
+<span class="sd">Async RTU Transport Layer Implementation</span>
+<span class="sd">Implements async Modbus RTU protocol transport based on asyncio, including CRC16 validation.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">serial</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">serial.rs485</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">serial_asyncio</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.async_base</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncBaseTransport</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..common.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="ne">ConnectionError</span><span class="p">,</span>
+    <span class="ne">TimeoutError</span><span class="p">,</span>
+    <span class="n">CRCError</span><span class="p">,</span>
+    <span class="n">InvalidResponseError</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..common.language</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_message</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils.crc</span><span class="w"> </span><span class="kn">import</span> <span class="n">CRC16Modbus</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span>
+
+
+<div class="viewcode-block" id="AsyncRtuTransport">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.transport.async_rtu.AsyncRtuTransport">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AsyncRtuTransport</span><span class="p">(</span><span class="n">AsyncBaseTransport</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    异步Modbus RTU传输层实现</span>
+<span class="sd">    处理基于asyncio的异步Modbus RTU通信，包括：</span>
+
+<span class="sd">    Async Modbus RTU Transport Layer Implementation</span>
+<span class="sd">    Handles async Modbus RTU communication based on asyncio, including:</span>
+
+<span class="sd">    - 异步串口连接管理 | Async serial port connection management</span>
+<span class="sd">    - CRC16校验码的计算和验证 | CRC16 checksum calculation and validation</span>
+<span class="sd">    - ADU（应用数据单元）的构建和解析 | ADU (Application Data Unit) construction and parsing</span>
+<span class="sd">    - 异步错误处理和超时管理 | Async error handling and timeout management</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AsyncRtuTransport.__init__">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.transport.async_rtu.AsyncRtuTransport.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">port</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">baudrate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">9600</span><span class="p">,</span>
+            <span class="n">bytesize</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+            <span class="n">parity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;N&quot;</span><span class="p">,</span>
+            <span class="n">stopbits</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+            <span class="n">rs485_mode</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">serial</span><span class="o">.</span><span class="n">rs485</span><span class="o">.</span><span class="n">RS485Settings</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        初始化异步RTU传输层 | Initialize async RTU transport layer</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            port: 串口名称 (如 &#39;COM1&#39;, &#39;/dev/ttyUSB0&#39;) | Serial port name (e.g. &#39;COM1&#39;, &#39;/dev/ttyUSB0&#39;)</span>
+<span class="sd">            baudrate: 波特率，默认9600 | Baud rate, default 9600</span>
+<span class="sd">            bytesize: 数据位，默认8位 | Data bits, default 8 bits</span>
+<span class="sd">            parity: 校验位，默认无校验 | Parity, default no parity</span>
+<span class="sd">            stopbits: 停止位，默认1位 | Stop bits, default 1 bit</span>
+<span class="sd">            timeout: 超时时间（秒），默认1.0秒 | Timeout in seconds, default 1.0 seconds</span>
+<span class="sd">            rs485_mode: RS485模式配置 | RS485 mode configuration</span>
+<span class="sd">                - None 或 False: 禁用RS485模式 | Disable RS485 mode</span>
+<span class="sd">                - True: 启用RS485模式（使用默认设置，RTS高电平发送，低电平接收）</span>
+<span class="sd">                        | Enable RS485 mode (default settings, RTS high for TX, low for RX)</span>
+<span class="sd">                - serial.rs485.RS485Settings: 使用自定义RS485设置</span>
+<span class="sd">                        | Use custom RS485 settings</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError: 当参数无效时 | When parameters are invalid</span>
+<span class="sd">        </span>
+<span class="sd">        Example:</span>
+<span class="sd">            基本RS485模式 | Basic RS485 mode::</span>
+
+<span class="sd">                transport = AsyncRtuTransport(&#39;/dev/ttyUSB0&#39;, rs485_mode=True)</span>
+<span class="sd">            </span>
+<span class="sd">            自定义RS485设置 | Custom RS485 settings::</span>
+
+<span class="sd">                import serial.rs485</span>
+<span class="sd">                rs485_settings = serial.rs485.RS485Settings(</span>
+<span class="sd">                    rts_level_for_tx=True,   # RTS高电平发送 | RTS high during TX</span>
+<span class="sd">                    rts_level_for_rx=False,  # RTS低电平接收 | RTS low during RX</span>
+<span class="sd">                    delay_before_tx=0.0,     # 发送前延迟（秒） | Delay before TX (seconds)</span>
+<span class="sd">                    delay_before_rx=0.0,     # 接收前延迟（秒） | Delay before RX (seconds)</span>
+<span class="sd">                )</span>
+<span class="sd">                transport = AsyncRtuTransport(&#39;/dev/ttyUSB0&#39;, rs485_mode=rs485_settings)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">port</span> <span class="ow">or</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">port</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;串口名称不能为空且必须是字符串&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Port name cannot be empty and must be a string&quot;</span>
+            <span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">baudrate</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="n">baudrate</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;波特率必须是正整数&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Baudrate must be a positive integer&quot;</span>
+            <span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">timeout</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">or</span> <span class="n">timeout</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;超时时间必须是正数&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Timeout must be a positive number&quot;</span>
+            <span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">baudrate</span> <span class="o">=</span> <span class="n">baudrate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bytesize</span> <span class="o">=</span> <span class="n">bytesize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parity</span> <span class="o">=</span> <span class="n">parity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stopbits</span> <span class="o">=</span> <span class="n">stopbits</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rs485_mode</span> <span class="o">=</span> <span class="n">rs485_mode</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reader</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">StreamReader</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">StreamWriter</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_serial</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">serial</span><span class="o">.</span><span class="n">Serial</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># 用于RS485模式配置 | For RS485 mode configuration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="s2">&quot;transport.async_rtu&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="AsyncRtuTransport.open">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.transport.async_rtu.AsyncRtuTransport.open">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;异步打开串口连接 | Async open serial port connection&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reader</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span> <span class="o">=</span> <span class="k">await</span> <span class="n">serial_asyncio</span><span class="o">.</span><span class="n">open_serial_connection</span><span class="p">(</span>
+                <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
+                <span class="n">baudrate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">baudrate</span><span class="p">,</span>
+                <span class="n">bytesize</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bytesize</span><span class="p">,</span>
+                <span class="n">parity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">parity</span><span class="p">,</span>
+                <span class="n">stopbits</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">stopbits</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="c1"># 配置RS485模式 | Configure RS485 mode</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rs485_mode</span><span class="p">:</span>
+                <span class="c1"># 获取底层串口对象 | Get underlying serial object</span>
+                <span class="n">transport</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="o">.</span><span class="n">transport</span>
+                <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">transport</span><span class="p">,</span> <span class="s1">&#39;serial&#39;</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_serial</span> <span class="o">=</span> <span class="n">transport</span><span class="o">.</span><span class="n">serial</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rs485_mode</span><span class="p">,</span> <span class="n">serial</span><span class="o">.</span><span class="n">rs485</span><span class="o">.</span><span class="n">RS485Settings</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_serial</span><span class="o">.</span><span class="n">rs485_mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rs485_mode</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># 使用默认RS485设置 | Use default RS485 settings</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_serial</span><span class="o">.</span><span class="n">rs485_mode</span> <span class="o">=</span> <span class="n">serial</span><span class="o">.</span><span class="n">rs485</span><span class="o">.</span><span class="n">RS485Settings</span><span class="p">(</span>
+                            <span class="n">rts_level_for_tx</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                            <span class="n">rts_level_for_rx</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                            <span class="n">delay_before_tx</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                            <span class="n">delay_before_rx</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;RS485模式已启用: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_serial</span><span class="o">.</span><span class="n">rs485_mode</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;RS485 mode enabled: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_serial</span><span class="o">.</span><span class="n">rs485_mode</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;无法配置RS485模式：无法访问底层串口对象&quot;</span><span class="p">,</span>
+                        <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Cannot configure RS485 mode: unable to access underlying serial object&quot;</span>
+                    <span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;异步RTU连接已建立: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2"> @ </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">baudrate</span><span class="si">}</span><span class="s2">bps&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Async RTU connection established: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2"> @ </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">baudrate</span><span class="si">}</span><span class="s2">bps&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;异步串口连接失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Async serial port connection failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AsyncRtuTransport.close">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.transport.async_rtu.AsyncRtuTransport.close">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;异步关闭串口连接 | Async close serial port connection&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="o">.</span><span class="n">wait_closed</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;异步RTU连接已关闭: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Async RTU connection closed: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;关闭异步串口连接时出现错误（可忽略）: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Error during async serial connection close (ignorable): </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_reader</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="AsyncRtuTransport.is_open">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.transport.async_rtu.AsyncRtuTransport.is_open">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">is_open</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;异步检查串口连接状态 | Async check serial port connection status&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reader</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="o">.</span><span class="n">is_closing</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="AsyncRtuTransport.send_and_receive">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.transport.async_rtu.AsyncRtuTransport.send_and_receive">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_and_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">pdu</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        异步发送PDU并接收响应</span>
+<span class="sd">        实现异步RTU协议的完整通信流程：</span>
+
+<span class="sd">        Async send PDU and receive response</span>
+<span class="sd">        Implements complete async RTU protocol communication flow:</span>
+
+<span class="sd">        1. 构建ADU（地址 + PDU + CRC） | Build ADU (Address + PDU + CRC)</span>
+<span class="sd">        2. 异步发送请求 | Async send request</span>
+<span class="sd">        3. 异步接收响应 | Async receive response</span>
+<span class="sd">        4. 验证CRC | Validate CRC</span>
+<span class="sd">        5. 返回响应PDU | Return response PDU</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 使用锁确保并发安全 | Use lock to ensure concurrent safety</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_open</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;异步串口连接未建立&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Async serial port connection not established&quot;</span>
+                <span class="p">)</span>
+
+            <span class="c1"># 1. 构建请求帧 | Build request frame</span>
+            <span class="n">frame_prefix</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">([</span><span class="n">slave_id</span><span class="p">])</span> <span class="o">+</span> <span class="n">pdu</span>
+            <span class="n">crc</span> <span class="o">=</span> <span class="n">CRC16Modbus</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">frame_prefix</span><span class="p">)</span>
+            <span class="n">request_adu</span> <span class="o">=</span> <span class="n">frame_prefix</span> <span class="o">+</span> <span class="n">crc</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;发送异步RTU请求: </span><span class="si">{</span><span class="n">request_adu</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Sending async RTU request: </span><span class="si">{</span><span class="n">request_adu</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># 2. 清空接收缓冲区并发送请求 | Clear receive buffer and send request</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reader</span><span class="o">.</span><span class="n">at_eof</span><span class="p">():</span>
+                    <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span>
+                        <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;异步串口连接已断开&quot;</span><span class="p">,</span>
+                        <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Async serial connection lost&quot;</span>
+                    <span class="p">)</span>
+
+                <span class="c1"># 清空可能存在的旧数据 | Clear any existing old data</span>
+                <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_reader</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1024</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.01</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">TimeoutError</span><span class="p">:</span>
+                        <span class="k">break</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">request_adu</span><span class="p">)</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="o">.</span><span class="n">drain</span><span class="p">()</span>
+
+                <span class="c1"># 3. 接收响应 | Receive response</span>
+                <span class="n">function_code</span> <span class="o">=</span> <span class="n">pdu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">pdu</span> <span class="k">else</span> <span class="mi">0</span>
+                <span class="n">response_pdu</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_receive_response</span><span class="p">(</span><span class="n">slave_id</span><span class="p">,</span> <span class="n">function_code</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;接收到异步RTU响应PDU: </span><span class="si">{</span><span class="n">response_pdu</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Received async RTU response PDU: </span><span class="si">{</span><span class="n">response_pdu</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+                <span class="k">return</span> <span class="n">response_pdu</span>
+
+            <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">TimeoutError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TimeoutError</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;异步RTU通信超时: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Async RTU communication timeout: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="si">}</span><span class="s2">s&quot;</span>
+                <span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="p">(</span><span class="ne">ConnectionError</span><span class="p">,</span> <span class="ne">TimeoutError</span><span class="p">,</span> <span class="n">CRCError</span><span class="p">,</span> <span class="n">InvalidResponseError</span><span class="p">)):</span>
+                    <span class="k">raise</span>
+                <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;异步RTU通信错误: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Async RTU communication error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span></div>
+
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_receive_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">expected_slave_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">function_code</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        异步接收并验证响应帧 | Async receive and validate response frame</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            expected_slave_id: 期望的从站地址 | Expected slave address</span>
+<span class="sd">            function_code: 功能码 | Function code</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            响应的PDU部分 | PDU part of response</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            TimeoutError: 接收超时 | Receive timeout</span>
+<span class="sd">            CRCError: CRC校验失败 | CRC validation failed</span>
+<span class="sd">            InvalidResponseError: 响应格式无效 | Invalid response format</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># 接收从站地址 | Receive slave address</span>
+            <span class="n">slave_addr_bytes</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_reader</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">slave_addr_bytes</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;未接收到从站地址&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="s2">&quot;No slave address received&quot;</span>
+                <span class="p">)</span>
+
+            <span class="n">received_slave_id</span> <span class="o">=</span> <span class="n">slave_addr_bytes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">received_slave_id</span> <span class="o">!=</span> <span class="n">expected_slave_id</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;从站地址不匹配: 预期 </span><span class="si">{</span><span class="n">expected_slave_id</span><span class="si">}</span><span class="s2">, 得到 </span><span class="si">{</span><span class="n">received_slave_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Slave address mismatch: expected </span><span class="si">{</span><span class="n">expected_slave_id</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">received_slave_id</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+            <span class="c1"># 接收功能码 | Receive function code</span>
+            <span class="n">func_code_bytes</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_reader</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">func_code_bytes</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;未接收到功能码&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="s2">&quot;No function code received&quot;</span>
+                <span class="p">)</span>
+
+            <span class="n">received_function_code</span> <span class="o">=</span> <span class="n">func_code_bytes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="c1"># 检查是否为异常响应 | Check if it&#39;s an exception response</span>
+            <span class="k">if</span> <span class="n">received_function_code</span> <span class="o">&amp;</span> <span class="mh">0x80</span><span class="p">:</span>
+                <span class="c1"># 异常响应：功能码 + 异常码 + CRC | Exception response: function code + exception code + CRC</span>
+                <span class="n">exception_code_bytes</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_reader</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">exception_code_bytes</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                        <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;未接收到异常码&quot;</span><span class="p">,</span>
+                        <span class="n">en</span><span class="o">=</span><span class="s2">&quot;No exception code received&quot;</span>
+                    <span class="p">)</span>
+
+                <span class="c1"># 接收CRC | Receive CRC</span>
+                <span class="n">crc_bytes</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_reader</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">crc_bytes</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                        <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;CRC数据不完整&quot;</span><span class="p">,</span>
+                        <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Incomplete CRC data&quot;</span>
+                    <span class="p">)</span>
+
+                <span class="c1"># 验证CRC | Validate CRC</span>
+                <span class="n">response_without_crc</span> <span class="o">=</span> <span class="n">slave_addr_bytes</span> <span class="o">+</span> <span class="n">func_code_bytes</span> <span class="o">+</span> <span class="n">exception_code_bytes</span>
+                <span class="n">expected_crc</span> <span class="o">=</span> <span class="n">CRC16Modbus</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">response_without_crc</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">crc_bytes</span> <span class="o">!=</span> <span class="n">expected_crc</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">CRCError</span><span class="p">(</span>
+                        <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;异常响应CRC校验失败: 预期 </span><span class="si">{</span><span class="n">expected_crc</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span><span class="si">}</span><span class="s2">, 得到 </span><span class="si">{</span><span class="n">crc_bytes</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Exception response CRC validation failed: expected </span><span class="si">{</span><span class="n">expected_crc</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">crc_bytes</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+
+                <span class="c1"># 返回异常响应PDU | Return exception response PDU</span>
+                <span class="k">return</span> <span class="n">func_code_bytes</span> <span class="o">+</span> <span class="n">exception_code_bytes</span>
+
+            <span class="c1"># 正常响应处理 | Normal response handling</span>
+            <span class="k">if</span> <span class="n">received_function_code</span> <span class="o">!=</span> <span class="n">function_code</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;功能码不匹配: 预取 </span><span class="si">{</span><span class="n">function_code</span><span class="si">}</span><span class="s2">, 得到 </span><span class="si">{</span><span class="n">received_function_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Function code mismatch: expected </span><span class="si">{</span><span class="n">function_code</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">received_function_code</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+            <span class="c1"># 根据功能码确定数据长度 | Determine data length based on function code</span>
+            <span class="k">if</span> <span class="n">function_code</span> <span class="ow">in</span> <span class="p">[</span><span class="mh">0x01</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">]:</span>  <span class="c1"># 读线圈/离散输入 | Read coils/discrete inputs</span>
+                <span class="n">data_length_bytes</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_reader</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_length_bytes</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                        <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;未接收到数据长度&quot;</span><span class="p">,</span>
+                        <span class="n">en</span><span class="o">=</span><span class="s2">&quot;No data length received&quot;</span>
+                    <span class="p">)</span>
+                <span class="n">data_length</span> <span class="o">=</span> <span class="n">data_length_bytes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="k">elif</span> <span class="n">function_code</span> <span class="ow">in</span> <span class="p">[</span><span class="mh">0x03</span><span class="p">,</span> <span class="mh">0x04</span><span class="p">]:</span>  <span class="c1"># 读保持寄存器/输入寄存器 | Read holding/input registers</span>
+                <span class="n">data_length_bytes</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_reader</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_length_bytes</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                        <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;未接收到数据长度&quot;</span><span class="p">,</span>
+                        <span class="n">en</span><span class="o">=</span><span class="s2">&quot;No data length received&quot;</span>
+                    <span class="p">)</span>
+                <span class="n">data_length</span> <span class="o">=</span> <span class="n">data_length_bytes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="k">elif</span> <span class="n">function_code</span> <span class="ow">in</span> <span class="p">[</span><span class="mh">0x05</span><span class="p">,</span> <span class="mh">0x06</span><span class="p">]:</span>  <span class="c1"># 写单个线圈/寄存器 | Write single coil/register</span>
+                <span class="n">data_length</span> <span class="o">=</span> <span class="mi">4</span>  <span class="c1"># 地址(2) + 值(2) | Address(2) + Value(2)</span>
+                <span class="n">data_length_bytes</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span>
+
+            <span class="k">elif</span> <span class="n">function_code</span> <span class="ow">in</span> <span class="p">[</span><span class="mh">0x0F</span><span class="p">,</span> <span class="mh">0x10</span><span class="p">]:</span>  <span class="c1"># 写多个线圈/寄存器 | Write multiple coils/registers</span>
+                <span class="n">data_length</span> <span class="o">=</span> <span class="mi">4</span>  <span class="c1"># 地址(2) + 数量(2) | Address(2) + Quantity(2)</span>
+                <span class="n">data_length_bytes</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;不支持的功能码: </span><span class="si">{</span><span class="n">function_code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Unsupported function code: </span><span class="si">{</span><span class="n">function_code</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+            <span class="c1"># 接收数据部分 | Receive data part</span>
+            <span class="n">data_bytes</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_reader</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data_length</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_bytes</span><span class="p">)</span> <span class="o">!=</span> <span class="n">data_length</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;数据长度不匹配: 预取 </span><span class="si">{</span><span class="n">data_length</span><span class="si">}</span><span class="s2">, 得到 </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">data_bytes</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Data length mismatch: expected </span><span class="si">{</span><span class="n">data_length</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">data_bytes</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+            <span class="c1"># 接收CRC | Receive CRC</span>
+            <span class="n">crc_bytes</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_reader</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">crc_bytes</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;CRC数据不完整&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Incomplete CRC data&quot;</span>
+                <span class="p">)</span>
+
+            <span class="c1"># 验证CRC | Validate CRC</span>
+            <span class="n">response_without_crc</span> <span class="o">=</span> <span class="n">slave_addr_bytes</span> <span class="o">+</span> <span class="n">func_code_bytes</span> <span class="o">+</span> <span class="n">data_length_bytes</span> <span class="o">+</span> <span class="n">data_bytes</span>
+            <span class="n">expected_crc</span> <span class="o">=</span> <span class="n">CRC16Modbus</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">response_without_crc</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">crc_bytes</span> <span class="o">!=</span> <span class="n">expected_crc</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">CRCError</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;CRC校验失败: 预期 </span><span class="si">{</span><span class="n">expected_crc</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span><span class="si">}</span><span class="s2">, 得到 </span><span class="si">{</span><span class="n">crc_bytes</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;CRC validation failed: expected </span><span class="si">{</span><span class="n">expected_crc</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">crc_bytes</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+            <span class="c1"># 返回PDU（功能码 + 数据） | Return PDU (function code + data)</span>
+            <span class="k">return</span> <span class="n">func_code_bytes</span> <span class="o">+</span> <span class="n">data_length_bytes</span> <span class="o">+</span> <span class="n">data_bytes</span>
+
+        <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">TimeoutError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TimeoutError</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;异步接收响应超时: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Async receive response timeout: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="si">}</span><span class="s2">s&quot;</span>
+            <span class="p">)</span>
+
+<div class="viewcode-block" id="AsyncRtuTransport.__repr__">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.transport.async_rtu.AsyncRtuTransport.__repr__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;返回传输层的字符串表示 | Return string representation of transport layer&quot;&quot;&quot;</span>
+        <span class="n">rs485_info</span> <span class="o">=</span> <span class="s2">&quot;, rs485_mode=True&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rs485_mode</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;AsyncRtuTransport(port=&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="si">}</span><span class="s2">&#39;, baudrate=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">baudrate</span><span class="si">}</span><span class="s2">, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;timeout=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="si">}{</span><span class="n">rs485_info</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Miraitowa-la.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

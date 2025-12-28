@@ -1,0 +1,962 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>modbuslink.client.sync_client &mdash; ModbusLink 1.2.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=d1fcaa3c"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/translations.js?v=beaddf03"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="../../../genindex.html" />
+    <link rel="search" title="搜索" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            ModbusLink
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">快速入门</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">安装指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">快速开始</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#id4">30秒快速体验</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#id5">主流传输方式</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#id6">高级数据类型</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#id7">高性能异步操作</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#id8">本地测试环境</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#id9">错误处理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#id10">下一步</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">架构设计</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide.html">用户指南</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">示例和实践</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">示例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html">最佳实践指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id3">连接管理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id6">错误处理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id9">性能优化</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id12">数据验证</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id15">监控和诊断</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id17">配置管理</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id18">生产环境最佳实践</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id21">测试策略</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#id24">总结</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html">故障排除指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id3">连接问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id11">协议错误</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id13">性能问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id16">数据问题</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id19">调试和监控</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id23">常见错误汇总</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id25">预防措施</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#id27">获取帮助</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">API 参考</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ModbusLink</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">模块代码</a></li>
+      <li class="breadcrumb-item active">modbuslink.client.sync_client</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>modbuslink.client.sync_client 源代码</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">ModbusLink 同步客户端实现</span>
+<span class="sd">提供用户友好的同步Modbus客户端API。</span>
+
+<span class="sd">ModbusLink Synchronous Client Implementation</span>
+<span class="sd">Provides user-friendly synchronous Modbus client API.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">struct</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..transport.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseTransport</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..common.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">InvalidResponseError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..common.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_message</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils.coder</span><span class="w"> </span><span class="kn">import</span> <span class="n">PayloadCoder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span>
+
+
+<div class="viewcode-block" id="ModbusClient">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.client.sync_client.ModbusClient">[文档]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ModbusClient</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    同步Modbus客户端</span>
+<span class="sd">    提供简洁、用户友好的Modbus操作接口。通过依赖注入的方式接收传输层实例，支持RTU和TCP等不同传输方式。</span>
+<span class="sd">    所有方法都使用Python原生数据类型（int, list等），将底层的字节操作完全封装。</span>
+
+<span class="sd">    Synchronous Modbus Client</span>
+<span class="sd">    Provides a concise, user-friendly Modbus operation interface. Receives</span>
+<span class="sd">    transport layer instances through dependency injection, supporting different</span>
+<span class="sd">    transport methods such as RTU and TCP.</span>
+<span class="sd">    All methods use Python native data types (int, list, etc.),</span>
+<span class="sd">    completely encapsulating underlying byte operations.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ModbusClient.__init__">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.client.sync_client.ModbusClient.__init__">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transport</span><span class="p">:</span> <span class="n">BaseTransport</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        初始化Modbus客户端 | Initialize Modbus Client</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            transport: 传输层实例（RtuTransport或TcpTransport） | Transport layer instance (RtuTransport or TcpTransport)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transport</span> <span class="o">=</span> <span class="n">transport</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="s2">&quot;client.sync&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModbusClient.read_coils">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.client.sync_client.ModbusClient.read_coils">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_coils</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">start_address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">quantity</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        读取线圈状态（功能码0x01） | Read Coil Status (Function Code 0x01)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            slave_id: 从站地址 | Slave address</span>
+<span class="sd">            start_address: 起始地址 | Starting address</span>
+<span class="sd">            quantity: 读取数量（1-2000） | Quantity to read (1-2000)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            线圈状态列表，True表示ON，False表示OFF | List of coil status, True for ON, False for OFF</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">quantity</span> <span class="o">&lt;=</span> <span class="mi">2000</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;线圈数量必须在1-2000之间&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Coil quantity must be between 1-2000&quot;</span>
+            <span class="p">))</span>
+
+        <span class="c1"># 构建PDU：功能码 + 起始地址 + 数量 | Build PDU: function code + starting address + quantity</span>
+        <span class="n">pdu</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;&gt;BHH&quot;</span><span class="p">,</span> <span class="mh">0x01</span><span class="p">,</span> <span class="n">start_address</span><span class="p">,</span> <span class="n">quantity</span><span class="p">)</span>
+
+        <span class="c1"># 发送请求并接收响应 | Send request and receive response</span>
+        <span class="n">response_pdu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">send_and_receive</span><span class="p">(</span><span class="n">slave_id</span><span class="p">,</span> <span class="n">pdu</span><span class="p">)</span>
+
+        <span class="c1"># 解析响应：功能码 + 字节数 + 数据 | Parse response: function code + byte count + data</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">response_pdu</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;响应PDU长度不足&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Response PDU length insufficient&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">function_code</span> <span class="o">=</span> <span class="n">response_pdu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">byte_count</span> <span class="o">=</span> <span class="n">response_pdu</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">function_code</span> <span class="o">!=</span> <span class="mh">0x01</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;功能码不匹配: 期望 0x01, 得到 0x</span><span class="si">{</span><span class="n">function_code</span><span class="si">:</span><span class="s2">02X</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Function code mismatch: expected 0x01, received 0x</span><span class="si">{</span><span class="n">function_code</span><span class="si">:</span><span class="s2">02X</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">response_pdu</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">byte_count</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;响应数据长度不匹配&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Response data length mismatch&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># 解析线圈数据 | Parse coil data</span>
+        <span class="n">coil_data</span> <span class="o">=</span> <span class="n">response_pdu</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+        <span class="n">coils</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">byte_idx</span><span class="p">,</span> <span class="n">byte_val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">coil_data</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">bit_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">coils</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">quantity</span><span class="p">:</span>  <span class="c1"># 只返回请求的数量 | Only return requested quantity</span>
+                    <span class="k">break</span>
+                <span class="n">coils</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">byte_val</span> <span class="o">&amp;</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">bit_idx</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="n">coils</span><span class="p">[:</span><span class="n">quantity</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="ModbusClient.read_discrete_inputs">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.client.sync_client.ModbusClient.read_discrete_inputs">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_discrete_inputs</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">start_address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">quantity</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        读取离散输入状态（功能码0x02） | Read Discrete Input Status (Function Code 0x02)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            slave_id: 从站地址 | Slave address</span>
+<span class="sd">            start_address: 起始地址 | Starting address</span>
+<span class="sd">            quantity: 读取数量（1-2000） | Quantity to read (1-2000)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            离散输入状态列表，True表示ON，False表示OFF | List of discrete input status, True for ON, False for OFF</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">quantity</span> <span class="o">&lt;=</span> <span class="mi">2000</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;离散输入数量必须在1-2000之间&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Discrete input quantity must be between 1-2000&quot;</span>
+            <span class="p">))</span>
+
+        <span class="c1"># 构建PDU：功能码 + 起始地址 + 数量 | Build PDU: function code + starting address + quantity</span>
+        <span class="n">pdu</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;&gt;BHH&quot;</span><span class="p">,</span> <span class="mh">0x02</span><span class="p">,</span> <span class="n">start_address</span><span class="p">,</span> <span class="n">quantity</span><span class="p">)</span>
+
+        <span class="c1"># 发送请求并接收响应 | Send request and receive response</span>
+        <span class="n">response_pdu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">send_and_receive</span><span class="p">(</span><span class="n">slave_id</span><span class="p">,</span> <span class="n">pdu</span><span class="p">)</span>
+
+        <span class="c1"># 解析响应（与读取线圈相同的格式） | Parse response (same format as reading coils)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">response_pdu</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;响应PDU长度不足&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Response PDU length insufficient&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">function_code</span> <span class="o">=</span> <span class="n">response_pdu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">byte_count</span> <span class="o">=</span> <span class="n">response_pdu</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">function_code</span> <span class="o">!=</span> <span class="mh">0x02</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;功能码不匹配: 期望 0x02, 得到 0x</span><span class="si">{</span><span class="n">function_code</span><span class="si">:</span><span class="s2">02X</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Function code mismatch: expected 0x02, received 0x</span><span class="si">{</span><span class="n">function_code</span><span class="si">:</span><span class="s2">02X</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">response_pdu</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">byte_count</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;响应数据长度不匹配&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Response data length mismatch&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># 解析离散输入数据 | Parse discrete input data</span>
+        <span class="n">input_data</span> <span class="o">=</span> <span class="n">response_pdu</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+        <span class="n">inputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">byte_idx</span><span class="p">,</span> <span class="n">byte_val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">input_data</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">bit_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">quantity</span><span class="p">:</span>  <span class="c1"># 只返回请求的数量 | Only return requested quantity</span>
+                    <span class="k">break</span>
+                <span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">bool</span><span class="p">(</span><span class="n">byte_val</span> <span class="o">&amp;</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">bit_idx</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="n">inputs</span><span class="p">[:</span><span class="n">quantity</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="ModbusClient.read_holding_registers">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.client.sync_client.ModbusClient.read_holding_registers">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_holding_registers</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">start_address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">quantity</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        读取保持寄存器（功能码0x03） | Read Holding Registers (Function Code 0x03)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            slave_id: 从站地址 | Slave address</span>
+<span class="sd">            start_address: 起始地址 | Starting address</span>
+<span class="sd">            quantity: 读取数量（1-125） | Quantity to read (1-125)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            寄存器值列表，每个值为16位无符号整数（0-65535） | List of register values, each value is a 16-bit unsigned integer (0-65535)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">quantity</span> <span class="o">&lt;=</span> <span class="mi">125</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;寄存器数量必须在1-125之间&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Register quantity must be between 1-125&quot;</span>
+            <span class="p">))</span>
+
+        <span class="c1"># 构建PDU：功能码 + 起始地址 + 数量 | Build PDU: function code + starting address + quantity</span>
+        <span class="n">pdu</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;&gt;BHH&quot;</span><span class="p">,</span> <span class="mh">0x03</span><span class="p">,</span> <span class="n">start_address</span><span class="p">,</span> <span class="n">quantity</span><span class="p">)</span>
+
+        <span class="c1"># 发送请求并接收响应 | Send request and receive response</span>
+        <span class="n">response_pdu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">send_and_receive</span><span class="p">(</span><span class="n">slave_id</span><span class="p">,</span> <span class="n">pdu</span><span class="p">)</span>
+
+        <span class="c1"># 解析响应：功能码 + 字节数 + 数据 | Parse response: function code + byte count + data</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">response_pdu</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;响应PDU长度不足&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Response PDU length insufficient&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">function_code</span> <span class="o">=</span> <span class="n">response_pdu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">byte_count</span> <span class="o">=</span> <span class="n">response_pdu</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">function_code</span> <span class="o">!=</span> <span class="mh">0x03</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;功能码不匹配: 期望 0x03, 得到 0x</span><span class="si">{</span><span class="n">function_code</span><span class="si">:</span><span class="s2">02X</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Function code mismatch: expected 0x03, received 0x</span><span class="si">{</span><span class="n">function_code</span><span class="si">:</span><span class="s2">02X</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">expected_byte_count</span> <span class="o">=</span> <span class="n">quantity</span> <span class="o">*</span> <span class="mi">2</span>
+        <span class="k">if</span> <span class="n">byte_count</span> <span class="o">!=</span> <span class="n">expected_byte_count</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;字节数不匹配: 期望 </span><span class="si">{</span><span class="n">expected_byte_count</span><span class="si">}</span><span class="s2">, 得到 </span><span class="si">{</span><span class="n">byte_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Byte count mismatch: expected </span><span class="si">{</span><span class="n">expected_byte_count</span><span class="si">}</span><span class="s2">, received </span><span class="si">{</span><span class="n">byte_count</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">response_pdu</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">byte_count</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;响应数据长度不匹配&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Response data length mismatch&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># 解析寄存器数据 | Parse register data</span>
+        <span class="n">register_data</span> <span class="o">=</span> <span class="n">response_pdu</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+        <span class="n">registers</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">register_data</span><span class="p">),</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">register_value</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&quot;&gt;H&quot;</span><span class="p">,</span> <span class="n">register_data</span><span class="p">[</span><span class="n">i</span><span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">registers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">register_value</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">registers</span></div>
+
+
+<div class="viewcode-block" id="ModbusClient.read_input_registers">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.client.sync_client.ModbusClient.read_input_registers">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_input_registers</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">start_address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">quantity</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        读取输入寄存器（功能码0x04） | Read Input Registers (Function Code 0x04)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            slave_id: 从站地址 | Slave address</span>
+<span class="sd">            start_address: 起始地址 | Starting address</span>
+<span class="sd">            quantity: 读取数量（1-125） | Quantity to read (1-125)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            寄存器值列表，每个值为16位无符号整数（0-65535） | List of register values, each value is a 16-bit unsigned integer (0-65535)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">quantity</span> <span class="o">&lt;=</span> <span class="mi">125</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;寄存器数量必须在1-125之间&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Register quantity must be between 1-125&quot;</span>
+            <span class="p">))</span>
+
+        <span class="c1"># 构建PDU：功能码 + 起始地址 + 数量 | Build PDU: function code + starting address + quantity</span>
+        <span class="n">pdu</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;&gt;BHH&quot;</span><span class="p">,</span> <span class="mh">0x04</span><span class="p">,</span> <span class="n">start_address</span><span class="p">,</span> <span class="n">quantity</span><span class="p">)</span>
+
+        <span class="c1"># 发送请求并接收响应 | Send request and receive response</span>
+        <span class="n">response_pdu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">send_and_receive</span><span class="p">(</span><span class="n">slave_id</span><span class="p">,</span> <span class="n">pdu</span><span class="p">)</span>
+
+        <span class="c1"># 解析响应（与读取保持寄存器相同的格式） | Parse response (same format as reading holding registers)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">response_pdu</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;响应PDU长度不足&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Response PDU length insufficient&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">function_code</span> <span class="o">=</span> <span class="n">response_pdu</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">byte_count</span> <span class="o">=</span> <span class="n">response_pdu</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">function_code</span> <span class="o">!=</span> <span class="mh">0x04</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;功能码不匹配: 期望 0x04, 得到 0x</span><span class="si">{</span><span class="n">function_code</span><span class="si">:</span><span class="s2">02X</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Function code mismatch: expected 0x04, received 0x</span><span class="si">{</span><span class="n">function_code</span><span class="si">:</span><span class="s2">02X</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">expected_byte_count</span> <span class="o">=</span> <span class="n">quantity</span> <span class="o">*</span> <span class="mi">2</span>
+        <span class="k">if</span> <span class="n">byte_count</span> <span class="o">!=</span> <span class="n">expected_byte_count</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;字节数不匹配: 期望 </span><span class="si">{</span><span class="n">expected_byte_count</span><span class="si">}</span><span class="s2">, 得到 </span><span class="si">{</span><span class="n">byte_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Byte count mismatch: expected </span><span class="si">{</span><span class="n">expected_byte_count</span><span class="si">}</span><span class="s2">, received </span><span class="si">{</span><span class="n">byte_count</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">response_pdu</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">byte_count</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;响应数据长度不匹配&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Response data length mismatch&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># 解析寄存器数据 | Parse register data</span>
+        <span class="n">register_data</span> <span class="o">=</span> <span class="n">response_pdu</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+        <span class="n">registers</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">register_data</span><span class="p">),</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">register_value</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s2">&quot;&gt;H&quot;</span><span class="p">,</span> <span class="n">register_data</span><span class="p">[</span><span class="n">i</span><span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">2</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">registers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">register_value</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">registers</span></div>
+
+
+<div class="viewcode-block" id="ModbusClient.write_single_coil">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.client.sync_client.ModbusClient.write_single_coil">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_single_coil</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">value</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        写单个线圈（功能码0x05） | Write Single Coil (Function Code 0x05)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            slave_id: 从站地址 | Slave address</span>
+<span class="sd">            address: 线圈地址 | Coil address</span>
+<span class="sd">            value: 线圈值，True表示ON，False表示OFF | Coil value, True for ON, False for OFF</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 构建PDU：功能码 + 地址 + 值 | Build PDU: function code + address + value</span>
+        <span class="n">coil_value</span> <span class="o">=</span> <span class="mh">0xFF00</span> <span class="k">if</span> <span class="n">value</span> <span class="k">else</span> <span class="mh">0x0000</span>
+        <span class="n">pdu</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;&gt;BHH&quot;</span><span class="p">,</span> <span class="mh">0x05</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">coil_value</span><span class="p">)</span>
+
+        <span class="c1"># 发送请求并接收响应 | Send request and receive response</span>
+        <span class="n">response_pdu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">send_and_receive</span><span class="p">(</span><span class="n">slave_id</span><span class="p">,</span> <span class="n">pdu</span><span class="p">)</span>
+
+        <span class="c1"># 验证响应（应该与请求相同） | Verify response (should be same as request)</span>
+        <span class="k">if</span> <span class="n">response_pdu</span> <span class="o">!=</span> <span class="n">pdu</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;写单个线圈响应不匹配&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Write single coil response mismatch&quot;</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModbusClient.write_single_register">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.client.sync_client.ModbusClient.write_single_register">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_single_register</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">value</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        写单个寄存器（功能码0x06） | Write Single Register (Function Code 0x06)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            slave_id: 从站地址 | Slave address</span>
+<span class="sd">            address: 寄存器地址 | Register address</span>
+<span class="sd">            value: 寄存器值（0-65535） | Register value (0-65535)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="mi">65535</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;寄存器值必须在0-65535之间&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Register value must be between 0-65535&quot;</span>
+            <span class="p">))</span>
+
+        <span class="c1"># 构建PDU：功能码 + 地址 + 值 | Build PDU: function code + address + value</span>
+        <span class="n">pdu</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;&gt;BHH&quot;</span><span class="p">,</span> <span class="mh">0x06</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+        <span class="c1"># 发送请求并接收响应 | Send request and receive response</span>
+        <span class="n">response_pdu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">send_and_receive</span><span class="p">(</span><span class="n">slave_id</span><span class="p">,</span> <span class="n">pdu</span><span class="p">)</span>
+
+        <span class="c1"># 验证响应（应该与请求相同） | Verify response (should be same as request)</span>
+        <span class="k">if</span> <span class="n">response_pdu</span> <span class="o">!=</span> <span class="n">pdu</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;写单个寄存器响应不匹配&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Write single register response mismatch&quot;</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModbusClient.write_multiple_coils">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.client.sync_client.ModbusClient.write_multiple_coils">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_multiple_coils</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">start_address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        写多个线圈（功能码0x0F） | Write Multiple Coils (Function Code 0x0F)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            slave_id: 从站地址 | Slave address</span>
+<span class="sd">            start_address: 起始地址 | Starting address</span>
+<span class="sd">            values: 线圈值列表，True表示ON，False表示OFF | List of coil values, True for ON, False for OFF</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">quantity</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">quantity</span> <span class="o">&lt;=</span> <span class="mi">1968</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;线圈数量必须在1-1968之间&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Coil quantity must be between 1-1968&quot;</span>
+            <span class="p">))</span>
+
+        <span class="c1"># 计算需要的字节数 | Calculate required byte count</span>
+        <span class="n">byte_count</span> <span class="o">=</span> <span class="p">(</span><span class="n">quantity</span> <span class="o">+</span> <span class="mi">7</span><span class="p">)</span> <span class="o">//</span> <span class="mi">8</span>
+
+        <span class="c1"># 将布尔值列表转换为字节数据 | Convert boolean list to byte data</span>
+        <span class="n">coil_bytes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">byte_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">byte_count</span><span class="p">):</span>
+            <span class="n">byte_val</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">bit_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
+                <span class="n">value_idx</span> <span class="o">=</span> <span class="n">byte_idx</span> <span class="o">*</span> <span class="mi">8</span> <span class="o">+</span> <span class="n">bit_idx</span>
+                <span class="k">if</span> <span class="n">value_idx</span> <span class="o">&lt;</span> <span class="n">quantity</span> <span class="ow">and</span> <span class="n">values</span><span class="p">[</span><span class="n">value_idx</span><span class="p">]:</span>
+                    <span class="n">byte_val</span> <span class="o">|=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="n">bit_idx</span>
+            <span class="n">coil_bytes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">byte_val</span><span class="p">)</span>
+
+        <span class="c1"># 构建PDU：功能码 + 起始地址 + 数量 + 字节数 + 数据 | Build PDU: function code + starting address + quantity + byte count + data</span>
+        <span class="n">pdu</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;&gt;BHHB&quot;</span><span class="p">,</span> <span class="mh">0x0F</span><span class="p">,</span> <span class="n">start_address</span><span class="p">,</span> <span class="n">quantity</span><span class="p">,</span> <span class="n">byte_count</span><span class="p">)</span>
+        <span class="n">pdu</span> <span class="o">+=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">coil_bytes</span><span class="p">)</span>
+
+        <span class="c1"># 发送请求并接收响应 | Send request and receive response</span>
+        <span class="n">response_pdu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">send_and_receive</span><span class="p">(</span><span class="n">slave_id</span><span class="p">,</span> <span class="n">pdu</span><span class="p">)</span>
+
+        <span class="c1"># 验证响应：功能码 + 起始地址 + 数量 | Verify response: function code + starting address + quantity</span>
+        <span class="n">expected_response</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;&gt;BHH&quot;</span><span class="p">,</span> <span class="mh">0x0F</span><span class="p">,</span> <span class="n">start_address</span><span class="p">,</span> <span class="n">quantity</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response_pdu</span> <span class="o">!=</span> <span class="n">expected_response</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;写多个线圈响应不匹配&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Write multiple coils response mismatch&quot;</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModbusClient.write_multiple_registers">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.client.sync_client.ModbusClient.write_multiple_registers">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_multiple_registers</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">start_address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">values</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        写多个寄存器（功能码0x10） | Write Multiple Registers (Function Code 0x10)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            slave_id: 从站地址 | Slave address</span>
+<span class="sd">            start_address: 起始地址 | Starting address</span>
+<span class="sd">            values: 寄存器值列表，每个值为0-65535 | List of register values, each value 0-65535</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">quantity</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">quantity</span> <span class="o">&lt;=</span> <span class="mi">123</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;寄存器数量必须在1-123之间&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Register quantity must be between 1-123&quot;</span>
+            <span class="p">))</span>
+
+        <span class="c1"># 验证所有值都在有效范围内 | Verify all values are within valid range</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">value</span> <span class="o">&lt;=</span> <span class="mi">65535</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;寄存器值[</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">]必须在0-65535之间: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Register value[</span><span class="si">{i}</span><span class="s2">] must be between 0-65535: </span><span class="si">{value}</span><span class="s2">&quot;</span>
+                <span class="p">))</span>
+
+        <span class="n">byte_count</span> <span class="o">=</span> <span class="n">quantity</span> <span class="o">*</span> <span class="mi">2</span>
+
+        <span class="c1"># 构建PDU：功能码 + 起始地址 + 数量 + 字节数 + 数据 | Build PDU: function code + starting address + quantity + byte count + data</span>
+        <span class="n">pdu</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;&gt;BHHB&quot;</span><span class="p">,</span> <span class="mh">0x10</span><span class="p">,</span> <span class="n">start_address</span><span class="p">,</span> <span class="n">quantity</span><span class="p">,</span> <span class="n">byte_count</span><span class="p">)</span>
+
+        <span class="c1"># 添加寄存器数据 | Add register data</span>
+        <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+            <span class="n">pdu</span> <span class="o">+=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;&gt;H&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+        <span class="c1"># 发送请求并接收响应 | Send request and receive response</span>
+        <span class="n">response_pdu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">send_and_receive</span><span class="p">(</span><span class="n">slave_id</span><span class="p">,</span> <span class="n">pdu</span><span class="p">)</span>
+
+        <span class="c1"># 验证响应：功能码 + 起始地址 + 数量 | Verify response: function code + starting address + quantity</span>
+        <span class="n">expected_response</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;&gt;BHH&quot;</span><span class="p">,</span> <span class="mh">0x10</span><span class="p">,</span> <span class="n">start_address</span><span class="p">,</span> <span class="n">quantity</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response_pdu</span> <span class="o">!=</span> <span class="n">expected_response</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidResponseError</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;写多个寄存器响应不匹配&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Write multiple registers response mismatch&quot;</span>
+            <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModbusClient.__enter__">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.client.sync_client.ModbusClient.__enter__">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ModbusClient&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;上下文管理器入口 | Context manager entry&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="ModbusClient.__exit__">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.client.sync_client.ModbusClient.__exit__">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">exc_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">type</span><span class="p">],</span>
+            <span class="n">exc_val</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">],</span>
+            <span class="n">exc_tb</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;上下文管理器出口 | Context manager exit&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+    <span class="c1"># 高级数据类型API | Advanced Data Type APIs</span>
+
+<div class="viewcode-block" id="ModbusClient.read_float32">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.client.sync_client.ModbusClient.read_float32">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_float32</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">start_address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">byte_order</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;big&quot;</span><span class="p">,</span>
+            <span class="n">word_order</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;high&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        读取32位浮点数（占用2个连续寄存器） | Read 32-bit float (occupies 2 consecutive registers)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            slave_id: 从站地址 | Slave address</span>
+<span class="sd">            start_address: 起始寄存器地址 | Starting register address</span>
+<span class="sd">            byte_order: 字节序，&#39;big&#39;或&#39;little&#39; | Byte order, &#39;big&#39; or &#39;little&#39;</span>
+<span class="sd">            word_order: 字序，&#39;high&#39;或&#39;low&#39; | Word order, &#39;high&#39; or &#39;low&#39;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            32位浮点数值 | 32-bit float value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">registers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="n">slave_id</span><span class="p">,</span> <span class="n">start_address</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">PayloadCoder</span><span class="o">.</span><span class="n">decode_float32</span><span class="p">(</span><span class="n">registers</span><span class="p">,</span> <span class="n">byte_order</span><span class="p">,</span> <span class="n">word_order</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModbusClient.write_float32">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.client.sync_client.ModbusClient.write_float32">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_float32</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">start_address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="n">byte_order</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;big&quot;</span><span class="p">,</span>
+            <span class="n">word_order</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;high&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        写入32位浮点数（占用2个连续寄存器） | Write 32-bit float (occupies 2 consecutive registers)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            slave_id: 从站地址 | Slave address</span>
+<span class="sd">            start_address: 起始寄存器地址 | Starting register address</span>
+<span class="sd">            value: 要写入的浮点数值 | Float value to write</span>
+<span class="sd">            byte_order: 字节序，&#39;big&#39;或&#39;little&#39; | Byte order, &#39;big&#39; or &#39;little&#39;</span>
+<span class="sd">            word_order: 字序，&#39;high&#39;或&#39;low&#39; | Word order, &#39;high&#39; or &#39;low&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">registers</span> <span class="o">=</span> <span class="n">PayloadCoder</span><span class="o">.</span><span class="n">encode_float32</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">byte_order</span><span class="p">,</span> <span class="n">word_order</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_multiple_registers</span><span class="p">(</span><span class="n">slave_id</span><span class="p">,</span> <span class="n">start_address</span><span class="p">,</span> <span class="n">registers</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModbusClient.read_int32">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.client.sync_client.ModbusClient.read_int32">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_int32</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">start_address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">byte_order</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;big&quot;</span><span class="p">,</span>
+            <span class="n">word_order</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;high&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        读取32位有符号整数（占用2个连续寄存器） | Read 32-bit signed integer (occupies 2 consecutive registers)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            slave_id: 从站地址 | Slave address</span>
+<span class="sd">            start_address: 起始寄存器地址 | Starting register address</span>
+<span class="sd">            byte_order: 字节序，&#39;big&#39;或&#39;little&#39; | Byte order, &#39;big&#39; or &#39;little&#39;</span>
+<span class="sd">            word_order: 字序，&#39;high&#39;或&#39;low&#39; | Word order, &#39;high&#39; or &#39;low&#39;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            32位有符号整数值 | 32-bit signed integer value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">registers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="n">slave_id</span><span class="p">,</span> <span class="n">start_address</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">PayloadCoder</span><span class="o">.</span><span class="n">decode_int32</span><span class="p">(</span><span class="n">registers</span><span class="p">,</span> <span class="n">byte_order</span><span class="p">,</span> <span class="n">word_order</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModbusClient.write_int32">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.client.sync_client.ModbusClient.write_int32">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_int32</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">start_address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">byte_order</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;big&quot;</span><span class="p">,</span>
+            <span class="n">word_order</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;high&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        写入32位有符号整数（占用2个连续寄存器） | Write 32-bit signed integer (occupies 2 consecutive registers)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            slave_id: 从站地址 | Slave address</span>
+<span class="sd">            start_address: 起始寄存器地址 | Starting register address</span>
+<span class="sd">            value: 要写入的整数值 | Integer value to write</span>
+<span class="sd">            byte_order: 字节序，&#39;big&#39;或&#39;little&#39; | Byte order, &#39;big&#39; or &#39;little&#39;</span>
+<span class="sd">            word_order: 字序，&#39;high&#39;或&#39;low&#39; | Word order, &#39;high&#39; or &#39;low&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">registers</span> <span class="o">=</span> <span class="n">PayloadCoder</span><span class="o">.</span><span class="n">encode_int32</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">byte_order</span><span class="p">,</span> <span class="n">word_order</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_multiple_registers</span><span class="p">(</span><span class="n">slave_id</span><span class="p">,</span> <span class="n">start_address</span><span class="p">,</span> <span class="n">registers</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModbusClient.read_uint32">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.client.sync_client.ModbusClient.read_uint32">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_uint32</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">start_address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">byte_order</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;big&quot;</span><span class="p">,</span>
+            <span class="n">word_order</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;high&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        读取32位无符号整数（占用2个连续寄存器） | Read 32-bit unsigned integer (occupies 2 consecutive registers)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            slave_id: 从站地址 | Slave address</span>
+<span class="sd">            start_address: 起始寄存器地址 | Starting register address</span>
+<span class="sd">            byte_order: 字节序，&#39;big&#39;或&#39;little&#39; | Byte order, &#39;big&#39; or &#39;little&#39;</span>
+<span class="sd">            word_order: 字序，&#39;high&#39;或&#39;low&#39; | Word order, &#39;high&#39; or &#39;low&#39;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            32位无符号整数值 | 32-bit unsigned integer value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">registers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="n">slave_id</span><span class="p">,</span> <span class="n">start_address</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">PayloadCoder</span><span class="o">.</span><span class="n">decode_uint32</span><span class="p">(</span><span class="n">registers</span><span class="p">,</span> <span class="n">byte_order</span><span class="p">,</span> <span class="n">word_order</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModbusClient.write_uint32">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.client.sync_client.ModbusClient.write_uint32">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_uint32</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">start_address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">byte_order</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;big&quot;</span><span class="p">,</span>
+            <span class="n">word_order</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;high&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        写入32位无符号整数（占用2个连续寄存器） | Write 32-bit unsigned integer (occupies 2 consecutive registers)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            slave_id: 从站地址 | Slave address</span>
+<span class="sd">            start_address: 起始寄存器地址 | Starting register address</span>
+<span class="sd">            value: 要写入的无符号整数值 | Unsigned integer value to write</span>
+<span class="sd">            byte_order: 字节序，&#39;big&#39;或&#39;little&#39; | Byte order, &#39;big&#39; or &#39;little&#39;</span>
+<span class="sd">            word_order: 字序，&#39;high&#39;或&#39;low&#39; | Word order, &#39;high&#39; or &#39;low&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">registers</span> <span class="o">=</span> <span class="n">PayloadCoder</span><span class="o">.</span><span class="n">encode_uint32</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">byte_order</span><span class="p">,</span> <span class="n">word_order</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_multiple_registers</span><span class="p">(</span><span class="n">slave_id</span><span class="p">,</span> <span class="n">start_address</span><span class="p">,</span> <span class="n">registers</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModbusClient.read_int64">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.client.sync_client.ModbusClient.read_int64">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_int64</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">start_address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">byte_order</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;big&quot;</span><span class="p">,</span>
+            <span class="n">word_order</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;high&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        读取64位有符号整数（占用4个连续寄存器） | Read 64-bit signed integer (occupies 4 consecutive registers)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            slave_id: 从站地址 | Slave address</span>
+<span class="sd">            start_address: 起始寄存器地址 | Starting register address</span>
+<span class="sd">            byte_order: 字节序，&#39;big&#39;或&#39;little&#39; | Byte order, &#39;big&#39; or &#39;little&#39;</span>
+<span class="sd">            word_order: 字序，&#39;high&#39;或&#39;low&#39; | Word order, &#39;high&#39; or &#39;low&#39;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            64位有符号整数值 | 64-bit signed integer value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">registers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="n">slave_id</span><span class="p">,</span> <span class="n">start_address</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">PayloadCoder</span><span class="o">.</span><span class="n">decode_int64</span><span class="p">(</span><span class="n">registers</span><span class="p">,</span> <span class="n">byte_order</span><span class="p">,</span> <span class="n">word_order</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModbusClient.write_int64">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.client.sync_client.ModbusClient.write_int64">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_int64</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">start_address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">byte_order</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;big&quot;</span><span class="p">,</span>
+            <span class="n">word_order</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;high&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        写入64位有符号整数（占用4个连续寄存器） | Write 64-bit signed integer (occupies 4 consecutive registers)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            slave_id: 从站地址 | Slave address</span>
+<span class="sd">            start_address: 起始寄存器地址 | Starting register address</span>
+<span class="sd">            value: 要写入的整数值 | Integer value to write</span>
+<span class="sd">            byte_order: 字节序，&#39;big&#39;或&#39;little&#39; | Byte order, &#39;big&#39; or &#39;little&#39;</span>
+<span class="sd">            word_order: 字序，&#39;high&#39;或&#39;low&#39; | Word order, &#39;high&#39; or &#39;low&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">registers</span> <span class="o">=</span> <span class="n">PayloadCoder</span><span class="o">.</span><span class="n">encode_int64</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">byte_order</span><span class="p">,</span> <span class="n">word_order</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_multiple_registers</span><span class="p">(</span><span class="n">slave_id</span><span class="p">,</span> <span class="n">start_address</span><span class="p">,</span> <span class="n">registers</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModbusClient.read_uint64">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.client.sync_client.ModbusClient.read_uint64">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_uint64</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">start_address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">byte_order</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;big&quot;</span><span class="p">,</span>
+            <span class="n">word_order</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;high&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        读取64位无符号整数（占用4个连续寄存器） | Read 64-bit unsigned integer (occupies 4 consecutive registers)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            slave_id: 从站地址 | Slave address</span>
+<span class="sd">            start_address: 起始寄存器地址 | Starting register address</span>
+<span class="sd">            byte_order: 字节序，&#39;big&#39;或&#39;little&#39; | Byte order, &#39;big&#39; or &#39;little&#39;</span>
+<span class="sd">            word_order: 字序，&#39;high&#39;或&#39;low&#39; | Word order, &#39;high&#39; or &#39;low&#39;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            64位无符号整数值 | 64-bit unsigned integer value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">registers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="n">slave_id</span><span class="p">,</span> <span class="n">start_address</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">PayloadCoder</span><span class="o">.</span><span class="n">decode_uint64</span><span class="p">(</span><span class="n">registers</span><span class="p">,</span> <span class="n">byte_order</span><span class="p">,</span> <span class="n">word_order</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModbusClient.write_uint64">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.client.sync_client.ModbusClient.write_uint64">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_uint64</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">start_address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">value</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">byte_order</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;big&quot;</span><span class="p">,</span>
+            <span class="n">word_order</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;high&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        写入64位无符号整数（占用4个连续寄存器） | Write 64-bit unsigned integer (occupies 4 consecutive registers)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            slave_id: 从站地址 | Slave address</span>
+<span class="sd">            start_address: 起始寄存器地址 | Starting register address</span>
+<span class="sd">            value: 要写入的无符号整数值 | Unsigned integer value to write</span>
+<span class="sd">            byte_order: 字节序，&#39;big&#39;或&#39;little&#39; | Byte order, &#39;big&#39; or &#39;little&#39;</span>
+<span class="sd">            word_order: 字序，&#39;high&#39;或&#39;low&#39; | Word order, &#39;high&#39; or &#39;low&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">registers</span> <span class="o">=</span> <span class="n">PayloadCoder</span><span class="o">.</span><span class="n">encode_uint64</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">byte_order</span><span class="p">,</span> <span class="n">word_order</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_multiple_registers</span><span class="p">(</span><span class="n">slave_id</span><span class="p">,</span> <span class="n">start_address</span><span class="p">,</span> <span class="n">registers</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModbusClient.read_string">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.client.sync_client.ModbusClient.read_string">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">read_string</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">start_address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">length</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        读取字符串（从连续寄存器中） | Read string (from consecutive registers)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            slave_id: 从站地址 | Slave address</span>
+<span class="sd">            start_address: 起始寄存器地址 | Starting register address</span>
+<span class="sd">            length: 字符串字节长度 | String byte length</span>
+<span class="sd">            encoding: 字符编码，默认&#39;utf-8&#39; | Character encoding, default &#39;utf-8&#39;</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            解码后的字符串 | Decoded string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">register_count</span> <span class="o">=</span> <span class="p">(</span><span class="n">length</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>  <span class="c1"># 每个寄存器2字节 | 2 bytes per register</span>
+        <span class="n">registers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="n">slave_id</span><span class="p">,</span> <span class="n">start_address</span><span class="p">,</span> <span class="n">register_count</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">PayloadCoder</span><span class="o">.</span><span class="n">decode_string</span><span class="p">(</span><span class="n">registers</span><span class="p">,</span> <span class="n">PayloadCoder</span><span class="o">.</span><span class="n">BIG_ENDIAN</span><span class="p">,</span> <span class="n">encoding</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModbusClient.write_string">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.client.sync_client.ModbusClient.write_string">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">write_string</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">start_address</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">encoding</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        写入字符串（到连续寄存器中） | Write string (to consecutive registers)</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            slave_id: 从站地址 | Slave address</span>
+<span class="sd">            start_address: 起始寄存器地址 | Starting register address</span>
+<span class="sd">            value: 要写入的字符串 | String to write</span>
+<span class="sd">            encoding: 字符编码，默认&#39;utf-8&#39; | Character encoding, default &#39;utf-8&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 计算所需的寄存器数量 | Calculate required register count</span>
+        <span class="n">byte_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">))</span>
+        <span class="n">register_count</span> <span class="o">=</span> <span class="p">(</span><span class="n">byte_length</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>  <span class="c1"># 向上取整 | Round up</span>
+        <span class="n">registers</span> <span class="o">=</span> <span class="n">PayloadCoder</span><span class="o">.</span><span class="n">encode_string</span><span class="p">(</span>
+            <span class="n">value</span><span class="p">,</span> <span class="n">register_count</span><span class="p">,</span> <span class="n">PayloadCoder</span><span class="o">.</span><span class="n">BIG_ENDIAN</span><span class="p">,</span> <span class="n">encoding</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_multiple_registers</span><span class="p">(</span><span class="n">slave_id</span><span class="p">,</span> <span class="n">start_address</span><span class="p">,</span> <span class="n">registers</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ModbusClient.__repr__">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.client.sync_client.ModbusClient.__repr__">[文档]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;字符串表示 | String representation&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;ModbusClient(transport=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, Miraitowa。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

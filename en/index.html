@@ -1,0 +1,467 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ModbusLink Documentation &mdash; ModbusLink 1.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=6efca38a"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation Guide" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            ModbusLink
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#second-demo">30-Second Demo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#main-transport-methods">Main Transport Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#advanced-data-types">Advanced Data Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#high-performance-async-operations">High-Performance Async Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#local-testing-environment">Local Testing Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#error-handling">Error Handling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html#next-steps">Next Steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">Architecture Design</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples &amp; Practices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html">Best Practices Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#connection-management">Connection Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#error-handling">Error Handling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#performance-optimization">Performance Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#data-validation">Data Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#monitoring-and-diagnostics">Monitoring and Diagnostics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#configuration-management">Configuration Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#production-best-practices">Production Best Practices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#testing-strategy">Testing Strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#connection-issues">Connection Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#protocol-errors">Protocol Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#performance-issues">Performance Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#data-issues">Data Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#debugging-and-monitoring">Debugging and Monitoring</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#common-error-reference">Common Error Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#prevention-measures">Prevention Measures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html#getting-help">Getting Help</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">ModbusLink</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">ModbusLink Documentation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="modbuslink-documentation">
+<h1>ModbusLink Documentation<a class="headerlink" href="#modbuslink-documentation" title="Link to this heading"></a></h1>
+<a class="reference external image-reference" href="https://pypi.org/project/modbuslink/"><img alt="PyPI Version" src="https://img.shields.io/pypi/v/modbuslink.svg" />
+</a>
+<a class="reference external image-reference" href="https://pypi.org/project/modbuslink/"><img alt="Python Version" src="https://img.shields.io/pypi/pyversions/modbuslink.svg" />
+</a>
+<a class="reference external image-reference" href="https://github.com/Miraitowa-la/ModbusLink/blob/main/LICENSE.txt"><img alt="License" src="https://img.shields.io/github/license/Miraitowa-la/ModbusLink" />
+</a>
+<p>Welcome to ModbusLink’s documentation!</p>
+<p>ModbusLink is a <strong>modern, high-performance Python Modbus library</strong> designed for industrial automation, IoT applications, and SCADA systems. Built with modern Python practices, it provides unparalleled ease of use while maintaining enterprise-grade reliability.</p>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+<section id="documentation-sections">
+<h1>Documentation Sections<a class="headerlink" href="#documentation-sections" title="Link to this heading"></a></h1>
+<section id="new-to-modbuslink">
+<h2>New to ModbusLink?<a class="headerlink" href="#new-to-modbuslink" title="Link to this heading"></a></h2>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover quickstart-card docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+⚡ 30-Second Demo</div>
+<p class="sd-card-text">Get up and running with ModbusLink in minutes. Learn the basics and see your first Modbus communication.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="quickstart.html"><span class="doc">Quick Start</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover install-card docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+🛠️ Installation Guide</div>
+<p class="sd-card-text">Detailed installation guide including system requirements, dependencies, and environment setup.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="installation.html"><span class="doc">Installation Guide</span></a></div>
+</div>
+</div>
+</div>
+</section>
+<section id="core-features">
+<h2>Core Features<a class="headerlink" href="#core-features" title="Link to this heading"></a></h2>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-3 sd-row-cols-xs-3 sd-row-cols-sm-3 sd-row-cols-md-3 sd-row-cols-lg-3 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover guide-card docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+📖 User Guide</div>
+<p class="sd-card-text">Comprehensive guide covering all features, from basic operations to advanced configurations.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="user_guide.html"><span class="doc">User Guide</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover arch-card docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+🏗️ Architecture Design</div>
+<p class="sd-card-text">Deep dive into ModbusLink’s layered architecture and design principles.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="architecture.html"><span class="doc">Architecture Design</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover api-card docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+📚 API Reference</div>
+<p class="sd-card-text">Complete API documentation with detailed class and method descriptions.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="api_reference.html"><span class="doc">API Reference</span></a></div>
+</div>
+</div>
+</div>
+</section>
+<section id="real-world-applications">
+<h2>Real-World Applications<a class="headerlink" href="#real-world-applications" title="Link to this heading"></a></h2>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-3 sd-row-cols-xs-3 sd-row-cols-sm-3 sd-row-cols-md-3 sd-row-cols-lg-3 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover example-card docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+💡 Code Examples</div>
+<p class="sd-card-text">Rich collection of real-world examples covering various industrial application scenarios.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="examples.html"><span class="doc">Examples</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover perf-card docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+⚡ Performance Tuning</div>
+<p class="sd-card-text">Performance optimization techniques and concurrent processing best practices.</p>
+</div>
+<span class="sd-stretched-link sd-hide-link-text">performance</span></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover trouble-card docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+🔧 Troubleshooting</div>
+<p class="sd-card-text">Common issues solutions and debugging techniques.</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="troubleshooting.html"><span class="doc">Troubleshooting Guide</span></a></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="key-features">
+<h1>Key Features<a class="headerlink" href="#key-features" title="Link to this heading"></a></h1>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">ModbusLink Core Features</span><a class="headerlink" href="#id1" title="Link to this table"></a></caption>
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 40.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Feature</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Benefit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>🏗️ <strong>Layered Architecture</strong></p></td>
+<td><p>Clean separation of concerns</p></td>
+<td><p>Easy maintenance &amp; extension</p></td>
+</tr>
+<tr class="row-odd"><td><p>🔌 <strong>Universal Transports</strong></p></td>
+<td><p>TCP, RTU, ASCII support</p></td>
+<td><p>Works with any Modbus device</p></td>
+</tr>
+<tr class="row-even"><td><p>⚡ <strong>Async Performance</strong></p></td>
+<td><p>Native asyncio support</p></td>
+<td><p>Handle 1000+ concurrent connections</p></td>
+</tr>
+<tr class="row-odd"><td><p>🛠️ <strong>Developer Experience</strong></p></td>
+<td><p>Intuitive APIs &amp; full typing</p></td>
+<td><p>Faster development &amp; fewer bugs</p></td>
+</tr>
+<tr class="row-even"><td><p>📊 <strong>Rich Data Types</strong></p></td>
+<td><p>float32, int32, strings &amp; more</p></td>
+<td><p>Handle complex industrial data</p></td>
+</tr>
+<tr class="row-odd"><td><p>🔍 <strong>Advanced Debugging</strong></p></td>
+<td><p>Protocol-level monitoring</p></td>
+<td><p>Rapid troubleshooting</p></td>
+</tr>
+<tr class="row-even"><td><p>🖥️ <strong>Complete Server</strong></p></td>
+<td><p>Full server implementation</p></td>
+<td><p>Build custom Modbus devices</p></td>
+</tr>
+<tr class="row-odd"><td><p>🎯 <strong>Production Ready</strong></p></td>
+<td><p>Comprehensive error handling</p></td>
+<td><p>Deploy with confidence</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="supported-modbus-function-codes">
+<h1>Supported Modbus Function Codes<a class="headerlink" href="#supported-modbus-function-codes" title="Link to this heading"></a></h1>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 15.0%" />
+<col style="width: 25.0%" />
+<col style="width: 60.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Function Code</p></th>
+<th class="head"><p>Function Name</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>0x01</strong></p></td>
+<td><p>Read Coils</p></td>
+<td><p>Read status of one or more coils (boolean values)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>0x02</strong></p></td>
+<td><p>Read Discrete Inputs</p></td>
+<td><p>Read status of one or more discrete inputs (read-only boolean values)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>0x03</strong></p></td>
+<td><p>Read Holding Registers</p></td>
+<td><p>Read values of one or more holding registers (16-bit integers)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>0x04</strong></p></td>
+<td><p>Read Input Registers</p></td>
+<td><p>Read values of one or more input registers (read-only 16-bit integers)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>0x05</strong></p></td>
+<td><p>Write Single Coil</p></td>
+<td><p>Write a single coil value to specified address</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>0x06</strong></p></td>
+<td><p>Write Single Register</p></td>
+<td><p>Write a single register value to specified address</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>0x0F</strong></p></td>
+<td><p>Write Multiple Coils</p></td>
+<td><p>Write multiple coil values to consecutive addresses</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>0x10</strong></p></td>
+<td><p>Write Multiple Registers</p></td>
+<td><p>Write multiple register values to consecutive addresses</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="second-demo">
+<h1>30-Second Demo<a class="headerlink" href="#second-demo" title="Link to this heading"></a></h1>
+<section id="install-modbuslink">
+<h2>Install ModbusLink<a class="headerlink" href="#install-modbuslink" title="Link to this heading"></a></h2>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install from PyPI</span>
+pip<span class="w"> </span>install<span class="w"> </span>modbuslink
+</pre></div>
+</div>
+</section>
+<section id="simple-examples">
+<h2>Simple Examples<a class="headerlink" href="#simple-examples" title="Link to this heading"></a></h2>
+<p><strong>TCP Client (Ethernet Devices)</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModbusClient</span><span class="p">,</span> <span class="n">TcpTransport</span>
+
+<span class="c1"># Connect to Modbus TCP device</span>
+<span class="n">transport</span> <span class="o">=</span> <span class="n">TcpTransport</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">502</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+    <span class="c1"># Read temperature sensor</span>
+    <span class="n">temp</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_float32</span><span class="p">(</span><span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Temperature: </span><span class="si">{</span><span class="n">temp</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">°C&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Control pump switch</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">write_single_coil</span><span class="p">(</span><span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pump started!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Serial Client (RTU Devices)</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModbusClient</span><span class="p">,</span> <span class="n">RtuTransport</span>
+
+<span class="c1"># Connect to serial device</span>
+<span class="n">transport</span> <span class="o">=</span> <span class="n">RtuTransport</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="s1">&#39;COM3&#39;</span><span class="p">,</span> <span class="n">baudrate</span><span class="o">=</span><span class="mi">9600</span><span class="p">)</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">ModbusClient</span><span class="p">(</span><span class="n">transport</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">client</span><span class="p">:</span>
+    <span class="c1"># Read flow meter data</span>
+    <span class="n">flow</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">read_float32</span><span class="p">(</span><span class="n">slave_id</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Flow rate: </span><span class="si">{</span><span class="n">flow</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> L/min&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>High-Performance Async Operations</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncModbusClient</span><span class="p">,</span> <span class="n">AsyncTcpTransport</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">read_multiple_plcs</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read from multiple PLCs concurrently&quot;&quot;&quot;</span>
+    <span class="n">plc1</span> <span class="o">=</span> <span class="n">AsyncModbusClient</span><span class="p">(</span><span class="n">AsyncTcpTransport</span><span class="p">(</span><span class="s1">&#39;192.168.1.10&#39;</span><span class="p">,</span> <span class="mi">502</span><span class="p">))</span>
+    <span class="n">plc2</span> <span class="o">=</span> <span class="n">AsyncModbusClient</span><span class="p">(</span><span class="n">AsyncTcpTransport</span><span class="p">(</span><span class="s1">&#39;192.168.1.11&#39;</span><span class="p">,</span> <span class="mi">502</span><span class="p">))</span>
+
+    <span class="k">async</span> <span class="k">with</span> <span class="n">plc1</span><span class="p">,</span> <span class="n">plc2</span><span class="p">:</span>
+        <span class="c1"># Concurrent reading</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+            <span class="n">plc1</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+            <span class="n">plc2</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PLC1: </span><span class="si">{</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">, PLC2: </span><span class="si">{</span><span class="n">results</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">read_multiple_plcs</span><span class="p">())</span>
+</pre></div>
+</div>
+</section>
+<section id="get-started-now">
+<h2>Get Started Now<a class="headerlink" href="#get-started-now" title="Link to this heading"></a></h2>
+<p>🚀 Ready to dive in? Head to <a class="reference internal" href="installation.html"><span class="doc">Installation Guide</span></a> to install ModbusLink, then check out <a class="reference internal" href="quickstart.html"><span class="doc">Quick Start</span></a> for a detailed tutorial!</p>
+</section>
+</section>
+<section id="community-and-support">
+<h1>Community and Support<a class="headerlink" href="#community-and-support" title="Link to this heading"></a></h1>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-row-cols-2 sd-row-cols-xs-2 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-2 sd-g-3 sd-g-xs-3 sd-g-sm-3 sd-g-md-3 sd-g-lg-3 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+📖 GitHub Project</div>
+<p class="sd-card-text">Source code, issue reports, and feature requests</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="https://github.com/Miraitowa-la/ModbusLink"><span>https://github.com/Miraitowa-la/ModbusLink</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+📦 PyPI Package</div>
+<p class="sd-card-text">Official releases and version history</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference external" href="https://pypi.org/project/modbuslink/"><span>https://pypi.org/project/modbuslink/</span></a></div>
+</div>
+</div>
+</div>
+</section>
+<section id="version-information">
+<h1>Version Information<a class="headerlink" href="#version-information" title="Link to this heading"></a></h1>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Miraitowa-la.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

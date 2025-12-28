@@ -1,0 +1,328 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>modbuslink.common.exceptions &mdash; ModbusLink 1.2.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=6efca38a"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            ModbusLink
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#second-demo">30-Second Demo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#main-transport-methods">Main Transport Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#advanced-data-types">Advanced Data Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#high-performance-async-operations">High-Performance Async Operations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#local-testing-environment">Local Testing Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#error-handling">Error Handling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html#next-steps">Next Steps</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">Architecture Design</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide.html">User Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples &amp; Practices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html">Best Practices Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#connection-management">Connection Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#error-handling">Error Handling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#performance-optimization">Performance Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#data-validation">Data Validation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#monitoring-and-diagnostics">Monitoring and Diagnostics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#configuration-management">Configuration Management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#production-best-practices">Production Best Practices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#testing-strategy">Testing Strategy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html#summary">Summary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html">Troubleshooting Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#connection-issues">Connection Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#protocol-errors">Protocol Errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#performance-issues">Performance Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#data-issues">Data Issues</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#debugging-and-monitoring">Debugging and Monitoring</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#common-error-reference">Common Error Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#prevention-measures">Prevention Measures</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html#getting-help">Getting Help</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ModbusLink</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">modbuslink.common.exceptions</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for modbuslink.common.exceptions</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">ModbusLink 异常定义模块</span>
+<span class="sd">定义了所有ModbusLink库中使用的异常类型。</span>
+
+<span class="sd">Exception Definition Module</span>
+<span class="sd">Defines all exception types used in the ModbusLink library.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.language</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_message</span>
+
+
+<div class="viewcode-block" id="ModbusLinkError">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.common.exceptions.ModbusLinkError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ModbusLinkError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ModbusLink库的基础异常类</span>
+<span class="sd">    所有ModbusLink相关的异常都继承自这个基类。</span>
+
+<span class="sd">    Base exception class for ModbusLink library</span>
+<span class="sd">    All ModbusLink-related exceptions inherit from this base class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+
+
+<div class="viewcode-block" id="ConnectionError">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.common.exceptions.ConnectionError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConnectionError</span><span class="p">(</span><span class="n">ModbusLinkError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    连接错误异常</span>
+<span class="sd">    当无法建立或维持与Modbus设备的连接时抛出。</span>
+
+<span class="sd">    Connection error exception</span>
+<span class="sd">    Raised when unable to establish or maintain connection with Modbus device.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ConnectionError.__init__">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.common.exceptions.ConnectionError.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">en</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cn</span> <span class="o">=</span> <span class="n">cn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">en</span> <span class="o">=</span> <span class="n">en</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span><span class="n">cn</span><span class="p">,</span> <span class="n">en</span><span class="p">))</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">get_message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">en</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="TimeoutError">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.common.exceptions.TimeoutError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TimeoutError</span><span class="p">(</span><span class="n">ModbusLinkError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    超时错误异常</span>
+<span class="sd">    当操作超过指定的超时时间时抛出。</span>
+
+<span class="sd">    Timeout error exception</span>
+<span class="sd">    Raised when operation exceeds the specified timeout period.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TimeoutError.__init__">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.common.exceptions.TimeoutError.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">en</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cn</span> <span class="o">=</span> <span class="n">cn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">en</span> <span class="o">=</span> <span class="n">en</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span><span class="n">cn</span><span class="p">,</span> <span class="n">en</span><span class="p">))</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">get_message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">en</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="CRCError">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.common.exceptions.CRCError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CRCError</span><span class="p">(</span><span class="n">ModbusLinkError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    CRC校验错误异常</span>
+<span class="sd">    当接收到的数据帧CRC校验失败时抛出。</span>
+
+<span class="sd">    CRC validation error exception</span>
+<span class="sd">    Raised when CRC validation of received data frame fails.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="CRCError.__init__">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.common.exceptions.CRCError.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">en</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cn</span> <span class="o">=</span> <span class="n">cn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">en</span> <span class="o">=</span> <span class="n">en</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span><span class="n">cn</span><span class="p">,</span> <span class="n">en</span><span class="p">))</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">get_message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">en</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="InvalidResponseError">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.common.exceptions.InvalidResponseError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">InvalidResponseError</span><span class="p">(</span><span class="n">ModbusLinkError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    无效响应错误异常</span>
+<span class="sd">    当接收到的响应格式不正确或不符合预期时抛出。</span>
+
+<span class="sd">    Invalid response error exception</span>
+<span class="sd">    Raised when received response format is incorrect or unexpected.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="InvalidResponseError.__init__">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.common.exceptions.InvalidResponseError.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cn</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">en</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cn</span> <span class="o">=</span> <span class="n">cn</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">en</span> <span class="o">=</span> <span class="n">en</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">get_message</span><span class="p">(</span><span class="n">cn</span><span class="p">,</span> <span class="n">en</span><span class="p">))</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">get_message</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">en</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="ModbusException">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.common.exceptions.ModbusException">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ModbusException</span><span class="p">(</span><span class="n">ModbusLinkError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Modbus协议异常</span>
+<span class="sd">    当从站返回Modbus异常码时抛出。</span>
+
+<span class="sd">    Modbus protocol exception</span>
+<span class="sd">    Raised when slave returns Modbus exception code.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        exception_code: Modbus异常码 (如0x01, 0x02等) | Modbus exception code (e.g. 0x01, 0x02, etc.)</span>
+<span class="sd">        function_code: 原始功能码 | Original function code</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># 异常码名称映射 | Exception code name mapping</span>
+    <span class="n">_EXCEPTION_NAMES_CN</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mh">0x01</span><span class="p">:</span> <span class="s2">&quot;非法功能码&quot;</span><span class="p">,</span>
+        <span class="mh">0x02</span><span class="p">:</span> <span class="s2">&quot;非法数据地址&quot;</span><span class="p">,</span>
+        <span class="mh">0x03</span><span class="p">:</span> <span class="s2">&quot;非法数据值&quot;</span><span class="p">,</span>
+        <span class="mh">0x04</span><span class="p">:</span> <span class="s2">&quot;从站设备故障&quot;</span><span class="p">,</span>
+        <span class="mh">0x05</span><span class="p">:</span> <span class="s2">&quot;确认&quot;</span><span class="p">,</span>
+        <span class="mh">0x06</span><span class="p">:</span> <span class="s2">&quot;从站设备忙&quot;</span><span class="p">,</span>
+        <span class="mh">0x08</span><span class="p">:</span> <span class="s2">&quot;存储奇偶性差错&quot;</span><span class="p">,</span>
+        <span class="mh">0x0A</span><span class="p">:</span> <span class="s2">&quot;不可用网关路径&quot;</span><span class="p">,</span>
+        <span class="mh">0x0B</span><span class="p">:</span> <span class="s2">&quot;网关目标设备响应失败&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">_EXCEPTION_NAMES_EN</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="mh">0x01</span><span class="p">:</span> <span class="s2">&quot;Illegal Function Code&quot;</span><span class="p">,</span>
+        <span class="mh">0x02</span><span class="p">:</span> <span class="s2">&quot;Illegal Data Address&quot;</span><span class="p">,</span>
+        <span class="mh">0x03</span><span class="p">:</span> <span class="s2">&quot;Illegal Data Value&quot;</span><span class="p">,</span>
+        <span class="mh">0x04</span><span class="p">:</span> <span class="s2">&quot;Slave Device Failure&quot;</span><span class="p">,</span>
+        <span class="mh">0x05</span><span class="p">:</span> <span class="s2">&quot;Acknowledge&quot;</span><span class="p">,</span>
+        <span class="mh">0x06</span><span class="p">:</span> <span class="s2">&quot;Slave Device Busy&quot;</span><span class="p">,</span>
+        <span class="mh">0x08</span><span class="p">:</span> <span class="s2">&quot;Memory Parity Error&quot;</span><span class="p">,</span>
+        <span class="mh">0x0A</span><span class="p">:</span> <span class="s2">&quot;Gateway Path Unavailable&quot;</span><span class="p">,</span>
+        <span class="mh">0x0B</span><span class="p">:</span> <span class="s2">&quot;Gateway Target Device Failed to Respond&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+<div class="viewcode-block" id="ModbusException.__init__">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.common.exceptions.ModbusException.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">exception_code</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">function_code</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exception_code</span> <span class="o">=</span> <span class="n">exception_code</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">function_code</span> <span class="o">=</span> <span class="n">function_code</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_message</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_custom_message</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_custom_message</span>
+
+        <span class="n">exception_name_cn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_EXCEPTION_NAMES_CN</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exception_code</span><span class="p">,</span> <span class="s2">&quot;未知异常&quot;</span><span class="p">)</span>
+        <span class="n">exception_name_en</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_EXCEPTION_NAMES_EN</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exception_code</span><span class="p">,</span> <span class="s2">&quot;Unknown Exception&quot;</span><span class="p">)</span>
+
+        <span class="n">cn_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Modbus异常 (功能码: 0x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">function_code</span><span class="si">:</span><span class="s2">02X</span><span class="si">}</span><span class="s2">, 异常码: 0x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">exception_code</span><span class="si">:</span><span class="s2">02X</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">exception_name_cn</span><span class="si">}</span><span class="s2">)&quot;</span>
+        <span class="n">en_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Modbus Exception (Function Code: 0x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">function_code</span><span class="si">:</span><span class="s2">02X</span><span class="si">}</span><span class="s2">, Exception Code: 0x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">exception_code</span><span class="si">:</span><span class="s2">02X</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">exception_name_en</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+        <span class="k">return</span> <span class="n">get_message</span><span class="p">(</span><span class="n">cn_msg</span><span class="p">,</span> <span class="n">en_msg</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Miraitowa-la.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
