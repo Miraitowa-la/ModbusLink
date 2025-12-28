@@ -66,6 +66,7 @@ class AsyncTcpTransport(AsyncBaseTransport):
         self._writer: Optional[asyncio.StreamWriter] = None
         self._transaction_id = 0
         self._logger = get_logger("transport.async_tcp")
+        self._lock = asyncio.Lock()
 
     async def open(self) -> None:
         """异步建立TCP连接 | Async establish TCP connection"""
@@ -131,121 +132,123 @@ class AsyncTcpTransport(AsyncBaseTransport):
         5. 异步接收响应PDU | Async receive response PDU
         6. 返回响应PDU | Return response PDU
         """
-        if not await self.is_open():
-            raise ConnectionError(
-                cn="异步TCP连接未建立",
-                en="Async TCP connection not established"
+        # 使用锁确保并发安全 | Use lock to ensure concurrent safety
+        async with self._lock:
+            if not await self.is_open():
+                raise ConnectionError(
+                    cn="异步TCP连接未建立",
+                    en="Async TCP connection not established"
+                )
+
+            # 1. 生成事务ID并构建MBAP头 | Generate transaction ID and build MBAP header
+            current_transaction_id = self._transaction_id
+            self._transaction_id = (self._transaction_id + 1) % 0x10000  # 16位回绕 | 16-bit wraparound
+
+            # MBAP头格式： | MBAP header format:
+            # - Transaction ID (2字节): 事务标识符 | Transaction identifier
+            # - Protocol ID (2字节): 协议标识符，固定为0x0000 | Protocol identifier, fixed to 0x0000
+            # - Length (2字节): 后续字节长度（Unit ID + PDU） | Length of following bytes (Unit ID + PDU)
+            # - Unit ID (1字节): 单元标识符（从站地址） | Unit identifier (slave address)
+            mbap_header = struct.pack(
+                ">HHHB",  # 大端序：2个short, 1个short, 1个byte | Big endian: 2 shorts, 1 short, 1 byte
+                current_transaction_id,  # Transaction ID
+                0x0000,  # Protocol ID
+                len(pdu)
+                + 1,  # Length (PDU长度 + Unit ID的1字节) | Length (PDU length + 1 byte for Unit ID)
+                slave_id,  # Unit ID
             )
 
-        # 1. 生成事务ID并构建MBAP头 | Generate transaction ID and build MBAP header
-        current_transaction_id = self._transaction_id
-        self._transaction_id = (self._transaction_id + 1) % 0x10000  # 16位回绕 | 16-bit wraparound
-
-        # MBAP头格式： | MBAP header format:
-        # - Transaction ID (2字节): 事务标识符 | Transaction identifier
-        # - Protocol ID (2字节): 协议标识符，固定为0x0000 | Protocol identifier, fixed to 0x0000
-        # - Length (2字节): 后续字节长度（Unit ID + PDU） | Length of following bytes (Unit ID + PDU)
-        # - Unit ID (1字节): 单元标识符（从站地址） | Unit identifier (slave address)
-        mbap_header = struct.pack(
-            ">HHHB",  # 大端序：2个short, 1个short, 1个byte | Big endian: 2 shorts, 1 short, 1 byte
-            current_transaction_id,  # Transaction ID
-            0x0000,  # Protocol ID
-            len(pdu)
-            + 1,  # Length (PDU长度 + Unit ID的1字节) | Length (PDU length + 1 byte for Unit ID)
-            slave_id,  # Unit ID
-        )
-
-        # 2. 构建完整请求帧 | Build complete request frame
-        request_frame = mbap_header + pdu
-
-        self._logger.debug(
-            cn=f"异步TCP发送: {request_frame.hex(' ').upper()}",
-            en=f"Async TCP Send: {request_frame.hex(' ').upper()}"
-        )
-
-        try:
-            # 3. 异步发送请求 | Async send request
-            if self._writer is None:
-                raise ConnectionError(
-                    cn="连接未建立",
-                    en="Connection not established"
-                )
-            self._writer.write(request_frame)
-            await asyncio.wait_for(self._writer.drain(), timeout=self.timeout)
-
-            # 4. 异步接收响应MBAP头（7字节） | Async receive response MBAP header (7 bytes)
-            response_mbap = await self._receive_exact(7)
-
-            # 5. 解析响应MBAP头 | Parse response MBAP header
-            (
-                response_transaction_id,
-                response_protocol_id,
-                response_length,
-                response_unit_id,
-            ) = struct.unpack(">HHHB", response_mbap)
-
-            # 6. 验证MBAP头 | Validate MBAP header
-            if response_transaction_id != current_transaction_id:
-                raise InvalidResponseError(
-                    cn=f"事务ID不匹配: 期望 {current_transaction_id}, 得到 {response_transaction_id}",
-                    en=f"Transaction ID mismatch: Expected {current_transaction_id}, Received {response_transaction_id}"
-                )
-
-            if response_protocol_id != 0x0000:
-                raise InvalidResponseError(
-                    cn=f"协议ID无效: 期望 0x0000, 得到 0x{response_protocol_id:04X}",
-                    en=f"Invalid Protocol ID: Expected 0x0000, Received 0x{response_protocol_id:04X}"
-                )
-
-            if response_unit_id != slave_id:
-                raise InvalidResponseError(
-                    cn=f"单元ID不匹配: 期望 {slave_id}, 得到 {response_unit_id}",
-                    en=f"Unit ID mismatch: Expected {slave_id}, Received {response_unit_id}"
-                )
-
-            # 7. 异步接收响应PDU | Async receive response PDU
-            pdu_length = (
-                    response_length - 1
-            )  # 减去Unit ID的1字节 | Subtract 1 byte for Unit ID
-            if pdu_length <= 0:
-                raise InvalidResponseError(
-                    cn=f"PDU长度无效: {pdu_length}",
-                    en=f"Invalid PDU length: {pdu_length}"
-                )
-
-            response_pdu = await self._receive_exact(pdu_length)
+            # 2. 构建完整请求帧 | Build complete request frame
+            request_frame = mbap_header + pdu
 
             self._logger.debug(
-                cn=f"异步TCP接收: {(response_mbap + response_pdu).hex(' ').upper()}",
-                en=f"Async TCP Receive: {(response_mbap + response_pdu).hex(' ').upper()}"
+                cn=f"异步TCP发送: {request_frame.hex(' ').upper()}",
+                en=f"Async TCP Send: {request_frame.hex(' ').upper()}"
             )
 
-            # 8. 检查是否为异常响应 | Check if it's an exception response
-            if (
-                    len(response_pdu) > 0 and response_pdu[0] & 0x80
-            ):  # 异常响应 | Exception response
-                from ..common.exceptions import ModbusException
+            try:
+                # 3. 异步发送请求 | Async send request
+                if self._writer is None:
+                    raise ConnectionError(
+                        cn="连接未建立",
+                        en="Connection not established"
+                    )
+                self._writer.write(request_frame)
+                await asyncio.wait_for(self._writer.drain(), timeout=self.timeout)
 
-                function_code = (
-                        response_pdu[0] & 0x7F
-                )  # 去除异常标志位 | Remove exception flag bit
-                exception_code = response_pdu[1] if len(response_pdu) > 1 else 0
-                raise ModbusException(exception_code, function_code)
+                # 4. 异步接收响应MBAP头（7字节） | Async receive response MBAP header (7 bytes)
+                response_mbap = await self._receive_exact(7)
 
-            return response_pdu
+                # 5. 解析响应MBAP头 | Parse response MBAP header
+                (
+                    response_transaction_id,
+                    response_protocol_id,
+                    response_length,
+                    response_unit_id,
+                ) = struct.unpack(">HHHB", response_mbap)
 
-        except asyncio.TimeoutError:
-            raise TimeoutError(
-                cn=f"异步TCP通信超时 ({self.timeout}秒)",
-                en=f"Async TCP communication timeout ({self.timeout}seconds)"
-            )
-        except Exception as e:
-            if isinstance(e, (ConnectionError, TimeoutError, InvalidResponseError)):
-                raise
-            raise ConnectionError(
-                cn=f"异步TCP通信错误: {e}",
-                en=f"Async TCP communication error: {e}"
-            )
+                # 6. 验证MBAP头 | Validate MBAP header
+                if response_transaction_id != current_transaction_id:
+                    raise InvalidResponseError(
+                        cn=f"事务ID不匹配: 期望 {current_transaction_id}, 得到 {response_transaction_id}",
+                        en=f"Transaction ID mismatch: Expected {current_transaction_id}, Received {response_transaction_id}"
+                    )
+
+                if response_protocol_id != 0x0000:
+                    raise InvalidResponseError(
+                        cn=f"协议ID无效: 期望 0x0000, 得到 0x{response_protocol_id:04X}",
+                        en=f"Invalid Protocol ID: Expected 0x0000, Received 0x{response_protocol_id:04X}"
+                    )
+
+                if response_unit_id != slave_id:
+                    raise InvalidResponseError(
+                        cn=f"单元ID不匹配: 期望 {slave_id}, 得到 {response_unit_id}",
+                        en=f"Unit ID mismatch: Expected {slave_id}, Received {response_unit_id}"
+                    )
+
+                # 7. 异步接收响应PDU | Async receive response PDU
+                pdu_length = (
+                        response_length - 1
+                )  # 减去Unit ID的1字节 | Subtract 1 byte for Unit ID
+                if pdu_length <= 0:
+                    raise InvalidResponseError(
+                        cn=f"PDU长度无效: {pdu_length}",
+                        en=f"Invalid PDU length: {pdu_length}"
+                    )
+
+                response_pdu = await self._receive_exact(pdu_length)
+
+                self._logger.debug(
+                    cn=f"异步TCP接收: {(response_mbap + response_pdu).hex(' ').upper()}",
+                    en=f"Async TCP Receive: {(response_mbap + response_pdu).hex(' ').upper()}"
+                )
+
+                # 8. 检查是否为异常响应 | Check if it's an exception response
+                if (
+                        len(response_pdu) > 0 and response_pdu[0] & 0x80
+                ):  # 异常响应 | Exception response
+                    from ..common.exceptions import ModbusException
+
+                    function_code = (
+                            response_pdu[0] & 0x7F
+                    )  # 去除异常标志位 | Remove exception flag bit
+                    exception_code = response_pdu[1] if len(response_pdu) > 1 else 0
+                    raise ModbusException(exception_code, function_code)
+
+                return response_pdu
+
+            except asyncio.TimeoutError:
+                raise TimeoutError(
+                    cn=f"异步TCP通信超时 ({self.timeout}秒)",
+                    en=f"Async TCP communication timeout ({self.timeout}seconds)"
+                )
+            except Exception as e:
+                if isinstance(e, (ConnectionError, TimeoutError, InvalidResponseError)):
+                    raise
+                raise ConnectionError(
+                    cn=f"异步TCP通信错误: {e}",
+                    en=f"Async TCP communication error: {e}"
+                )
 
     async def _receive_exact(self, length: int) -> bytes:
         """

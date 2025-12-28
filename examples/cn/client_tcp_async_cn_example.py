@@ -424,8 +424,8 @@ async def main():
         await basic_operations_example()
         await advanced_data_types_example()
         await callback_example()
-        await concurrent_operations_example()  # 貌似有点问题后面在修复
-        await industrial_monitoring_example()  # 貌似有点问题后面在修复
+        await concurrent_operations_example()
+        await industrial_monitoring_example()
 
         print("\n=== 所有示例执行完成 ===")
 

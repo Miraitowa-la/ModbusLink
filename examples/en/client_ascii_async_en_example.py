@@ -454,8 +454,8 @@ async def main():
         await advanced_data_types_example()
         await debugging_example()
         await error_handling_example()
-        # await performance_comparison_example()  # It seems there is a problem. It will be fixed later.
-        # await sensor_monitoring_example()  # It seems there is a problem. It will be fixed later.
+        await performance_comparison_example()
+        await sensor_monitoring_example()
 
         print("\n=== All Examples Completed ===")
 

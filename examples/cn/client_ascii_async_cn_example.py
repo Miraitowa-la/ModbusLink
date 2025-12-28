@@ -454,8 +454,8 @@ async def main():
         await advanced_data_types_example()
         await debugging_example()
         await error_handling_example()
-        # await performance_comparison_example()  # 貌似有点问题后面在修复
-        # await sensor_monitoring_example()  # 貌似有点问题后面在修复
+        await performance_comparison_example()
+        await sensor_monitoring_example()
 
         print("\n=== 所有示例执行完成 ===")
 

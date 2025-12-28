@@ -86,6 +86,7 @@ class AsyncAsciiTransport(AsyncBaseTransport):
         self._reader: Optional[asyncio.StreamReader] = None
         self._writer: Optional[asyncio.StreamWriter] = None
         self._logger = get_logger("transport.async_ascii")
+        self._lock = asyncio.Lock()
 
     async def open(self) -> None:
         """异步打开串口连接 | Async open serial port connection"""
@@ -146,66 +147,68 @@ class AsyncAsciiTransport(AsyncBaseTransport):
         4. 验证LRC | Validate LRC
         5. 返回响应PDU | Return response PDU
         """
-        if not await self.is_open():
-            raise ConnectionError(
-                cn="异步串口连接未建立",
-                en="Async serial port connection not established"
-            )
-
-        # 1. 构建请求帧 | Build request frame
-        frame_data = bytes([slave_id]) + pdu
-        lrc = self._calculate_lrc(frame_data)
-
-        # ASCII编码：冒号 + 数据的十六进制表示 + LRC + CRLF | ASCII encoding: colon + hex data + LRC + CRLF
-        ascii_data = frame_data + bytes([lrc])
-        ascii_frame = b':' + ascii_data.hex().upper().encode('ascii') + b'\r\n'
-
-        self._logger.debug(
-            cn=f"发送异步ASCII请求: {ascii_frame.decode('ascii', errors='ignore')}",
-            en=f"Sending async ASCII request: {ascii_frame.decode('ascii', errors='ignore')}"
-        )
-
-        try:
-            # 2. 清空接收缓冲区并发送请求 | Clear receive buffer and send request
-            if self._reader.at_eof():
+        # 使用锁确保并发安全 | Use lock to ensure concurrent safety
+        async with self._lock:
+            if not await self.is_open():
                 raise ConnectionError(
-                    cn="异步串口连接已断开",
-                    en="Async serial connection lost"
+                    cn="异步串口连接未建立",
+                    en="Async serial port connection not established"
                 )
 
-            # 清空可能存在的旧数据 | Clear any existing old data
-            while True:
-                try:
-                    await asyncio.wait_for(self._reader.read(1024), timeout=0.01)
-                except asyncio.TimeoutError:
-                    break
+            # 1. 构建请求帧 | Build request frame
+            frame_data = bytes([slave_id]) + pdu
+            lrc = self._calculate_lrc(frame_data)
 
-            self._writer.write(ascii_frame)
-            await self._writer.drain()
-
-            # 3. 接收响应 | Receive response
-            function_code = pdu[0] if pdu else 0
-            response_pdu = await self._receive_response(slave_id, function_code)
+            # ASCII编码：冒号 + 数据的十六进制表示 + LRC + CRLF | ASCII encoding: colon + hex data + LRC + CRLF
+            ascii_data = frame_data + bytes([lrc])
+            ascii_frame = b':' + ascii_data.hex().upper().encode('ascii') + b'\r\n'
 
             self._logger.debug(
-                cn=f"接收到异步ASCII响应PDU: {response_pdu.hex()}",
-                en=f"Received async ASCII response PDU: {response_pdu.hex()}"
+                cn=f"发送异步ASCII请求: {ascii_frame.decode('ascii', errors='ignore')}",
+                en=f"Sending async ASCII request: {ascii_frame.decode('ascii', errors='ignore')}"
             )
 
-            return response_pdu
+            try:
+                # 2. 清空接收缓冲区并发送请求 | Clear receive buffer and send request
+                if self._reader.at_eof():
+                    raise ConnectionError(
+                        cn="异步串口连接已断开",
+                        en="Async serial connection lost"
+                    )
 
-        except asyncio.TimeoutError:
-            raise TimeoutError(
-                cn=f"异步ASCII通信超时: {self.timeout}s",
-                en=f"Async ASCII communication timeout: {self.timeout}s"
-            )
-        except Exception as e:
-            if isinstance(e, (ConnectionError, TimeoutError, CRCError, InvalidResponseError)):
-                raise
-            raise ConnectionError(
-                cn=f"异步ASCII通信错误: {e}",
-                en=f"Async ASCII communication error: {e}"
-            )
+                # 清空可能存在的旧数据 | Clear any existing old data
+                while True:
+                    try:
+                        await asyncio.wait_for(self._reader.read(1024), timeout=0.01)
+                    except asyncio.TimeoutError:
+                        break
+
+                self._writer.write(ascii_frame)
+                await self._writer.drain()
+
+                # 3. 接收响应 | Receive response
+                function_code = pdu[0] if pdu else 0
+                response_pdu = await self._receive_response(slave_id, function_code)
+
+                self._logger.debug(
+                    cn=f"接收到异步ASCII响应PDU: {response_pdu.hex()}",
+                    en=f"Received async ASCII response PDU: {response_pdu.hex()}"
+                )
+
+                return response_pdu
+
+            except asyncio.TimeoutError:
+                raise TimeoutError(
+                    cn=f"异步ASCII通信超时: {self.timeout}s",
+                    en=f"Async ASCII communication timeout: {self.timeout}s"
+                )
+            except Exception as e:
+                if isinstance(e, (ConnectionError, TimeoutError, CRCError, InvalidResponseError)):
+                    raise
+                raise ConnectionError(
+                    cn=f"异步ASCII通信错误: {e}",
+                    en=f"Async ASCII communication error: {e}"
+                )
 
     async def _receive_response(self, expected_slave_id: int, function_code: int) -> bytes:
         """

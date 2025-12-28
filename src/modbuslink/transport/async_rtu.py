@@ -71,11 +71,11 @@ class AsyncRtuTransport(AsyncBaseTransport):
         
         Example:
             基本RS485模式 | Basic RS485 mode::
-            
+
                 transport = AsyncRtuTransport('/dev/ttyUSB0', rs485_mode=True)
             
             自定义RS485设置 | Custom RS485 settings::
-            
+
                 import serial.rs485
                 rs485_settings = serial.rs485.RS485Settings(
                     rts_level_for_tx=True,   # RTS高电平发送 | RTS high during TX
@@ -113,6 +113,7 @@ class AsyncRtuTransport(AsyncBaseTransport):
         self._writer: Optional[asyncio.StreamWriter] = None
         self._serial: Optional[serial.Serial] = None  # 用于RS485模式配置 | For RS485 mode configuration
         self._logger = get_logger("transport.async_rtu")
+        self._lock = asyncio.Lock()
 
     async def open(self) -> None:
         """异步打开串口连接 | Async open serial port connection"""
@@ -199,63 +200,65 @@ class AsyncRtuTransport(AsyncBaseTransport):
         4. 验证CRC | Validate CRC
         5. 返回响应PDU | Return response PDU
         """
-        if not await self.is_open():
-            raise ConnectionError(
-                cn="异步串口连接未建立",
-                en="Async serial port connection not established"
-            )
-
-        # 1. 构建请求帧 | Build request frame
-        frame_prefix = bytes([slave_id]) + pdu
-        crc = CRC16Modbus.calculate(frame_prefix)
-        request_adu = frame_prefix + crc
-
-        self._logger.debug(
-            cn=f"发送异步RTU请求: {request_adu.hex()}",
-            en=f"Sending async RTU request: {request_adu.hex()}"
-        )
-
-        try:
-            # 2. 清空接收缓冲区并发送请求 | Clear receive buffer and send request
-            if self._reader.at_eof():
+        # 使用锁确保并发安全 | Use lock to ensure concurrent safety
+        async with self._lock:
+            if not await self.is_open():
                 raise ConnectionError(
-                    cn="异步串口连接已断开",
-                    en="Async serial connection lost"
+                    cn="异步串口连接未建立",
+                    en="Async serial port connection not established"
                 )
 
-            # 清空可能存在的旧数据 | Clear any existing old data
-            while True:
-                try:
-                    await asyncio.wait_for(self._reader.read(1024), timeout=0.01)
-                except asyncio.TimeoutError:
-                    break
-
-            self._writer.write(request_adu)
-            await self._writer.drain()
-
-            # 3. 接收响应 | Receive response
-            function_code = pdu[0] if pdu else 0
-            response_pdu = await self._receive_response(slave_id, function_code)
+            # 1. 构建请求帧 | Build request frame
+            frame_prefix = bytes([slave_id]) + pdu
+            crc = CRC16Modbus.calculate(frame_prefix)
+            request_adu = frame_prefix + crc
 
             self._logger.debug(
-                cn=f"接收到异步RTU响应PDU: {response_pdu.hex()}",
-                en=f"Received async RTU response PDU: {response_pdu.hex()}"
+                cn=f"发送异步RTU请求: {request_adu.hex()}",
+                en=f"Sending async RTU request: {request_adu.hex()}"
             )
 
-            return response_pdu
+            try:
+                # 2. 清空接收缓冲区并发送请求 | Clear receive buffer and send request
+                if self._reader.at_eof():
+                    raise ConnectionError(
+                        cn="异步串口连接已断开",
+                        en="Async serial connection lost"
+                    )
 
-        except asyncio.TimeoutError:
-            raise TimeoutError(
-                cn=f"异步RTU通信超时: {self.timeout}s",
-                en=f"Async RTU communication timeout: {self.timeout}s"
-            )
-        except Exception as e:
-            if isinstance(e, (ConnectionError, TimeoutError, CRCError, InvalidResponseError)):
-                raise
-            raise ConnectionError(
-                cn=f"异步RTU通信错误: {e}",
-                en=f"Async RTU communication error: {e}"
-            )
+                # 清空可能存在的旧数据 | Clear any existing old data
+                while True:
+                    try:
+                        await asyncio.wait_for(self._reader.read(1024), timeout=0.01)
+                    except asyncio.TimeoutError:
+                        break
+
+                self._writer.write(request_adu)
+                await self._writer.drain()
+
+                # 3. 接收响应 | Receive response
+                function_code = pdu[0] if pdu else 0
+                response_pdu = await self._receive_response(slave_id, function_code)
+
+                self._logger.debug(
+                    cn=f"接收到异步RTU响应PDU: {response_pdu.hex()}",
+                    en=f"Received async RTU response PDU: {response_pdu.hex()}"
+                )
+
+                return response_pdu
+
+            except asyncio.TimeoutError:
+                raise TimeoutError(
+                    cn=f"异步RTU通信超时: {self.timeout}s",
+                    en=f"Async RTU communication timeout: {self.timeout}s"
+                )
+            except Exception as e:
+                if isinstance(e, (ConnectionError, TimeoutError, CRCError, InvalidResponseError)):
+                    raise
+                raise ConnectionError(
+                    cn=f"异步RTU通信错误: {e}",
+                    en=f"Async RTU communication error: {e}"
+                )
 
     async def _receive_response(self, expected_slave_id: int, function_code: int) -> bytes:
         """
