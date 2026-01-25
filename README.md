@@ -229,7 +229,26 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-### 4. Server (Slave) Examples
+### 4. Client RS485 Mode 
+
+Suitable for RS485 communication mode, usually additional control lines (DE/RE) need to be configured.
+`SyncRtuTransport`/`AsyncRtuTransport`/`SyncAsciiTransport`/`AsyncAsciiTransport` can all be configured for RS585 mode. 
+
+```python
+# As an example of the synchronous RTU client (for other clients, simply modify "SyncRtuTransport" )
+from serial.rs485 import RS485Settings
+from modbuslink import SyncRtuTransport
+
+rs485_settings = RS485Settings(
+    rts_level_for_tx=True,
+    rts_level_for_rx=False,
+    delay_before_tx=0.001,
+    delay_before_rx=0.001,
+)
+transport = SyncRtuTransport('/dev/ttyUSB0', rs485_mode=rs485_settings)
+```
+
+### 5. Server Examples
 
 ModbusLink's server implementations are all based on Async IO, capable of efficiently handling multi-client concurrency (TCP) or fast responses (RTU/ASCII).
 

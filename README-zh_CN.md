@@ -238,7 +238,26 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
-### 4. 服务器 (Slave) 示例
+### 4. 客户端 RS485 模式
+
+适用于 RS485 通信模式，通常需要配置额外的控制线（DE/RE）。
+`SyncRtuTransport`/`AsyncRtuTransport`/`SyncAsciiTransport`/`AsyncAsciiTransport` 都可配置RS485模式
+
+```python
+# 同步RTU客户端为例（其他客户端只需要修改 "SyncRtuTransport" 即可）
+from serial.rs485 import RS485Settings
+from modbuslink import SyncRtuTransport
+
+rs485_settings = RS485Settings(
+    rts_level_for_tx=True,
+    rts_level_for_rx=False,
+    delay_before_tx=0.001,
+    delay_before_rx=0.001,
+)
+transport = SyncRtuTransport('/dev/ttyUSB0', rs485_mode=rs485_settings)
+```
+
+### 5. 服务器示例
 
 ModbusLink 的服务器实现均基于异步 IO，能够高效处理多客户端并发（TCP）或快速响应（RTU/ASCII）。
 

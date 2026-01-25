@@ -9,6 +9,7 @@ import asyncio
 import threading
 import serial_asyncio
 from typing import Optional
+from serial.rs485 import RS485Settings
 
 from .base_transport import SyncBaseTransport, AsyncBaseTransport
 from ..utils.lrc import LRCModbus
@@ -31,7 +32,8 @@ class SyncAsciiTransport(SyncBaseTransport):
             bytesize: int = 7,
             parity: str = "E",
             stopbits: float = 1,
-            timeout: float = 1.0
+            timeout: float = 1.0,
+            rs485_mode: Optional[RS485Settings] = None
     ) -> None:
         """
         初始化同步ASCII传输层
@@ -45,6 +47,7 @@ class SyncAsciiTransport(SyncBaseTransport):
             parity: 校验位（默认偶校验） | Parity (default even parity)
             stopbits: 停止位（默认1） | Stop bits (default 1)
             timeout: 超时时间（默认1.0秒） | Timeout time (default 1.0 second)
+            rs485_mode: RS485模式（默认None） | RS485 mode (default None)
 
         Raises:
             ValueError: 当参数无效时 | When parameters are invalid
@@ -67,12 +70,19 @@ class SyncAsciiTransport(SyncBaseTransport):
                 en="Timeout time must be a positive number"
             ))
 
+        if not isinstance(rs485_mode, (RS485Settings, type(None))):
+            raise ValueError(get_message(
+                cn="RS485模式必须是RS485Settings类型",
+                en="RS485 mode must be RS485Settings type"
+            ))
+
         self.port = port
         self.baudrate = baudrate
         self.bytesize = bytesize
         self.parity = parity
         self.stopbits = stopbits
         self.timeout = timeout
+        self.rs485_mode = rs485_mode
 
         self._serial: Optional[serial.Serial] = None
         self._lock = threading.Lock()
@@ -104,6 +114,14 @@ class SyncAsciiTransport(SyncBaseTransport):
                 cn=f"ASCII连接建立成功 ({self.port}@{self.baudrate})",
                 en=f"ASCII connection established successfully ({self.port}@{self.baudrate})"
             )
+
+            if self.rs485_mode:
+                self._serial.rs485_mode = self.rs485_mode
+
+                self._logger.info(
+                    cn=f"RTU RS485模式设置成功",
+                    en=f"RTU RS485 mode set successfully"
+                )
 
         except serial.SerialException as e:
             raise ConnectError(
@@ -339,7 +357,8 @@ class AsyncAsciiTransport(AsyncBaseTransport):
             bytesize: int = 7,
             parity: str = "E",
             stopbits: float = 1,
-            timeout: float = 1.0
+            timeout: float = 1.0,
+            rs485_mode: Optional[RS485Settings] = None
     ) -> None:
         """
         初始化同步ASCII传输层
@@ -353,6 +372,7 @@ class AsyncAsciiTransport(AsyncBaseTransport):
             parity: 校验位（默认偶校验） | Parity (default even parity)
             stopbits: 停止位（默认1） | Stop bits (default 1)
             timeout: 超时时间（默认1.0秒） | Timeout time (default 1.0 second)
+            rs485_mode: RS485模式（默认None） | RS485 mode (default None)
 
         Raises:
             ValueError: 当参数无效时 | When parameters are invalid
@@ -375,12 +395,19 @@ class AsyncAsciiTransport(AsyncBaseTransport):
                 en="Timeout time must be a positive number"
             ))
 
+        if not isinstance(rs485_mode, (RS485Settings, type(None))):
+            raise ValueError(get_message(
+                cn="RS485模式必须是RS485Settings类型",
+                en="RS485 mode must be RS485Settings type"
+            ))
+
         self.port = port
         self.baudrate = baudrate
         self.bytesize = bytesize
         self.parity = parity
         self.stopbits = stopbits
         self.timeout = timeout
+        self.rs485_mode = rs485_mode
 
         self._reader: Optional[asyncio.StreamReader] = None
         self._writer: Optional[asyncio.StreamWriter] = None
@@ -412,6 +439,22 @@ class AsyncAsciiTransport(AsyncBaseTransport):
                 cn=f"ASCII连接建立成功 ({self.port}@{self.baudrate})",
                 en=f"ASCII connection established successfully ({self.port}@{self.baudrate})"
             )
+
+            if self.rs485_mode:
+                transport = self._writer.transport
+
+                if hasattr(transport, 'serial'):
+                    transport.serial.rs485_mode = self.rs485_mode
+
+                    self._logger.info(
+                        cn=f"RTU RS485模式设置成功",
+                        en=f"RTU RS485 mode set successfully"
+                    )
+                else:
+                    self._logger.warning(
+                        cn=f"RTU RS485模式设置失败（无法访问底层串口对象）",
+                        en=f"RTU RS485 mode set failed (Unable to access the underlying serial port object)"
+                    )
 
         except serial.SerialException as e:
             raise ConnectError(
