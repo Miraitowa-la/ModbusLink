@@ -1,42 +1,39 @@
 """
 ModbusLink 异步客户端实现
-提供用户友好的异步Modbus客户端API。
 
-ModbusLink Asynchronous Client Implementation
-Provides user-friendly asynchronous Modbus client API.
+ModbusLink Async Client Implementation
 """
 
 import struct
 import asyncio
-from typing import List, Optional, Callable, Any
-from typing_extensions import Self
-from ..transport.async_base import AsyncBaseTransport
-from ..common.exceptions import InvalidResponseError
-from ..common.language import get_message
+from typing import List, Optional, Callable, Any, Literal
+
 from ..utils.coder import PayloadCoder
-from ..utils.logging import get_logger
+from ..common.logging import get_logger
+from ..common.language import get_message
+from ..common.exceptions import InvalidReplyError
+from ..transport.base_transport import AsyncBaseTransport
 
 
 class AsyncModbusClient:
     """
     异步Modbus客户端
-    提供简洁、用户友好的异步Modbus操作接口。通过依赖注入的方式接收异步传输层实例，支持异步TCP等传输方式。
-    所有方法都使用Python原生数据类型（int, list等），将底层的字节操作完全封装，并支持回调机制。
 
-    Asynchronous Modbus Client
-    Provides a concise, user-friendly asynchronous Modbus operation interface. Receives
-    async transport layer instances through dependency injection, supporting async
-    transport methods such as async TCP.
-    All methods use Python native data types (int, list, etc.),
-    completely encapsulating underlying byte operations, and support callback mechanisms.
+    通过依赖注入的方式接收传输层实例，支持RTU、ASCII和TCP等不同传输方式。
+
+    Async Modbus Client Implementation
+
+    Receive the transport layer instance through dependency injection, supporting different transmission methods such as RTU, ASCII and TCP.
     """
 
     def __init__(self, transport: AsyncBaseTransport):
         """
-        初始化异步Modbus客户端 | Initialize Async Modbus Client
+        初始化异步Modbus客户端
+
+        Initialize Async Modbus Client
 
         Args:
-            transport: 异步传输层实例（AsyncTcpTransport等） | Async transport layer instance (AsyncTcpTransport, etc.)
+            transport: 传输层实例（AsyncRtuTransport/AsyncAsciiTransport/AsyncTcpTransport） | Transport layer instance (AsyncRtuTransport/AsyncAsciiTransport/AsyncTcpTransport)
         """
         self.transport = transport
         self._logger = get_logger("client.async")
@@ -49,7 +46,9 @@ class AsyncModbusClient:
             callback: Optional[Callable[[List[bool]], None]] = None,
     ) -> List[bool]:
         """
-        异步读取线圈状态（功能码0x01） | Async Read Coil Status (Function Code 0x01)
+        读取线圈状态（功能码0x01）
+
+        Read Coil Status (Function Code 0x01)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -76,7 +75,7 @@ class AsyncModbusClient:
 
         # 解析响应：功能码 + 字节数 + 数据 | Parse response: function code + byte count + data
         if len(response_pdu) < 2:
-            raise InvalidResponseError(
+            raise InvalidReplyError(
                 cn="响应PDU长度不足",
                 en="Response PDU length insufficient"
             )
@@ -85,13 +84,13 @@ class AsyncModbusClient:
         byte_count = response_pdu[1]
 
         if function_code != 0x01:
-            raise InvalidResponseError(
-                cn=f"功能码不匹配: 期望 0x01, 得到 0x{function_code:02X} ",
+            raise InvalidReplyError(
+                cn=f"功能码不匹配: 期望 0x01, 实际 0x{function_code:02X} ",
                 en=f"Function code mismatch: expected 0x01, received 0x{function_code:02X}"
             )
 
         if len(response_pdu) != 2 + byte_count:
-            raise InvalidResponseError(
+            raise InvalidReplyError(
                 cn="响应数据长度不匹配",
                 en="Response data length mismatch"
             )
@@ -122,7 +121,9 @@ class AsyncModbusClient:
             callback: Optional[Callable[[List[bool]], None]] = None,
     ) -> List[bool]:
         """
-        异步读取离散输入状态（功能码0x02） | Async Read Discrete Input Status (Function Code 0x02)
+        读取离散输入状态（功能码0x02）
+
+        Read Discrete Input Status (Function Code 0x02)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -149,7 +150,7 @@ class AsyncModbusClient:
 
         # 解析响应（与读取线圈相同的格式） | Parse response (same format as reading coils)
         if len(response_pdu) < 2:
-            raise InvalidResponseError(
+            raise InvalidReplyError(
                 cn="响应PDU长度不足",
                 en="Response PDU length insufficient"
             )
@@ -158,13 +159,13 @@ class AsyncModbusClient:
         byte_count = response_pdu[1]
 
         if function_code != 0x02:
-            raise InvalidResponseError(
-                cn=f"功能码不匹配: 期望 0x02, 得到 0x{function_code:02X}",
+            raise InvalidReplyError(
+                cn=f"功能码不匹配: 期望 0x02, 实际 0x{function_code:02X}",
                 en=f"Function code mismatch: expected 0x02, received 0x{function_code:02X}"
             )
 
         if len(response_pdu) != 2 + byte_count:
-            raise InvalidResponseError(
+            raise InvalidReplyError(
                 cn="响应数据长度不匹配",
                 en="Response data length mismatch"
             )
@@ -195,7 +196,9 @@ class AsyncModbusClient:
             callback: Optional[Callable[[List[int]], None]] = None,
     ) -> List[int]:
         """
-        异步读取保持寄存器（功能码0x03） | Async Read Holding Registers (Function Code 0x03)
+        读取保持寄存器（功能码0x03）
+
+        Read Holding Registers (Function Code 0x03)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -222,7 +225,7 @@ class AsyncModbusClient:
 
         # 解析响应：功能码 + 字节数 + 数据 | Parse response: function code + byte count + data
         if len(response_pdu) < 2:
-            raise InvalidResponseError(
+            raise InvalidReplyError(
                 cn="响应PDU长度不足",
                 en="Response PDU length insufficient"
             )
@@ -231,20 +234,20 @@ class AsyncModbusClient:
         byte_count = response_pdu[1]
 
         if function_code != 0x03:
-            raise InvalidResponseError(
-                cn=f"功能码不匹配: 期望 0x03, 得到 0x{function_code:02X}",
+            raise InvalidReplyError(
+                cn=f"功能码不匹配: 期望 0x03, 实际 0x{function_code:02X}",
                 en=f"Function code mismatch: expected 0x03, received 0x{function_code:02X}"
             )
 
         expected_byte_count = quantity * 2
         if byte_count != expected_byte_count:
-            raise InvalidResponseError(
-                cn=f"字节数不匹配: 期望 {expected_byte_count}, 得到 {byte_count}",
+            raise InvalidReplyError(
+                cn=f"字节数不匹配: 期望 {expected_byte_count}, 实际 {byte_count}",
                 en=f"Byte count mismatch: expected {expected_byte_count}, received {byte_count}"
             )
 
         if len(response_pdu) != 2 + byte_count:
-            raise InvalidResponseError(
+            raise InvalidReplyError(
                 cn="响应数据长度不匹配",
                 en="Response data length mismatch"
             )
@@ -271,7 +274,9 @@ class AsyncModbusClient:
             callback: Optional[Callable[[List[int]], None]] = None,
     ) -> List[int]:
         """
-        异步读取输入寄存器（功能码0x04） | Async Read Input Registers (Function Code 0x04)
+        读取输入寄存器（功能码0x04）
+
+        Read Input Registers (Function Code 0x04)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -280,7 +285,9 @@ class AsyncModbusClient:
             callback: 可选的回调函数，在收到响应后调用 | Optional callback function, called after receiving response
 
         Returns:
-            寄存器值列表，每个值为16位无符号整数（0-65535） | List of register values, each value is a 16-bit unsigned integer (0-65535)
+            寄存器值列表，每个值为16位无符号整数（0-65535）
+
+            List of register values, each value is a 16-bit unsigned integer (0-65535)
         """
         if not (1 <= quantity <= 125):
             raise ValueError(get_message(
@@ -296,7 +303,7 @@ class AsyncModbusClient:
 
         # 解析响应（与读取保持寄存器相同的格式） | Parse response (same format as reading holding registers)
         if len(response_pdu) < 2:
-            raise InvalidResponseError(
+            raise InvalidReplyError(
                 cn="响应PDU长度不足",
                 en="Response PDU length insufficient"
             )
@@ -305,20 +312,20 @@ class AsyncModbusClient:
         byte_count = response_pdu[1]
 
         if function_code != 0x04:
-            raise InvalidResponseError(
-                cn=f"功能码不匹配: 期望 0x04, 得到 0x{function_code:02X}",
+            raise InvalidReplyError(
+                cn=f"功能码不匹配: 期望 0x04, 实际 0x{function_code:02X}",
                 en=f"Function code mismatch: expected 0x04, received 0x{function_code:02X}"
             )
 
         expected_byte_count = quantity * 2
         if byte_count != expected_byte_count:
-            raise InvalidResponseError(
-                cn=f"字节数不匹配: 期望 {expected_byte_count}, 得到 {byte_count}",
+            raise InvalidReplyError(
+                cn=f"字节数不匹配: 期望 {expected_byte_count}, 实际 {byte_count}",
                 en=f"Byte count mismatch: expected {expected_byte_count}, received {byte_count}"
             )
 
         if len(response_pdu) != 2 + byte_count:
-            raise InvalidResponseError(
+            raise InvalidReplyError(
                 cn="响应数据长度不匹配",
                 en="Response data length mismatch"
             )
@@ -345,7 +352,9 @@ class AsyncModbusClient:
             callback: Optional[Callable[[], None]] = None,
     ) -> None:
         """
-        异步写单个线圈（功能码0x05） | Async Write Single Coil (Function Code 0x05)
+        写单个线圈（功能码0x05）
+
+        Write Single Coil (Function Code 0x05)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -362,7 +371,7 @@ class AsyncModbusClient:
 
         # 验证响应（应该与请求相同） | Verify response (should be same as request)
         if response_pdu != pdu:
-            raise InvalidResponseError(
+            raise InvalidReplyError(
                 cn="写单个线圈响应不匹配",
                 en="Write single coil response mismatch"
             )
@@ -379,7 +388,9 @@ class AsyncModbusClient:
             callback: Optional[Callable[[], None]] = None,
     ) -> None:
         """
-        异步写单个寄存器（功能码0x06） | Async Write Single Register (Function Code 0x06)
+        写单个寄存器（功能码0x06）
+
+        Write Single Register (Function Code 0x06)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -401,7 +412,7 @@ class AsyncModbusClient:
 
         # 验证响应（应该与请求相同） | Verify response (should be same as request)
         if response_pdu != pdu:
-            raise InvalidResponseError(
+            raise InvalidReplyError(
                 cn="写单个寄存器响应不匹配",
                 en="Write single register response mismatch"
             )
@@ -418,7 +429,9 @@ class AsyncModbusClient:
             callback: Optional[Callable[[], None]] = None,
     ) -> None:
         """
-        异步写多个线圈（功能码0x0F） | Async Write Multiple Coils (Function Code 0x0F)
+        写多个线圈（功能码0x0F）
+
+        Write Multiple Coils (Function Code 0x0F)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -456,7 +469,7 @@ class AsyncModbusClient:
         # 验证响应：功能码 + 起始地址 + 数量 | Verify response: function code + starting address + quantity
         expected_response = struct.pack(">BHH", 0x0F, start_address, quantity)
         if response_pdu != expected_response:
-            raise InvalidResponseError(
+            raise InvalidReplyError(
                 cn="写多个线圈响应不匹配",
                 en="Write multiple coils response mismatch"
             )
@@ -473,7 +486,9 @@ class AsyncModbusClient:
             callback: Optional[Callable[[], None]] = None,
     ) -> None:
         """
-        异步写多个寄存器（功能码0x10） | Async Write Multiple Registers (Function Code 0x10)
+        写多个寄存器（功能码0x10）
+
+        Write Multiple Registers (Function Code 0x10)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -511,7 +526,7 @@ class AsyncModbusClient:
         # 验证响应：功能码 + 起始地址 + 数量 | Verify response: function code + starting address + quantity
         expected_response = struct.pack(">BHH", 0x10, start_address, quantity)
         if response_pdu != expected_response:
-            raise InvalidResponseError(
+            raise InvalidReplyError(
                 cn="写多个寄存器响应不匹配",
                 en="Write multiple registers response mismatch"
             )
@@ -525,7 +540,11 @@ class AsyncModbusClient:
             callback: Callable,
             result: Any
     ) -> None:
-        """安全地调用回调函数 | Safely call callback function"""
+        """
+        安全地调用回调函数
+
+        Safely call callback function
+        """
         try:
             if result is None:
                 callback()
@@ -543,12 +562,14 @@ class AsyncModbusClient:
             self,
             slave_id: int,
             start_address: int,
-            byte_order: str = "big",
-            word_order: str = "high",
+            byte_order: Literal["big", "little"] = PayloadCoder.BIG_ENDIAN,
+            word_order: Literal["high", "low"] = PayloadCoder.HIGH_WORD_FIRST,
             callback: Optional[Callable[[float], None]] = None,
     ) -> float:
         """
-        异步读取32位浮点数（占用2个连续寄存器） | Async Read 32-bit float (occupies 2 consecutive registers)
+        读取32位浮点数（占用2个连续寄存器）
+
+        Read 32-bit float (occupies 2 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -558,7 +579,9 @@ class AsyncModbusClient:
             callback: 可选的回调函数，在收到响应后调用 | Optional callback function, called after receiving response
 
         Returns:
-            32位浮点数值 | 32-bit float value
+            32位浮点数值
+
+            32-bit float value
         """
         registers = await self.read_holding_registers(slave_id, start_address, 2)
         result = PayloadCoder.decode_float32(registers, byte_order, word_order)
@@ -574,12 +597,14 @@ class AsyncModbusClient:
             slave_id: int,
             start_address: int,
             value: float,
-            byte_order: str = "big",
-            word_order: str = "high",
+            byte_order: Literal["big", "little"] = PayloadCoder.BIG_ENDIAN,
+            word_order: Literal["high", "low"] = PayloadCoder.HIGH_WORD_FIRST,
             callback: Optional[Callable[[], None]] = None,
     ) -> None:
         """
-        异步写入32位浮点数（占用2个连续寄存器） | Async Write 32-bit float (occupies 2 consecutive registers)
+        写入32位浮点数（占用2个连续寄存器）
+
+        Write 32-bit float (occupies 2 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -598,12 +623,14 @@ class AsyncModbusClient:
             self,
             slave_id: int,
             start_address: int,
-            byte_order: str = "big",
-            word_order: str = "high",
+            byte_order: Literal["big", "little"] = PayloadCoder.BIG_ENDIAN,
+            word_order: Literal["high", "low"] = PayloadCoder.HIGH_WORD_FIRST,
             callback: Optional[Callable[[int], None]] = None,
     ) -> int:
         """
-        异步读取32位有符号整数（占用2个连续寄存器） | Async Read 32-bit signed integer (occupies 2 consecutive registers)
+        读取32位有符号整数（占用2个连续寄存器）
+
+        Read 32-bit signed integer (occupies 2 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -613,7 +640,9 @@ class AsyncModbusClient:
             callback: 可选的回调函数，在收到响应后调用 | Optional callback function, called after receiving response
 
         Returns:
-            32位有符号整数值 | 32-bit signed integer value
+            32位有符号整数值
+
+            32-bit signed integer value
         """
         registers = await self.read_holding_registers(slave_id, start_address, 2)
         result = PayloadCoder.decode_int32(registers, byte_order, word_order)
@@ -629,12 +658,14 @@ class AsyncModbusClient:
             slave_id: int,
             start_address: int,
             value: int,
-            byte_order: str = "big",
-            word_order: str = "high",
+            byte_order: Literal["big", "little"] = PayloadCoder.BIG_ENDIAN,
+            word_order: Literal["high", "low"] = PayloadCoder.HIGH_WORD_FIRST,
             callback: Optional[Callable[[], None]] = None,
     ) -> None:
         """
-        异步写入32位有符号整数（占用2个连续寄存器） | Async Write 32-bit signed integer (occupies 2 consecutive registers)
+        写入32位有符号整数（占用2个连续寄存器）
+
+        Write 32-bit signed integer (occupies 2 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -653,12 +684,14 @@ class AsyncModbusClient:
             self,
             slave_id: int,
             start_address: int,
-            byte_order: str = "big",
-            word_order: str = "high",
+            byte_order: Literal["big", "little"] = PayloadCoder.BIG_ENDIAN,
+            word_order: Literal["high", "low"] = PayloadCoder.HIGH_WORD_FIRST,
             callback: Optional[Callable[[int], None]] = None,
     ) -> int:
         """
-        异步读取32位无符号整数（占用2个连续寄存器） | Async Read 32-bit unsigned integer (occupies 2 consecutive registers)
+        读取32位无符号整数（占用2个连续寄存器）
+
+        Read 32-bit unsigned integer (occupies 2 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -684,12 +717,14 @@ class AsyncModbusClient:
             slave_id: int,
             start_address: int,
             value: int,
-            byte_order: str = "big",
-            word_order: str = "high",
+            byte_order: Literal["big", "little"] = PayloadCoder.BIG_ENDIAN,
+            word_order: Literal["high", "low"] = PayloadCoder.HIGH_WORD_FIRST,
             callback: Optional[Callable[[], None]] = None,
     ) -> None:
         """
-        异步写入32位无符号整数（占用2个连续寄存器） | Async Write 32-bit unsigned integer (occupies 2 consecutive registers)
+        写入32位无符号整数（占用2个连续寄存器）
+
+        Write 32-bit unsigned integer (occupies 2 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -708,12 +743,14 @@ class AsyncModbusClient:
             self,
             slave_id: int,
             start_address: int,
-            byte_order: str = "big",
-            word_order: str = "high",
+            byte_order: Literal["big", "little"] = PayloadCoder.BIG_ENDIAN,
+            word_order: Literal["high", "low"] = PayloadCoder.HIGH_WORD_FIRST,
             callback: Optional[Callable[[int], None]] = None,
     ) -> int:
         """
-        异步读取64位有符号整数（占用4个连续寄存器） | Async Read 64-bit signed integer (occupies 4 consecutive registers)
+        读取64位有符号整数（占用4个连续寄存器）
+
+        Read 64-bit signed integer (occupies 4 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -723,7 +760,9 @@ class AsyncModbusClient:
             callback: 可选的回调函数，在收到响应后调用 | Optional callback function, called after receiving response
 
         Returns:
-            64位有符号整数值 | 64-bit signed integer value
+            64位有符号整数值
+
+            64-bit signed integer value
         """
         registers = await self.read_holding_registers(slave_id, start_address, 4)
         result = PayloadCoder.decode_int64(registers, byte_order, word_order)
@@ -739,12 +778,14 @@ class AsyncModbusClient:
             slave_id: int,
             start_address: int,
             value: int,
-            byte_order: str = "big",
-            word_order: str = "high",
+            byte_order: Literal["big", "little"] = PayloadCoder.BIG_ENDIAN,
+            word_order: Literal["high", "low"] = PayloadCoder.HIGH_WORD_FIRST,
             callback: Optional[Callable[[], None]] = None,
     ) -> None:
         """
-        异步写入64位有符号整数（占用4个连续寄存器） | Async Write 64-bit signed integer (occupies 4 consecutive registers)
+        写入64位有符号整数（占用4个连续寄存器）
+
+        Write 64-bit signed integer (occupies 4 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -763,12 +804,14 @@ class AsyncModbusClient:
             self,
             slave_id: int,
             start_address: int,
-            byte_order: str = "big",
-            word_order: str = "high",
+            byte_order: Literal["big", "little"] = PayloadCoder.BIG_ENDIAN,
+            word_order: Literal["high", "low"] = PayloadCoder.HIGH_WORD_FIRST,
             callback: Optional[Callable[[int], None]] = None,
     ) -> int:
         """
-        异步读取64位无符号整数（占用4个连续寄存器） | Async Read 64-bit unsigned integer (occupies 4 consecutive registers)
+        读取64位无符号整数（占用4个连续寄存器）
+
+        Read 64-bit unsigned integer (occupies 4 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -778,7 +821,9 @@ class AsyncModbusClient:
             callback: 可选的回调函数，在收到响应后调用 | Optional callback function, called after receiving response
 
         Returns:
-            64位无符号整数值 | 64-bit unsigned integer value
+            64位无符号整数值
+
+            64-bit unsigned integer value
         """
         registers = await self.read_holding_registers(slave_id, start_address, 4)
         result = PayloadCoder.decode_uint64(registers, byte_order, word_order)
@@ -794,12 +839,14 @@ class AsyncModbusClient:
             slave_id: int,
             start_address: int,
             value: int,
-            byte_order: str = "big",
-            word_order: str = "high",
+            byte_order: Literal["big", "little"] = PayloadCoder.BIG_ENDIAN,
+            word_order: Literal["high", "low"] = PayloadCoder.HIGH_WORD_FIRST,
             callback: Optional[Callable[[], None]] = None,
     ) -> None:
         """
-        异步写入64位无符号整数（占用4个连续寄存器） | Async Write 64-bit unsigned integer (occupies 4 consecutive registers)
+        写入64位无符号整数（占用4个连续寄存器）
+
+        Write 64-bit unsigned integer (occupies 4 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -823,7 +870,9 @@ class AsyncModbusClient:
             callback: Optional[Callable[[str], None]] = None,
     ) -> str:
         """
-        异步读取字符串（从连续寄存器中） | Async Read string (from consecutive registers)
+        读取字符串（从连续寄存器中）
+
+        Read string (from consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -833,7 +882,9 @@ class AsyncModbusClient:
             callback: 可选的回调函数，在收到响应后调用 | Optional callback function, called after receiving response
 
         Returns:
-            解码后的字符串 | Decoded string
+            解码后的字符串
+
+            Decoded string
         """
         register_count = (length + 1) // 2  # 每个寄存器2字节 | 2 bytes per register
         registers = await self.read_holding_registers(slave_id, start_address, register_count)
@@ -854,7 +905,9 @@ class AsyncModbusClient:
             callback: Optional[Callable[[], None]] = None,
     ) -> None:
         """
-        异步写入字符串（到连续寄存器中） | Async Write string (to consecutive registers)
+        写入字符串（到连续寄存器中）
+
+        Write string (to consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -871,8 +924,12 @@ class AsyncModbusClient:
         )
         await self.write_multiple_registers(slave_id, start_address, registers, callback)
 
-    async def __aenter__(self) -> Self:
-        """异步上下文管理器入口 | Async context manager entry"""
+    async def __aenter__(self) -> "AsyncModbusClient":
+        """
+        上下文管理器入口
+
+        context manager entry
+        """
         await self.transport.open()
         return self
 
@@ -882,5 +939,17 @@ class AsyncModbusClient:
             exc_val: Optional[BaseException],
             exc_tb: Optional[Any],
     ) -> None:
-        """异步上下文管理器出口 | Async context manager exit"""
+        """
+        异步上下文管理器出口
+
+        Async context manager exit
+        """
         await self.transport.close()
+
+    def __repr__(self) -> str:
+        """
+        字符串表示
+
+        String representation
+        """
+        return f"AsyncModbusClient(transport={self.transport})"

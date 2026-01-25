@@ -1,41 +1,39 @@
 """
 ModbusLink 同步客户端实现
-提供用户友好的同步Modbus客户端API。
 
-ModbusLink Synchronous Client Implementation
-Provides user-friendly synchronous Modbus client API.
+ModbusLink Sync Client Implementation
 """
 
 import struct
-from typing import List, Optional, Any
-from ..transport.base import BaseTransport
-from ..common.exceptions import InvalidResponseError
-from ..common.exceptions import get_message
+from typing import List, Optional, Any, Literal
+
 from ..utils.coder import PayloadCoder
-from ..utils.logging import get_logger
+from ..common.logging import get_logger
+from ..common.language import get_message
+from ..common.exceptions import InvalidReplyError
+from ..transport.base_transport import SyncBaseTransport
 
 
-class ModbusClient:
+class SyncModbusClient:
     """
     同步Modbus客户端
-    提供简洁、用户友好的Modbus操作接口。通过依赖注入的方式接收传输层实例，支持RTU和TCP等不同传输方式。
-    所有方法都使用Python原生数据类型（int, list等），将底层的字节操作完全封装。
 
-    Synchronous Modbus Client
-    Provides a concise, user-friendly Modbus operation interface. Receives
-    transport layer instances through dependency injection, supporting different
-    transport methods such as RTU and TCP.
-    All methods use Python native data types (int, list, etc.),
-    completely encapsulating underlying byte operations.
+    通过依赖注入的方式接收传输层实例，支持RTU、ASCII和TCP等不同传输方式。
+
+    Sync Modbus Client Implementation
+
+    Receive the transport layer instance through dependency injection, supporting different transmission methods such as RTU, ASCII and TCP.
     """
 
-    def __init__(self, transport: BaseTransport):
+    def __init__(self, transport: SyncBaseTransport):
         """
-        初始化Modbus客户端 | Initialize Modbus Client
+        初始化同步Modbus客户端
 
+        Initialize Sync Modbus Client
         Args:
-            transport: 传输层实例（RtuTransport或TcpTransport） | Transport layer instance (RtuTransport or TcpTransport)
+            transport: 传输层实例（SyncRtuTransport/SyncAsciiTransport/SyncTcpTransport） | Transport layer instance (SyncRtuTransport/SyncAsciiTransport/SyncTcpTransport)
         """
+
         self.transport = transport
         self._logger = get_logger("client.sync")
 
@@ -46,7 +44,9 @@ class ModbusClient:
             quantity: int
     ) -> List[bool]:
         """
-        读取线圈状态（功能码0x01） | Read Coil Status (Function Code 0x01)
+        读取线圈状态（功能码0x01）
+
+        Read Coil Status (Function Code 0x01)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -54,7 +54,9 @@ class ModbusClient:
             quantity: 读取数量（1-2000） | Quantity to read (1-2000)
 
         Returns:
-            线圈状态列表，True表示ON，False表示OFF | List of coil status, True for ON, False for OFF
+            线圈状态列表，True表示ON，False表示OFF
+
+            List of coil status, True for ON, False for OFF
         """
         if not (1 <= quantity <= 2000):
             raise ValueError(get_message(
@@ -70,7 +72,7 @@ class ModbusClient:
 
         # 解析响应：功能码 + 字节数 + 数据 | Parse response: function code + byte count + data
         if len(response_pdu) < 2:
-            raise InvalidResponseError(
+            raise InvalidReplyError(
                 cn="响应PDU长度不足",
                 en="Response PDU length insufficient"
             )
@@ -79,13 +81,13 @@ class ModbusClient:
         byte_count = response_pdu[1]
 
         if function_code != 0x01:
-            raise InvalidResponseError(
-                cn=f"功能码不匹配: 期望 0x01, 得到 0x{function_code:02X}",
+            raise InvalidReplyError(
+                cn=f"功能码不匹配: 期望 0x01, 实际 0x{function_code:02X}",
                 en=f"Function code mismatch: expected 0x01, received 0x{function_code:02X}"
             )
 
         if len(response_pdu) != 2 + byte_count:
-            raise InvalidResponseError(
+            raise InvalidReplyError(
                 cn="响应数据长度不匹配",
                 en="Response data length mismatch"
             )
@@ -109,7 +111,9 @@ class ModbusClient:
             quantity: int
     ) -> List[bool]:
         """
-        读取离散输入状态（功能码0x02） | Read Discrete Input Status (Function Code 0x02)
+        读取离散输入状态（功能码0x02）
+
+        Read Discrete Input Status (Function Code 0x02)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -117,7 +121,9 @@ class ModbusClient:
             quantity: 读取数量（1-2000） | Quantity to read (1-2000)
 
         Returns:
-            离散输入状态列表，True表示ON，False表示OFF | List of discrete input status, True for ON, False for OFF
+            离散输入状态列表，True表示ON，False表示OFF
+
+            List of discrete input status, True for ON, False for OFF
         """
         if not (1 <= quantity <= 2000):
             raise ValueError(get_message(
@@ -133,7 +139,7 @@ class ModbusClient:
 
         # 解析响应（与读取线圈相同的格式） | Parse response (same format as reading coils)
         if len(response_pdu) < 2:
-            raise InvalidResponseError(
+            raise InvalidReplyError(
                 cn="响应PDU长度不足",
                 en="Response PDU length insufficient"
             )
@@ -142,13 +148,13 @@ class ModbusClient:
         byte_count = response_pdu[1]
 
         if function_code != 0x02:
-            raise InvalidResponseError(
-                cn=f"功能码不匹配: 期望 0x02, 得到 0x{function_code:02X}",
+            raise InvalidReplyError(
+                cn=f"功能码不匹配: 期望 0x02, 实际 0x{function_code:02X}",
                 en=f"Function code mismatch: expected 0x02, received 0x{function_code:02X}"
             )
 
         if len(response_pdu) != 2 + byte_count:
-            raise InvalidResponseError(
+            raise InvalidReplyError(
                 cn="响应数据长度不匹配",
                 en="Response data length mismatch"
             )
@@ -172,7 +178,9 @@ class ModbusClient:
             quantity: int
     ) -> List[int]:
         """
-        读取保持寄存器（功能码0x03） | Read Holding Registers (Function Code 0x03)
+        读取保持寄存器（功能码0x03）
+
+        Read Holding Registers (Function Code 0x03)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -180,7 +188,9 @@ class ModbusClient:
             quantity: 读取数量（1-125） | Quantity to read (1-125)
 
         Returns:
-            寄存器值列表，每个值为16位无符号整数（0-65535） | List of register values, each value is a 16-bit unsigned integer (0-65535)
+            寄存器值列表，每个值为16位无符号整数（0-65535）
+
+            List of register values, each value is a 16-bit unsigned integer (0-65535)
         """
         if not (1 <= quantity <= 125):
             raise ValueError(get_message(
@@ -196,7 +206,7 @@ class ModbusClient:
 
         # 解析响应：功能码 + 字节数 + 数据 | Parse response: function code + byte count + data
         if len(response_pdu) < 2:
-            raise InvalidResponseError(
+            raise InvalidReplyError(
                 cn="响应PDU长度不足",
                 en="Response PDU length insufficient"
             )
@@ -205,20 +215,20 @@ class ModbusClient:
         byte_count = response_pdu[1]
 
         if function_code != 0x03:
-            raise InvalidResponseError(
-                cn=f"功能码不匹配: 期望 0x03, 得到 0x{function_code:02X}",
+            raise InvalidReplyError(
+                cn=f"功能码不匹配: 期望 0x03, 实际 0x{function_code:02X}",
                 en=f"Function code mismatch: expected 0x03, received 0x{function_code:02X}"
             )
 
         expected_byte_count = quantity * 2
         if byte_count != expected_byte_count:
-            raise InvalidResponseError(
-                cn=f"字节数不匹配: 期望 {expected_byte_count}, 得到 {byte_count}",
+            raise InvalidReplyError(
+                cn=f"字节数不匹配: 期望 {expected_byte_count}, 实际 {byte_count}",
                 en=f"Byte count mismatch: expected {expected_byte_count}, received {byte_count}"
             )
 
         if len(response_pdu) != 2 + byte_count:
-            raise InvalidResponseError(
+            raise InvalidReplyError(
                 cn="响应数据长度不匹配",
                 en="Response data length mismatch"
             )
@@ -240,7 +250,9 @@ class ModbusClient:
             quantity: int
     ) -> List[int]:
         """
-        读取输入寄存器（功能码0x04） | Read Input Registers (Function Code 0x04)
+        读取输入寄存器（功能码0x04）
+
+        Read Input Registers (Function Code 0x04)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -248,7 +260,9 @@ class ModbusClient:
             quantity: 读取数量（1-125） | Quantity to read (1-125)
 
         Returns:
-            寄存器值列表，每个值为16位无符号整数（0-65535） | List of register values, each value is a 16-bit unsigned integer (0-65535)
+            寄存器值列表，每个值为16位无符号整数（0-65535）
+
+            List of register values, each value is a 16-bit unsigned integer (0-65535)
         """
         if not (1 <= quantity <= 125):
             raise ValueError(get_message(
@@ -264,7 +278,7 @@ class ModbusClient:
 
         # 解析响应（与读取保持寄存器相同的格式） | Parse response (same format as reading holding registers)
         if len(response_pdu) < 2:
-            raise InvalidResponseError(
+            raise InvalidReplyError(
                 cn="响应PDU长度不足",
                 en="Response PDU length insufficient"
             )
@@ -273,20 +287,20 @@ class ModbusClient:
         byte_count = response_pdu[1]
 
         if function_code != 0x04:
-            raise InvalidResponseError(
-                cn=f"功能码不匹配: 期望 0x04, 得到 0x{function_code:02X}",
+            raise InvalidReplyError(
+                cn=f"功能码不匹配: 期望 0x04, 实际 0x{function_code:02X}",
                 en=f"Function code mismatch: expected 0x04, received 0x{function_code:02X}"
             )
 
         expected_byte_count = quantity * 2
         if byte_count != expected_byte_count:
-            raise InvalidResponseError(
-                cn=f"字节数不匹配: 期望 {expected_byte_count}, 得到 {byte_count}",
+            raise InvalidReplyError(
+                cn=f"字节数不匹配: 期望 {expected_byte_count}, 实际 {byte_count}",
                 en=f"Byte count mismatch: expected {expected_byte_count}, received {byte_count}"
             )
 
         if len(response_pdu) != 2 + byte_count:
-            raise InvalidResponseError(
+            raise InvalidReplyError(
                 cn="响应数据长度不匹配",
                 en="Response data length mismatch"
             )
@@ -308,7 +322,9 @@ class ModbusClient:
             value: bool
     ) -> None:
         """
-        写单个线圈（功能码0x05） | Write Single Coil (Function Code 0x05)
+        写单个线圈（功能码0x05）
+
+        Write Single Coil (Function Code 0x05)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -324,7 +340,7 @@ class ModbusClient:
 
         # 验证响应（应该与请求相同） | Verify response (should be same as request)
         if response_pdu != pdu:
-            raise InvalidResponseError(
+            raise InvalidReplyError(
                 cn="写单个线圈响应不匹配",
                 en="Write single coil response mismatch"
             )
@@ -336,7 +352,9 @@ class ModbusClient:
             value: int
     ) -> None:
         """
-        写单个寄存器（功能码0x06） | Write Single Register (Function Code 0x06)
+        写单个寄存器（功能码0x06）
+
+        Write Single Register (Function Code 0x06)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -357,7 +375,7 @@ class ModbusClient:
 
         # 验证响应（应该与请求相同） | Verify response (should be same as request)
         if response_pdu != pdu:
-            raise InvalidResponseError(
+            raise InvalidReplyError(
                 cn="写单个寄存器响应不匹配",
                 en="Write single register response mismatch"
             )
@@ -369,7 +387,9 @@ class ModbusClient:
             values: List[bool]
     ) -> None:
         """
-        写多个线圈（功能码0x0F） | Write Multiple Coils (Function Code 0x0F)
+        写多个线圈（功能码0x0F）
+
+        Write Multiple Coils (Function Code 0x0F)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -406,7 +426,7 @@ class ModbusClient:
         # 验证响应：功能码 + 起始地址 + 数量 | Verify response: function code + starting address + quantity
         expected_response = struct.pack(">BHH", 0x0F, start_address, quantity)
         if response_pdu != expected_response:
-            raise InvalidResponseError(
+            raise InvalidReplyError(
                 cn="写多个线圈响应不匹配",
                 en="Write multiple coils response mismatch"
             )
@@ -418,7 +438,9 @@ class ModbusClient:
             values: List[int]
     ) -> None:
         """
-        写多个寄存器（功能码0x10） | Write Multiple Registers (Function Code 0x10)
+        写多个寄存器（功能码0x10）
+
+        Write Multiple Registers (Function Code 0x10)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -455,24 +477,10 @@ class ModbusClient:
         # 验证响应：功能码 + 起始地址 + 数量 | Verify response: function code + starting address + quantity
         expected_response = struct.pack(">BHH", 0x10, start_address, quantity)
         if response_pdu != expected_response:
-            raise InvalidResponseError(
+            raise InvalidReplyError(
                 cn="写多个寄存器响应不匹配",
                 en="Write multiple registers response mismatch"
             )
-
-    def __enter__(self) -> "ModbusClient":
-        """上下文管理器入口 | Context manager entry"""
-        self.transport.open()
-        return self
-
-    def __exit__(
-            self,
-            exc_type: Optional[type],
-            exc_val: Optional[BaseException],
-            exc_tb: Optional[Any],
-    ) -> None:
-        """上下文管理器出口 | Context manager exit"""
-        self.transport.close()
 
     # 高级数据类型API | Advanced Data Type APIs
 
@@ -480,11 +488,13 @@ class ModbusClient:
             self,
             slave_id: int,
             start_address: int,
-            byte_order: str = "big",
-            word_order: str = "high",
+            byte_order: Literal["big", "little"] = PayloadCoder.BIG_ENDIAN,
+            word_order: Literal["high", "low"] = PayloadCoder.HIGH_WORD_FIRST
     ) -> float:
         """
-        读取32位浮点数（占用2个连续寄存器） | Read 32-bit float (occupies 2 consecutive registers)
+        读取32位浮点数（占用2个连续寄存器）
+
+        Read 32-bit float (occupies 2 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -493,7 +503,9 @@ class ModbusClient:
             word_order: 字序，'high'或'low' | Word order, 'high' or 'low'
 
         Returns:
-            32位浮点数值 | 32-bit float value
+            32位浮点数值
+
+            32-bit float value
         """
         registers = self.read_holding_registers(slave_id, start_address, 2)
         return PayloadCoder.decode_float32(registers, byte_order, word_order)
@@ -503,11 +515,13 @@ class ModbusClient:
             slave_id: int,
             start_address: int,
             value: float,
-            byte_order: str = "big",
-            word_order: str = "high",
+            byte_order: Literal["big", "little"] = PayloadCoder.BIG_ENDIAN,
+            word_order: Literal["high", "low"] = PayloadCoder.HIGH_WORD_FIRST
     ) -> None:
         """
-        写入32位浮点数（占用2个连续寄存器） | Write 32-bit float (occupies 2 consecutive registers)
+        写入32位浮点数（占用2个连续寄存器）
+
+        Write 32-bit float (occupies 2 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -523,11 +537,13 @@ class ModbusClient:
             self,
             slave_id: int,
             start_address: int,
-            byte_order: str = "big",
-            word_order: str = "high",
+            byte_order: Literal["big", "little"] = PayloadCoder.BIG_ENDIAN,
+            word_order: Literal["high", "low"] = PayloadCoder.HIGH_WORD_FIRST
     ) -> int:
         """
-        读取32位有符号整数（占用2个连续寄存器） | Read 32-bit signed integer (occupies 2 consecutive registers)
+        读取32位有符号整数（占用2个连续寄存器）
+
+        Read 32-bit signed integer (occupies 2 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -536,7 +552,9 @@ class ModbusClient:
             word_order: 字序，'high'或'low' | Word order, 'high' or 'low'
 
         Returns:
-            32位有符号整数值 | 32-bit signed integer value
+            32位有符号整数值
+
+            32-bit signed integer value
         """
         registers = self.read_holding_registers(slave_id, start_address, 2)
         return PayloadCoder.decode_int32(registers, byte_order, word_order)
@@ -546,11 +564,13 @@ class ModbusClient:
             slave_id: int,
             start_address: int,
             value: int,
-            byte_order: str = "big",
-            word_order: str = "high",
+            byte_order: Literal["big", "little"] = PayloadCoder.BIG_ENDIAN,
+            word_order: Literal["high", "low"] = PayloadCoder.HIGH_WORD_FIRST
     ) -> None:
         """
-        写入32位有符号整数（占用2个连续寄存器） | Write 32-bit signed integer (occupies 2 consecutive registers)
+        写入32位有符号整数（占用2个连续寄存器）
+
+        Write 32-bit signed integer (occupies 2 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -566,11 +586,13 @@ class ModbusClient:
             self,
             slave_id: int,
             start_address: int,
-            byte_order: str = "big",
-            word_order: str = "high",
+            byte_order: Literal["big", "little"] = PayloadCoder.BIG_ENDIAN,
+            word_order: Literal["high", "low"] = PayloadCoder.HIGH_WORD_FIRST
     ) -> int:
         """
-        读取32位无符号整数（占用2个连续寄存器） | Read 32-bit unsigned integer (occupies 2 consecutive registers)
+        读取32位无符号整数（占用2个连续寄存器）
+
+        Read 32-bit unsigned integer (occupies 2 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -589,11 +611,13 @@ class ModbusClient:
             slave_id: int,
             start_address: int,
             value: int,
-            byte_order: str = "big",
-            word_order: str = "high",
+            byte_order: Literal["big", "little"] = PayloadCoder.BIG_ENDIAN,
+            word_order: Literal["high", "low"] = PayloadCoder.HIGH_WORD_FIRST
     ) -> None:
         """
-        写入32位无符号整数（占用2个连续寄存器） | Write 32-bit unsigned integer (occupies 2 consecutive registers)
+        写入32位无符号整数（占用2个连续寄存器）
+
+        Write 32-bit unsigned integer (occupies 2 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -609,11 +633,13 @@ class ModbusClient:
             self,
             slave_id: int,
             start_address: int,
-            byte_order: str = "big",
-            word_order: str = "high",
+            byte_order: Literal["big", "little"] = PayloadCoder.BIG_ENDIAN,
+            word_order: Literal["high", "low"] = PayloadCoder.HIGH_WORD_FIRST
     ) -> int:
         """
-        读取64位有符号整数（占用4个连续寄存器） | Read 64-bit signed integer (occupies 4 consecutive registers)
+        读取64位有符号整数（占用4个连续寄存器）
+
+        Read 64-bit signed integer (occupies 4 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -622,7 +648,9 @@ class ModbusClient:
             word_order: 字序，'high'或'low' | Word order, 'high' or 'low'
 
         Returns:
-            64位有符号整数值 | 64-bit signed integer value
+            64位有符号整数值
+
+            64-bit signed integer value
         """
         registers = self.read_holding_registers(slave_id, start_address, 4)
         return PayloadCoder.decode_int64(registers, byte_order, word_order)
@@ -632,11 +660,13 @@ class ModbusClient:
             slave_id: int,
             start_address: int,
             value: int,
-            byte_order: str = "big",
-            word_order: str = "high",
+            byte_order: Literal["big", "little"] = PayloadCoder.BIG_ENDIAN,
+            word_order: Literal["high", "low"] = PayloadCoder.HIGH_WORD_FIRST
     ) -> None:
         """
-        写入64位有符号整数（占用4个连续寄存器） | Write 64-bit signed integer (occupies 4 consecutive registers)
+        写入64位有符号整数（占用4个连续寄存器）
+
+        Write 64-bit signed integer (occupies 4 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -652,11 +682,13 @@ class ModbusClient:
             self,
             slave_id: int,
             start_address: int,
-            byte_order: str = "big",
-            word_order: str = "high",
+            byte_order: Literal["big", "little"] = PayloadCoder.BIG_ENDIAN,
+            word_order: Literal["high", "low"] = PayloadCoder.HIGH_WORD_FIRST
     ) -> int:
         """
-        读取64位无符号整数（占用4个连续寄存器） | Read 64-bit unsigned integer (occupies 4 consecutive registers)
+        读取64位无符号整数（占用4个连续寄存器）
+
+        Read 64-bit unsigned integer (occupies 4 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -665,7 +697,9 @@ class ModbusClient:
             word_order: 字序，'high'或'low' | Word order, 'high' or 'low'
 
         Returns:
-            64位无符号整数值 | 64-bit unsigned integer value
+            64位无符号整数值
+
+            64-bit unsigned integer value
         """
         registers = self.read_holding_registers(slave_id, start_address, 4)
         return PayloadCoder.decode_uint64(registers, byte_order, word_order)
@@ -675,11 +709,13 @@ class ModbusClient:
             slave_id: int,
             start_address: int,
             value: int,
-            byte_order: str = "big",
-            word_order: str = "high",
+            byte_order: Literal["big", "little"] = PayloadCoder.BIG_ENDIAN,
+            word_order: Literal["high", "low"] = PayloadCoder.HIGH_WORD_FIRST
     ) -> None:
         """
-        写入64位无符号整数（占用4个连续寄存器） | Write 64-bit unsigned integer (occupies 4 consecutive registers)
+        写入64位无符号整数（占用4个连续寄存器）
+
+        Write 64-bit unsigned integer (occupies 4 consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -699,7 +735,9 @@ class ModbusClient:
             encoding: str = "utf-8"
     ) -> str:
         """
-        读取字符串（从连续寄存器中） | Read string (from consecutive registers)
+        读取字符串（从连续寄存器中）
+
+        Read string (from consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -708,7 +746,9 @@ class ModbusClient:
             encoding: 字符编码，默认'utf-8' | Character encoding, default 'utf-8'
 
         Returns:
-            解码后的字符串 | Decoded string
+            解码后的字符串
+
+            Decoded string
         """
         register_count = (length + 1) // 2  # 每个寄存器2字节 | 2 bytes per register
         registers = self.read_holding_registers(slave_id, start_address, register_count)
@@ -722,7 +762,9 @@ class ModbusClient:
             encoding: str = "utf-8"
     ) -> None:
         """
-        写入字符串（到连续寄存器中） | Write string (to consecutive registers)
+        写入字符串（到连续寄存器中）
+
+        Write string (to consecutive registers)
 
         Args:
             slave_id: 从站地址 | Slave address
@@ -738,6 +780,32 @@ class ModbusClient:
         )
         self.write_multiple_registers(slave_id, start_address, registers)
 
+    def __enter__(self) -> "SyncModbusClient":
+        """
+        上下文管理器入口
+
+        Context manager entry
+        """
+        self.transport.open()
+        return self
+
+    def __exit__(
+            self,
+            exc_type: Optional[type],
+            exc_val: Optional[BaseException],
+            exc_tb: Optional[Any],
+    ) -> None:
+        """
+        上下文管理器出口
+
+        Context manager exit
+        """
+        self.transport.close()
+
     def __repr__(self) -> str:
-        """字符串表示 | String representation"""
-        return f"ModbusClient(transport={self.transport})"
+        """
+        字符串表示
+
+        String representation
+        """
+        return f"SyncModbusClient(transport={self.transport})"

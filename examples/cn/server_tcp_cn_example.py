@@ -1,6 +1,5 @@
 """
-ModbusLink 异步TCP服务器示例
-演示如何创建和使用异步Modbus TCP服务器
+ModbusLink TCP服务器示例
 """
 
 import random
@@ -11,10 +10,8 @@ from src.modbuslink import (
     ModbusDataStore,
     ModbusLogger,
     Language,
-    set_language,
+    set_language
 )
-
-set_language(Language.CN)
 
 
 async def setup_data_store(data_store: ModbusDataStore) -> None:
@@ -28,19 +25,19 @@ async def setup_data_store(data_store: ModbusDataStore) -> None:
     data_store.write_coils(0, [True, False, True, False, True, False, True, False])
 
     # 设置一些初始的离散输入值
-    data_store.write_discrete_inputs(0, [False, True, False, True, False, True, False, True])
+    data_store.write_discrete_inputs(1, [False, True, False, True, False, True, False, True])
 
     # 设置一些初始的保持寄存器值
-    data_store.write_holding_registers(0, [100, 200, 300, 400, 500])
+    data_store.write_holding_registers(2, [100, 200, 300, 400, 500])
 
     # 设置一些初始的输入寄存器值
-    data_store.write_input_registers(0, [250, 251, 252, 253, 254])
+    data_store.write_input_registers(3, [250, 251, 252, 253, 254])
 
     print("数据存储初始化完成")
     print(f"线圈 0-7: {data_store.read_coils(0, 8)}")
-    print(f"离散输入 1-8: {data_store.read_discrete_inputs(0, 8)}")
-    print(f"保持寄存器 2-6: {data_store.read_holding_registers(0, 5)}")
-    print(f"输入寄存器 3-7: {data_store.read_input_registers(0, 5)}\n")
+    print(f"离散输入 1-8: {data_store.read_discrete_inputs(1, 8)}")
+    print(f"保持寄存器 2-6: {data_store.read_holding_registers(2, 5)}")
+    print(f"输入寄存器 3-7: {data_store.read_input_registers(3, 5)}\n")
 
 
 async def simulate_sensor_data(data_store: ModbusDataStore) -> None:
@@ -53,22 +50,17 @@ async def simulate_sensor_data(data_store: ModbusDataStore) -> None:
     counter = 0
     while True:
         try:
-            # 模拟输入寄存器数据变化
-            input_value = [random.randint(200, 300) for _ in range(5)]
-            data_store.write_input_registers(0, input_value)
-
             # 模拟离散输入状态变化
             discrete_states = [random.choice([True, False]) for _ in range(8)]
-            data_store.write_discrete_inputs(0, discrete_states)
+            data_store.write_discrete_inputs(1, discrete_states)
 
-            # 更新计数器
+            # 模拟输保持存器数据变化
             counter += 1
-            data_store.write_holding_registers(0, [counter])
+            data_store.write_holding_registers(2, [counter])
 
-            if counter % 10 == 0:
-                print(f"传感器数据更新 #{counter}")
-                print(f"  离散输入: {discrete_states}")
-                print(f"  输入寄存器: {input_value}\n")
+            # 模拟输入寄存器数据变化
+            input_value = [random.randint(200, 300) for _ in range(5)]
+            data_store.write_input_registers(3, input_value)
 
             await asyncio.sleep(1.0)  # 每秒更新一次
 
@@ -88,16 +80,16 @@ async def monitor_server(server: AsyncTcpModbusServer) -> None:
         try:
             if await server.is_running():
                 client_count = server.get_connected_clients_count()
-                print(f"服务器状态: 运行中, 连接的客户端数: {client_count}")
+                print(f"服务器状态: 运行中, 连接的客户端数: {client_count}\n")
             else:
-                print("服务器状态: 已停止")
+                print("服务器状态: 已停止\n")
                 break
 
-            await asyncio.sleep(30.0)  # 每30秒检查一次 | Check every 30 seconds
+            await asyncio.sleep(30.0)  # 每30秒检查一次
 
         except Exception as e:
             print(f"服务器监控错误: {e}")
-            await asyncio.sleep(5.0)
+            await asyncio.sleep(10.0)
 
 
 async def main() -> None:
@@ -108,7 +100,9 @@ async def main() -> None:
         enable_debug=True
     )
 
-    print("=== ModbusLink 异步TCP服务器示例 ===\n")
+    set_language(Language.CN)
+
+    print("=== ModbusLink TCP服务器示例 ===\n")
 
     # 创建数据存储
     data_store = ModbusDataStore(
@@ -118,31 +112,50 @@ async def main() -> None:
         input_registers_size=10
     )
 
+    data_store.add_callback(
+        "coils",
+        lambda address, values: print(f"'data_store'回调: 线圈 {address} 已更新: {values}")
+    )
+    data_store.add_callback(
+        "discrete_inputs",
+        lambda address, values: print(f"'data_store'回调: 离散输入 {address} 已更新: {values}")
+    )
+    data_store.add_callback(
+        "holding_registers",
+        lambda address, values: print(f"'data_store'回调: 保持寄存器 {address} 已更新: {values}")
+    )
+    data_store.add_callback(
+        "input_registers",
+        lambda address, values: print(f"'data_store'回调: 输入寄存器 {address} 已更新: {values}")
+    )
+
     # 设置初始数据
     await setup_data_store(data_store)
 
+    # TCP配置
+    tcp_config = {
+        "host": "localhost",
+        "port": 502,
+        "slave_id": 1
+    }
+
     # 创建TCP服务器
     server = AsyncTcpModbusServer(
-        host="localhost",
-        port=5020,
+        host=tcp_config["host"],
+        port=tcp_config["port"],
         data_store=data_store,
-        slave_id=1,
-        max_connections=5
+        slave_id=tcp_config["slave_id"]
     )
 
-    print(f"启动TCP服务器: localhost:5020")
-    print("从站地址: 1")
-    print("最大连接数: 5")
+    print(f"启动TCP服务器:")
+    print(f"  主机: {tcp_config['host']}")
+    print(f"  端口: {tcp_config['port']}")
+    print(f"  从站地址: {tcp_config['slave_id']}\n")
 
     try:
         # 启动服务器
         await server.start()
-        print("TCP服务器启动成功!\n ")
-        print("可以使用以下方式连接服务器:")
-        print("  - ModbusLink客户端")
-        print("  - 其他Modbus TCP客户端工具")
-        print("  - 地址: localhost:5020\n")
-        print("按 Ctrl+C 停止服务器\n")
+        print("TCP服务器启动成功! 按 Ctrl+C 停止服务器\n")
 
         # 启动后台任务
         tasks = [
@@ -164,11 +177,11 @@ async def main() -> None:
         print("服务器已停止")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # 运行示例
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
         print("\n程序被用户中断")
     except Exception as e:
-        print(f"\n程序运行错误：{e}")
+        print(f"\n程序运行错误: {e}")

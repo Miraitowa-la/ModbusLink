@@ -1,271 +1,256 @@
 """
-ModbusLink 异步TCP客户端示例
-演示如何使用异步TCP传输层进行Modbus通信，
-包括基本的读写操作、高级数据类型操作、并发操作和回调机制。
-
 ModbusLink Async TCP Client Example
-Demonstrates how to use async TCP transport for Modbus communication,
-including basic read/write operations, advanced data type operations, concurrent operations and callback mechanisms.
 """
 
 import asyncio
 import logging
+import traceback
+
 from src.modbuslink import (
     AsyncModbusClient,
     AsyncTcpTransport,
-    ConnectionError,
-    TimeoutError,
+    ConnectError,
+    TimeOutError,
+    CrcError,
     ModbusException,
     ModbusLogger,
     Language,
     set_language,
 )
 
-set_language(Language.EN)
 
-# Set logging
-ModbusLogger.setup_logging(
-    level=logging.INFO,
-    enable_debug=True,
-)
-
-
-async def basic_operations_example():
-    """Basic operations example"""
-    print("\n=== Async TCP Basic Operations Example ===")
-
-    # Create async TCP transport
-    transport = AsyncTcpTransport(
-        host="127.0.0.1",  # Modbus TCP server address
-        port=502,  # Standard Modbus TCP port
-        timeout=5.0
-    )
+async def basic_operation_example(client: AsyncModbusClient):
+    """Basic Operation Example"""
+    print("\n=== Async TCP Basic Operation Example ===")
 
     # Create async client
-    async with AsyncModbusClient(transport) as client:
+    async with client:
         try:
-            # Read holding registers
-            print("\n1. Reading holding registers...")
-            registers = await client.read_holding_registers(
-                slave_id=1, start_address=0, quantity=4
+            print("\n1. Read Coil Status (0x01)")
+            coils = await client.read_coils(
+                slave_id=1, start_address=0, quantity=10
             )
-            print(f"   Register values: {registers}")
+            print(f"   Coil Status: {coils}")
 
-            # Write single register
-            print("\n2. Writing single register...")
-            await client.write_single_register(slave_id=1, address=0, value=1234)
-            print("   Write completed")
+            print("\n2. Read Discrete Input Status (0x02)")
+            discrete_inputs = await client.read_discrete_inputs(
+                slave_id=1, start_address=0, quantity=10
+            )
+            print(f"   Discrete Input Status: {discrete_inputs}")
 
-            # Verify write result
-            print("\n3. Verifying write result...")
-            value = await client.read_holding_registers(
+            print("\n3. Read Holding Registers (0x03)")
+            holding_registers = await client.read_holding_registers(
+                slave_id=1, start_address=0, quantity=10
+            )
+            print(f"   Holding Registers: {holding_registers}")
+
+            print("\n4. Read Input Registers (0x04)")
+            input_registers = await client.read_input_registers(
+                slave_id=1, start_address=0, quantity=10
+            )
+            print(f"   Input Registers: {input_registers}")
+
+            print("\n5. Write Single Coil (0x05)")
+            await client.write_single_coil(
+                slave_id=1, address=0, value=True
+            )
+            coils = await client.read_coils(
                 slave_id=1, start_address=0, quantity=1
             )
-            print(f"   Register 0 value: {value[0]}")
+            print(f"   Updated Coil Status: {coils[0]}")
 
-            # Write multiple registers
-            print("\n4. Writing multiple registers...")
-            values = [1111, 2222, 3333, 4444]
-            await client.write_multiple_registers(
-                slave_id=1, start_address=10, values=values
+            print("\n6. Write Single Register (0x06)")
+            await client.write_single_register(
+                slave_id=1, address=0, value=1234
             )
-            print(f"   Written values: {values}")
-
-            # Read multiple registers
-            print("\n5. Reading multiple registers...")
-            read_values = await client.read_holding_registers(
-                slave_id=1, start_address=10, quantity=4
+            registers = await client.read_holding_registers(
+                slave_id=1, start_address=0, quantity=1
             )
-            print(f"   Read values: {read_values}")
+            print(f"   Updated Register Value: {registers[0]}")
 
-            # Coil operations
-            print("\n6. Coil operations...")
-            await client.write_single_coil(slave_id=1, address=0, value=True)
-            coils = await client.read_coils(slave_id=1, start_address=0, quantity=8)
-            print(f"   Coil status: {coils}")
-
-            # Write multiple coils
-            coil_values = [True, False, True, False, True, False, True, False]
+            print("\n7. Write Multiple Coils (0x0F)")
             await client.write_multiple_coils(
-                slave_id=1, start_address=0, values=coil_values
+                slave_id=1, start_address=5, values=[False, True, False, True, False]
             )
-            coils = await client.read_coils(slave_id=1, start_address=0, quantity=8)
-            print(f"   Updated coil status: {coils}")
+            coils = await client.read_coils(
+                slave_id=1, start_address=5, quantity=5
+            )
+            print(f"   Updated Coil Status: {coils}")
 
-            # Input registers and discrete inputs
-            print("\n7. Reading input registers...")
-            input_regs = await client.read_input_registers(
-                slave_id=1, start_address=0, quantity=4
+            print("\n8. Write Multiple Registers (0x10)")
+            await client.write_multiple_registers(
+                slave_id=1, start_address=5, values=[1234, 5678, 51011, 31314, 4789]
             )
-            print(f"   Input register values: {input_regs}")
-
-            print("\n8. Reading discrete inputs...")
-            discrete_inputs = await client.read_discrete_inputs(
-                slave_id=1, start_address=0, quantity=8
+            registers = await client.read_holding_registers(
+                slave_id=1, start_address=5, quantity=5
             )
-            print(f"   Discrete input status: {discrete_inputs}")
+            print(f"   Updated Register Values: {registers}")
 
         except Exception as e:
             print(f"Operation failed: {e}")
 
 
-async def advanced_data_types_example():
-    """Advanced data types example"""
-    print("\n=== Async TCP Advanced Data Types Example ===")
+async def advanced_operation_example(client: AsyncModbusClient):
+    """Advanced Operation Example"""
+    print("\n=== Async TCP Advanced Operation Example ===")
 
-    transport = AsyncTcpTransport(
-        host="127.0.0.1",
-        port=502,
-        timeout=5.0
-    )
-
-    async with AsyncModbusClient(transport) as client:
-        try:
-            # Write 32-bit float
-            print("\n1. Writing 32-bit float...")
-            temperature = 25.6
-            await client.write_float32(slave_id=1, start_address=20, value=temperature)
-            print(f"   Written temperature: {temperature}°C")
-
-            # Read 32-bit float
-            print("\n2. Reading 32-bit float...")
-            read_temp = await client.read_float32(slave_id=1, start_address=20)
-
-            # Write 32-bit signed integer
-            print("\n5. Writing 32-bit signed integer...")
-            pressure = -12345
-            await client.write_int32(slave_id=1, start_address=28, value=pressure)
-            print(f"   Written pressure: {pressure}")
-
-            # Read 32-bit signed integer
-            print("\n6. Reading 32-bit signed integer...")
-            read_pressure = await client.read_int32(slave_id=1, start_address=28)
-            print(f"   Read pressure: {read_pressure}")
-
-            # Write string
-            print("\n9. Writing string...")
-            device_name = "AsyncTCP_Device_2024"
-            await client.write_string(slave_id=1, start_address=40, value=device_name)
-            print(f"   Written device name: '{device_name}'")
-
-            # Read string
-            print("\n10. Reading string...")
-            read_name = await client.read_string(
-                slave_id=1,
-                start_address=40,
-                length=len(device_name.encode("utf-8")),
+    try:
+        async with client:
+            print("\n1. Write 32-bit Float")
+            value = 25.6
+            await client.write_float32(
+                slave_id=1, start_address=0, value=value
             )
-            print(f"   Read device name: '{read_name}'")
+            print(f"   Written Value: {value}")
 
-            # Test different byte and word orders
-            print(
-                "\n11. Testing different byte and word orders..."
+            print("\n2. Read 32-bit Float")
+            read_value = await client.read_float32(
+                slave_id=1, start_address=0
             )
-            test_value = 3.14159
+            print(f"   Read Value: {read_value}")
 
-            # Big endian, high word first (default)
+            print("\n3. Write 32-bit Signed Integer")
+            value = -12345
+            await client.write_int32(
+                slave_id=1, start_address=0, value=value
+            )
+            print(f"   Written Value: {value}")
+
+            print("\n4. Read 32-bit Signed Integer")
+            read_value = await client.read_int32(
+                slave_id=1, start_address=0
+            )
+            print(f"   Read Value: {read_value}")
+
+            print("\n5. Write 32-bit Unsigned Integer")
+            value = 12345
+            await client.write_uint32(
+                slave_id=1, start_address=0, value=value
+            )
+            print(f"   Written Value: {value}")
+
+            print("\n6. Read 32-bit Unsigned Integer")
+            read_value = await client.read_uint32(
+                slave_id=1, start_address=0
+            )
+            print(f"   Read Value: {read_value}")
+
+            print("\n7. Write 64-bit Signed Integer")
+            value = -123
+            await client.write_int64(
+                slave_id=1, start_address=0, value=value
+            )
+            print(f"   Written Value: {value}")
+
+            print("\n8. Read 64-bit Signed Integer")
+            read_value = await client.read_int64(
+                slave_id=1, start_address=0
+            )
+            print(f"   Read Value: {read_value}")
+
+            print("\n9. Write 64-bit Unsigned Integer")
+            value = 123
+            await client.write_uint64(
+                slave_id=1, start_address=0, value=value
+            )
+            print(f"   Written Value: {value}")
+
+            print("\n10. Read 64-bit Unsigned Integer")
+            read_value = await client.read_uint64(
+                slave_id=1, start_address=0
+            )
+            print(f"   Read Value: {read_value}")
+
+            print("\n11. Write String")
+            value = "TCP Modbus"
+            await client.write_string(
+                slave_id=1, start_address=0, value=value
+            )
+            print(f"   Written Value: {value}")
+
+            print("\n12. Read String")
+            read_value = await client.read_string(
+                slave_id=1, start_address=0, length=10
+            )
+            print(f"   Read Value: {read_value}")
+
+            print("\n13. Test different byte and word orders (Big Endian, High Word)")
+            value = 3.14159
+
             await client.write_float32(
                 slave_id=1,
-                start_address=50,
-                value=test_value,
+                start_address=0,
+                value=value,
                 byte_order="big",
                 word_order="high",
             )
-            read_val1 = await client.read_float32(
-                slave_id=1, start_address=50, byte_order="big", word_order="high"
+            read_value = await client.read_float32(
+                slave_id=1,
+                start_address=0,
+                byte_order="big",
+                word_order="high"
             )
-            print(
-                f"   Big/High: Written {test_value}, Read {read_val1}"
-            )
+            print(f"   Big/High: Wrote {value}, Read {read_value}")
 
-            # Little endian, low word first
+            print("\n14. Test different byte and word orders (Little Endian, Low Word)")
+            value = 3.14159
+
             await client.write_float32(
                 slave_id=1,
-                start_address=52,
-                value=test_value,
+                start_address=0,
+                value=value,
                 byte_order="little",
                 word_order="low",
             )
-            read_val2 = await client.read_float32(
-                slave_id=1, start_address=52, byte_order="little", word_order="low"
+            read_value = await client.read_float32(
+                slave_id=1,
+                start_address=0,
+                byte_order="little",
+                word_order="low"
             )
-            print(
-                f"   Little/Low: Written {test_value}, Read {read_val2}"
-            )
+            print(f"   Little/Low: Wrote {value}, Read {read_value}")
 
-        except Exception as e:
-            print(f"Advanced operation failed: {e}")
+    except Exception as e:
+        print(f"Advanced operation failed: {e}")
 
 
-async def callback_example():
-    """Callback mechanism example"""
-    print("\n=== Async TCP Callback Mechanism Example ===")
+async def callback_operation_example(client: AsyncModbusClient):
+    """Callback Operation Example"""
+    print("\n=== Async TCP Callback Operation Example ===")
 
     # Define callback functions
-    def on_register_read(registers):
-        print(
-            f"   [Callback] Read register values: {registers}"
-        )
+    def on_register_read(value):
+        print(f"   [Callback] Read register value: {value}")
 
     def on_register_write():
-        print("   [Callback] Register write completed")
+        print("   [Callback] Register write complete")
 
-    def on_float_read(value):
-        print(f"   [Callback] Read float value: {value}")
-
-    def on_coil_operation(result):
-        print(f"   [Callback] Coil operation result: {result}")
-
-    transport = AsyncTcpTransport(
-        host="127.0.0.1",
-        port=502,
-        timeout=5.0
-    )
-
-    async with AsyncModbusClient(transport) as client:
+    async with client:
         try:
             print("\n1. Register read with callback...")
             registers = await client.read_holding_registers(
-                slave_id=1, start_address=0, quantity=4, callback=on_register_read
+                slave_id=1, start_address=0, quantity=1, callback=on_register_read
             )
             print(f"   Main thread received result: {registers}")
 
             print("\n2. Register write with callback...")
             await client.write_single_register(
-                slave_id=1, address=5, value=9999, callback=on_register_write
+                slave_id=1, address=0, value=9999, callback=on_register_write
             )
-            print("   Main thread write completed")
+            print("   Main thread write complete")
 
-            print("\n3. Float read with callback...")
-            float_val = await client.read_float32(
-                slave_id=1, start_address=20, callback=on_float_read
-            )
-            print(f"   Main thread received float: {float_val}")
-
-            print("\n4. Coil operation with callback...")
-            coils = await client.read_coils(
-                slave_id=1, start_address=0, quantity=8, callback=on_coil_operation
-            )
-            print(f"   Main thread received coil status: {coils}")
-
-            # Wait a bit for callbacks to complete
+            # Wait a bit for the callback to finish
             await asyncio.sleep(0.1)
 
         except Exception as e:
             print(f"Callback example failed: {e}")
 
 
-async def concurrent_operations_example():
-    """Concurrent operations example"""
-    print("\n=== Async TCP Concurrent Operations Example ===")
+async def concurrent_operation_example(client: AsyncModbusClient):
+    """Concurrent Operation Example"""
+    print("\n=== Async TCP Concurrent Operation Example ===")
 
-    transport = AsyncTcpTransport(
-        host="127.0.0.1",
-        port=502,
-        timeout=5.0
-    )
-
-    async with AsyncModbusClient(transport) as client:
+    async with client:
         try:
             print(
                 "\nExecuting multiple read operations concurrently..."
@@ -273,12 +258,9 @@ async def concurrent_operations_example():
 
             # Create multiple concurrent tasks
             tasks = [
-                client.read_holding_registers(slave_id=1, start_address=0, quantity=4),
-                client.read_holding_registers(slave_id=1, start_address=10, quantity=4),
-                client.read_holding_registers(slave_id=1, start_address=20, quantity=4),
-                client.read_coils(slave_id=1, start_address=0, quantity=16),
-                client.read_input_registers(slave_id=1, start_address=0, quantity=8),
-                client.read_discrete_inputs(slave_id=1, start_address=0, quantity=16),
+                client.read_holding_registers(slave_id=1, start_address=0, quantity=2),
+                client.read_holding_registers(slave_id=1, start_address=2, quantity=2),
+                client.read_holding_registers(slave_id=1, start_address=4, quantity=2),
             ]
 
             # Execute all tasks concurrently
@@ -287,178 +269,73 @@ async def concurrent_operations_example():
             end_time = asyncio.get_event_loop().time()
 
             print(
-                f"   Concurrent execution time: {end_time - start_time:.3f}秒"
+                f"   Concurrent execution time: {end_time - start_time:.3f} seconds"
             )
-            print(f"   Holding registers 0-3: {results[0]}")
-            print(f"   Holding registers 10-13: {results[1]}")
-            print(f"   Holding registers 20-23: {results[2]}")
-            print(f"   Coils 0-15: {results[3]}")
-            print(f"   Input registers 0-7: {results[4]}")
-            print(f"   Discrete inputs 0-15: {results[5]}")
-
-            print(
-                "\nExecuting mixed read/write operations concurrently..."
-            )
-
-            # Create mixed read/write tasks
-            mixed_tasks = [
-                client.write_single_register(slave_id=1, address=100, value=1001),
-                client.write_single_register(slave_id=1, address=101, value=1002),
-                client.write_single_register(slave_id=1, address=102, value=1003),
-                client.read_holding_registers(slave_id=1, start_address=100, quantity=3),
-            ]
-
-            # Execute mixed tasks concurrently
-            start_time = asyncio.get_event_loop().time()
-            mixed_results = await asyncio.gather(*mixed_tasks)
-            end_time = asyncio.get_event_loop().time()
-
-            print(
-                f"   Mixed operations time: {end_time - start_time:.3f}秒"
-            )
-            print(f"   Read result: {mixed_results[3]}")
+            print(f"   Holding Registers 0-1: {results[0]}")
+            print(f"   Holding Registers 2-3: {results[1]}")
+            print(f"   Holding Registers 4-5: {results[2]}")
 
         except Exception as e:
             print(f"Concurrent operation failed: {e}")
 
 
-async def industrial_monitoring_example():
-    """Async industrial monitoring example"""
-    print("\n=== Async TCP Industrial Monitoring Example ===")
-
-    transport = AsyncTcpTransport(
-        host="127.0.0.1",
-        port=502,
-        timeout=5.0
+async def main():
+    """Main Function"""
+    # Setup logging
+    ModbusLogger.setup_logging(
+        level=logging.INFO,
+        enable_debug=True
     )
 
-    async with AsyncModbusClient(transport) as client:
-        try:
-            print("Async continuously monitoring industrial equipment data...")
+    set_language(Language.EN)
 
-            # Create monitoring tasks
-            async def monitor_temperature():
-                """Monitor temperature sensor"""
-                for i in range(5):
-                    temp = await client.read_float32(slave_id=1, start_address=100)
-                    status = "Normal" if 0 <= temp <= 100 else "Abnormal"
-                    print(f"   [Temperature Monitor] #{i + 1}: {temp:.1f}°C ({status})")
-                    await asyncio.sleep(1)
+    # TCP Configuration
+    tcp_config = {
+        "host": "127.0.0.1",
+        "port": 502,
+        "timeout": 1,
+    }
 
-            async def monitor_pressure():
-                """Monitor pressure sensor"""
-                for i in range(5):
-                    pressure_raw = await client.read_holding_registers(slave_id=1, start_address=104, quantity=1)
-                    pressure = pressure_raw[0] / 10.0
-                    status = "Normal" if 0 <= pressure <= 10 else "Abnormal"
-                    print(f"   [Pressure Monitor] #{i + 1}: {pressure:.1f}bar ({status})")
-                    await asyncio.sleep(1.2)
+    # Create TCP transport layer
+    transport = AsyncTcpTransport(
+        host=tcp_config["host"],
+        port=tcp_config["port"],
+        timeout=tcp_config["timeout"],
+    )
 
-            async def monitor_motor_status():
-                """Monitor motor status"""
-                for i in range(5):
-                    status_bits = await client.read_coils(slave_id=1, start_address=0, quantity=8)
-                    motor_running = status_bits[0]
-                    motor_fault = status_bits[1]
-                    emergency_stop = status_bits[2]
+    # Create TCP client
+    client = AsyncModbusClient(transport)
 
-                    status_text = []
-                    if motor_running:
-                        status_text.append("Running")
-                    if motor_fault:
-                        status_text.append("Fault")
-                    if emergency_stop:
-                        status_text.append("Emergency Stop")
-
-                    status_str = ", ".join(status_text) if status_text else "停止"
-                    print(f"   [Motor Monitor] #{i + 1}: {status_str}")
-                    await asyncio.sleep(1.5)
-
-            async def monitor_production_counter():
-                """Monitor production counter"""
-                for i in range(5):
-                    counter = await client.read_uint32(slave_id=1, start_address=200)
-                    print(f"   [Production Counter] #{i + 1}: {counter}件")
-                    await asyncio.sleep(2)
-
-            async def control_system_heartbeat():
-                """Control system heartbeat"""
-                for i in range(5):
-                    # Write heartbeat signal
-                    await client.write_single_register(slave_id=1, address=999, value=i + 1)
-                    print(f"   [System Heartbeat] #{i + 1}: Heartbeat signal has been sent")
-                    await asyncio.sleep(1.8)
-
-            # Execute all monitoring tasks concurrently
-            await asyncio.gather(
-                monitor_temperature(),
-                monitor_pressure(),
-                monitor_motor_status(),
-                monitor_production_counter(),
-                control_system_heartbeat()
-            )
-
-        except Exception as e:
-            print(f"Async industrial monitoring failed: {e}")
-
-
-async def main():
-    """Main function"""
-    print("ModbusLink Async TCP Client Example")
-    print("=" * 60)
-
-    print("Note: This example requires a Modbus TCP server")
-    print("\nAsync TCP Advantages:")
-    print("  - Non-blocking network I/O")
-    print("  - Supports high concurrent connections")
-    print("  - Excellent network performance")
-    print("  - Suitable for distributed systems")
-    print("\nRecommended Modbus TCP servers:")
-    print("  - ModbusPal (free simulator)")
-    print("  - QModMaster (open source tool)")
-    print("  - Industrial PLC devices")
-    print("Please modify connection parameters to match your server:")
-    print("  - host: 127.0.0.1")
-    print("  - port: 502")
-    print("  - slave_id: 1")
+    print(f"Async TCP Client Configuration:")
+    print(f"  Host: {tcp_config['host']}")
+    print(f"  Port: {tcp_config['port']}")
+    print(f"  Timeout: {tcp_config['timeout']}")
+    print(f"  Note: Requires a Modbus TCP device server\n")
 
     try:
         # Execute examples sequentially
-        await basic_operations_example()
-        await advanced_data_types_example()
-        await callback_example()
-        await concurrent_operations_example()
-        await industrial_monitoring_example()
+        await basic_operation_example(client)
+        await advanced_operation_example(client)
+        await callback_operation_example(client)
+        await concurrent_operation_example(client)
 
-        print("\n=== All Examples Completed ===")
+        print("\n=== All examples execution completed ===")
+
 
     except KeyboardInterrupt:
-        print("\nUser interrupted")
-    except ConnectionError as e:
-        print(f"\nNO!!! Connection error: {e}")
-        print("Please check:")
-        print("  - Modbus TCP server is running")
-        print("  - Server address and port are correct")
-        print("  - Network connection is working")
-        print("  - Firewall is not blocking the connection")
-    except TimeoutError as e:
-        print(f"\nNO!!! Timeout error: {e}")
-        print("Please check:")
-        print("  - Network latency is too high")
-        print("  - Server is responding normally")
-        print("  - Timeout setting is reasonable")
+        print("\nStop signal received")
+    except ConnectError as e:
+        print(f"\n'ConnectError' Connection error: {e}")
+    except TimeOutError as e:
+        print(f"\n'TimeOutError' Timeout error: {e}")
+    except CrcError as e:
+        print(f"\n'CrcError' Checksum error: {e}")
     except ModbusException as e:
-        print(f"\nNO!!! Modbus protocol exception: {e}")
-        print("Please check:")
-        print("  - Slave address is correct")
-        print("  - Register address is valid")
-        print("  - Server supports the requested function code")
+        print(f"\n'ModbusException' Modbus protocol exception: {e}")
     except Exception as e:
-        print(f"\nNO!!! Unknown error: {e}")
-        import traceback
+        print(f"\nOther error: {e}")
         traceback.print_exc()
 
 
 if __name__ == "__main__":
-    # Run async main function
     asyncio.run(main())

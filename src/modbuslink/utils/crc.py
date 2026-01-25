@@ -1,62 +1,141 @@
 """
 ModbusLink CRC16校验工具模块
-提供Modbus RTU协议所需的CRC16校验功能。
 
-ModbusLink CRC16 Checksum Utility Module
-Provides CRC16 checksum functionality required by Modbus RTU protocol.
+ModbusLink CRC16 Checksum Utils Module
 """
+
+from typing import Union
 
 
 class CRC16Modbus:
     """
-    Modbus CRC16校验工具类
-    实现Modbus RTU协议中使用的CRC16校验算法。
-    使用多项式0xA001 (反向0x8005)。
+    Modbus CRC16校验工具
 
-    Modbus CRC16 Checksum Utility Class
-    Implements the CRC16 checksum algorithm used in Modbus RTU protocol.
-    Uses polynomial 0xA001 (reverse of 0x8005).
+    Modbus CRC16 Check Utils Module
     """
 
+    # 预计算的CRC高位和低位表，用于快速查表计算 | Pre-computed CRC table for fast lookup
+    _CRC_TABLE = (0x0000, 0xC0C1, 0xC181, 0x0140, 0xC301, 0x03C0, 0x0280, 0xC241,
+                  0xC601, 0x06C0, 0x0780, 0xC741, 0x0500, 0xC5C1, 0xC481, 0x0440,
+                  0xCC01, 0x0CC0, 0x0D80, 0xCD41, 0x0F00, 0xCFC1, 0xCE81, 0x0E40,
+                  0x0A00, 0xCAC1, 0xCB81, 0x0B40, 0xC901, 0x09C0, 0x0880, 0xC841,
+                  0xD801, 0x18C0, 0x1980, 0xD941, 0x1B00, 0xDBC1, 0xDA81, 0x1A40,
+                  0x1E00, 0xDEC1, 0xDF81, 0x1F40, 0xDD01, 0x1DC0, 0x1C80, 0xDC41,
+                  0x1400, 0xD4C1, 0xD581, 0x1540, 0xD701, 0x17C0, 0x1680, 0xD641,
+                  0xD201, 0x12C0, 0x1380, 0xD341, 0x1100, 0xD1C1, 0xD081, 0x1040,
+                  0xF001, 0x30C0, 0x3180, 0xF141, 0x3300, 0xF3C1, 0xF281, 0x3240,
+                  0x3600, 0xF6C1, 0xF781, 0x3740, 0xF501, 0x35C0, 0x3480, 0xF441,
+                  0x3C00, 0xFCC1, 0xFD81, 0x3D40, 0xFF01, 0x3FC0, 0x3E80, 0xFE41,
+                  0xFA01, 0x3AC0, 0x3B80, 0xFB41, 0x3900, 0xF9C1, 0xF881, 0x3840,
+                  0x2800, 0xE8C1, 0xE981, 0x2940, 0xEB01, 0x2BC0, 0x2A80, 0xEA41,
+                  0xEE01, 0x2EC0, 0x2F80, 0xEF41, 0x2D00, 0xEDC1, 0xEC81, 0x2C40,
+                  0xE401, 0x24C0, 0x2580, 0xE541, 0x2700, 0xE7C1, 0xE681, 0x2640,
+                  0x2200, 0xE2C1, 0xE381, 0x2340, 0xE101, 0x21C0, 0x2080, 0xE041,
+                  0xA001, 0x60C0, 0x6180, 0xA141, 0x6300, 0xA3C1, 0xA281, 0x6240,
+                  0x6600, 0xA6C1, 0xA781, 0x6740, 0xA501, 0x65C0, 0x6480, 0xA441,
+                  0x6C00, 0xACC1, 0xAD81, 0x6D40, 0xAF01, 0x6FC0, 0x6E80, 0xAE41,
+                  0xAA01, 0x6AC0, 0x6B80, 0xAB41, 0x6900, 0xA9C1, 0xA881, 0x6840,
+                  0x7800, 0xB8C1, 0xB981, 0x7940, 0xBB01, 0x7BC0, 0x7A80, 0xBA41,
+                  0xBE01, 0x7EC0, 0x7F80, 0xBF41, 0x7D00, 0xBDC1, 0xBC81, 0x7C40,
+                  0xB401, 0x74C0, 0x7580, 0xB541, 0x7700, 0xB7C1, 0xB681, 0x7640,
+                  0x7200, 0xB2C1, 0xB381, 0x7340, 0xB101, 0x71C0, 0x7080, 0xB041,
+                  0x5000, 0x90C1, 0x9181, 0x5140, 0x9301, 0x53C0, 0x5280, 0x9241,
+                  0x9601, 0x56C0, 0x5780, 0x9741, 0x5500, 0x95C1, 0x9481, 0x5440,
+                  0x9C01, 0x5CC0, 0x5D80, 0x9D41, 0x5F00, 0x9FC1, 0x9E81, 0x5E40,
+                  0x5A00, 0x9AC1, 0x9B81, 0x5B40, 0x9901, 0x59C0, 0x5880, 0x9841,
+                  0x8801, 0x48C0, 0x4980, 0x8941, 0x4B00, 0x8BC1, 0x8A81, 0x4A40,
+                  0x4E00, 0x8EC1, 0x8F81, 0x4F40, 0x8D01, 0x4DC0, 0x4C80, 0x8C41,
+                  0x4400, 0x84C1, 0x8581, 0x4540, 0x8701, 0x47C0, 0x4680, 0x8641,
+                  0x8201, 0x42C0, 0x4380, 0x8341, 0x4100, 0x81C1, 0x8081, 0x4040)
+
     @staticmethod
-    def calculate(data: bytes) -> bytes:
+    def _calculate_by_table(data: Union[bytes, bytearray]) -> bytes:
         """
-        计算CRC16校验码 | Calculate CRC16 Checksum
+        [内部]查表法计算
+
+        [Internal] Table lookup calculation
 
         Args:
             data: 需要计算校验码的数据帧（地址+PDU） | Data frame for checksum calculation (address+PDU)
 
         Returns:
-            2字节的CRC校验码 (little-endian bytes) | 2-byte CRC checksum (little-endian bytes)
+            2字节的CRC校验码 (little-endian bytes)
+
+            2-byte CRC checksum (little-endian bytes)
+
         """
-        crc = 0xFFFF  # 初始值为0xFFFF | Initial value is 0xFFFF
-
+        crc = 0xFFFF
+        table = CRC16Modbus._CRC_TABLE
         for byte in data:
-            crc ^= byte  # 异或运算 | XOR operation
-            for _ in range(8):  # 处理8位 | Process 8 bits
-                if crc & 0x0001:  # 检查最低位 | Check lowest bit
-                    crc >>= 1  # 右移一位 | Right shift by one bit
-                    crc ^= 0xA001  # 异或多项式 | XOR with polynomial
-                else:
-                    crc >>= 1  # 右移一位 | Right shift by one bit
-
-        # 返回little-endian格式的2字节CRC | Return 2-byte CRC in little-endian format
+            index = (crc ^ byte) & 0xFF
+            crc = (crc >> 8) ^ table[index]
         return crc.to_bytes(2, byteorder="little")
 
     @staticmethod
-    def validate(frame_with_crc: bytes) -> bool:
+    def _calculate_direct(data: Union[bytes, bytearray]) -> bytes:
         """
-        验证包含CRC的完整数据帧 | Validate Complete Data Frame with CRC
+        [内部]直接计算法
+
+        [Internal]Direct calculation
+
+        Args:
+            data: 需要计算校验码的数据帧（地址+PDU） | Data frame for checksum calculation (address+PDU)
+
+        Returns:
+            2字节的CRC校验码 (little-endian bytes)
+
+            2-byte CRC checksum (little-endian bytes)
+
+        """
+        crc = 0xFFFF
+        for byte in data:
+            crc ^= byte
+            for _ in range(8):
+                if crc & 0x0001:
+                    crc >>= 1
+                    crc ^= 0xA001
+                else:
+                    crc >>= 1
+        return crc.to_bytes(2, byteorder="little")
+
+    @staticmethod
+    def calculate(data: Union[bytes, bytearray], use_table: bool = True) -> bytes:
+        """
+        计算CRC16校验码
+
+        Calculate CRC16 Checksum
+
+        Args:
+            data: 需要计算校验码的数据帧（地址+PDU） | Data frame for checksum calculation (address+PDU)
+            use_table: 是否使用查表法 | Whether to use the table lookup method
+
+        Returns:
+            2字节的CRC校验码 (little-endian bytes)
+
+            2-byte CRC checksum (little-endian bytes)
+        """
+        if use_table:
+            return CRC16Modbus._calculate_by_table(data)
+        else:
+            return CRC16Modbus._calculate_direct(data)
+
+    @staticmethod
+    def validate(frame_with_crc: Union[bytes, bytearray], use_table: bool = True) -> bool:
+        """
+        验证包含CRC的完整数据帧
+
+        Validate Complete Data Frame with CRC
 
         Args:
             frame_with_crc: 包含CRC校验码的完整数据帧 | Complete data frame containing CRC checksum
+            use_table: 是否使用查表法 | Whether to use the table lookup method
 
         Returns:
-            如果CRC校验正确返回True，否则返回False | True if CRC verification is correct, False otherwise
+            如果CRC校验正确返回True，否则返回False
+
+            True if CRC verification is correct, False otherwise
         """
-        if (
-                len(frame_with_crc) < 3
-        ):  # 至少需要1字节数据 + 2字节CRC | At least 1 byte data + 2 bytes CRC required
+        if len(frame_with_crc) < 3:  # 至少需要1字节数据 + 2字节CRC | At least 1 byte data + 2 bytes CRC required
             return False
 
         # 分离数据和CRC | Separate data and CRC
@@ -64,27 +143,7 @@ class CRC16Modbus:
         received_crc = frame_with_crc[-2:]
 
         # 计算期望的CRC | Calculate expected CRC
-        expected_crc = CRC16Modbus.calculate(data)
+        expected_crc = CRC16Modbus.calculate(data, use_table)
 
         # 比较CRC | Compare CRC
         return received_crc == expected_crc
-
-    @staticmethod
-    def crc16_to_int(data: bytes) -> int:
-        """
-        计算CRC16校验码并返回整数值
-        这是一个兼容性方法，用于与旧代码保持兼容。
-        推荐使用calculate()方法。
-
-        Calculate CRC16 Checksum and Return Integer Value
-        This is a compatibility method for maintaining compatibility with old code.
-        It is recommended to use the calculate() method.
-
-        Args:
-            data: 需要计算校验码的数据 | Data for checksum calculation
-
-        Returns:
-            CRC校验码的整数值 | Integer value of CRC checksum
-        """
-        crc_bytes = CRC16Modbus.calculate(data)
-        return int.from_bytes(crc_bytes, byteorder="little")

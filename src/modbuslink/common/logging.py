@@ -1,67 +1,68 @@
 """
 ModbusLink 日志系统
-提供统一的日志配置和管理功能。
 
-Logging System
-Provides unified logging configuration and management functionality.
+ModbusLink Logging System
 """
 
-import logging
 import sys
+import logging
 from typing import Optional
-from ..common.language import Language, set_language, get_language
-
-
-# Re-export for backwards compatibility
-__all__ = ['Language', 'set_language', 'get_language', 'BilingualLogger', 'ModbusLogger', 'get_logger']
+from .language import Language, set_language, get_message
 
 
 class BilingualLogger:
     """
     双语日志适配器
-    包装标准Logger，根据当前语言设置选择输出的消息
 
     Bilingual log adapter
-    The packaging standard Logger selects the output messages based on the current language setting.
     """
 
-    def __init__(self, name: str):
+    def __init__(self, name: str) -> None:
         self._logger = logging.getLogger(name)
 
-    def _get_msg(self, cn: str, en: str) -> str:
-        return cn if get_language() == Language.CN else en
+    @staticmethod
+    def _get_msg(cn: str, en: str) -> str:
+        return get_message(cn, en)
 
-    def debug(self, cn: str, en: str, *args, **kwargs):
+    def debug(self, cn: str, en: str, *args, **kwargs) -> None:
+        if self._logger.isEnabledFor(logging.DEBUG):
+            msg = self._get_msg(cn, en)
+            self._logger.debug(msg, *args, stacklevel=2, **kwargs)
+
+    def info(self, cn: str, en: str, *args, **kwargs) -> None:
+        if self._logger.isEnabledFor(logging.INFO):
+            msg = self._get_msg(cn, en)
+            self._logger.info(msg, *args, stacklevel=2, **kwargs)
+
+    def warning(self, cn: str, en: str, *args, **kwargs) -> None:
+        if self._logger.isEnabledFor(logging.WARNING):
+            msg = self._get_msg(cn, en)
+            self._logger.warning(msg, *args, stacklevel=2, **kwargs)
+
+    def error(self, cn: str, en: str, *args, **kwargs) -> None:
+        if self._logger.isEnabledFor(logging.ERROR):
+            msg = self._get_msg(cn, en)
+            self._logger.error(msg, *args, stacklevel=2, **kwargs)
+
+    def critical(self, cn: str, en: str, *args, **kwargs) -> None:
+        if self._logger.isEnabledFor(logging.CRITICAL):
+            msg = self._get_msg(cn, en)
+            self._logger.critical(msg, *args, stacklevel=2, **kwargs)
+
+    def exception(self, cn: str, en: str, *args, **kwargs) -> None:
         msg = self._get_msg(cn, en)
-        self._logger.debug(msg, *args, stacklevel=2, **kwargs)
+        # exception方法本质上是 error(..., exc_info=True)
+        self._logger.exception(msg, *args, stacklevel=2, **kwargs)
 
-    def info(self, cn: str, en: str, *args, **kwargs):
-        msg = self._get_msg(cn, en)
-        self._logger.info(msg, *args, stacklevel=2, **kwargs)
-
-    def warning(self, cn: str, en: str, *args, **kwargs):
-        msg = self._get_msg(cn, en)
-        self._logger.warning(msg, *args, stacklevel=2, **kwargs)
-
-    def error(self, cn: str, en: str, *args, **kwargs):
-        msg = self._get_msg(cn, en)
-        self._logger.error(msg, *args, stacklevel=2, **kwargs)
-
-    def critical(self, cn: str, en: str, *args, **kwargs):
-        msg = self._get_msg(cn, en)
-        self._logger.critical(msg, *args, stacklevel=2, **kwargs)
-
-    def setLevel(self, level):
+    def set_level(self, level) -> None:
         self._logger.setLevel(level)
 
 
 class ModbusLogger:
     """
     ModbusLink日志管理器
-    提供统一的日志配置和格式化功能。
 
-    ModbusLink Logger Manager
-    Provides unified logging configuration and formatting functionality.
+    ModbusLink Log Manager
     """
 
     # 默认日志格式 | Default log format
@@ -77,7 +78,9 @@ class ModbusLogger:
             language: str = Language.CN
     ) -> None:
         """
-        设置ModbusLink的日志配置 | Setup ModbusLink logging configuration
+        设置ModbusLink的日志配置
+
+        Setup ModbusLink logging configuration
 
         Args:
             level: 日志级别，默认INFO | Log level, default INFO
@@ -91,11 +94,7 @@ class ModbusLogger:
 
         # 选择日志格式 | Choose log format
         if format_string is None:
-            format_string = (
-                ModbusLogger.DEBUG_FORMAT
-                if enable_debug
-                else ModbusLogger.DEFAULT_FORMAT
-            )
+            format_string = ModbusLogger.DEBUG_FORMAT if enable_debug else ModbusLogger.DEFAULT_FORMAT
 
         # 创建格式化器 | Create formatter
         formatter = logging.Formatter(format_string)
@@ -134,13 +133,17 @@ class ModbusLogger:
     @staticmethod
     def get_logger(name: str) -> BilingualLogger:
         """
-        获取指定名称的日志器 | Get logger with specified name
+        获取指定名称的日志器
+
+        Get logger with specified name
 
         Args:
             name: 日志器名称 | Logger name
 
         Returns:
-            配置好的日志器实例 | Configured logger instance
+            配置好的日志器实例
+
+            Configured logger instance
         """
         # 内部使用 modbuslink. 前缀，但对用户隐藏 | Internally, it uses the "modbuslink." prefix, but hides it from the users.
         return BilingualLogger(f"modbuslink.{name}")
@@ -149,9 +152,11 @@ class ModbusLogger:
     def enable_protocol_debug() -> None:
         """
         启用协议级别的调试日志
+
         显示原始的十六进制数据包，用于调试通信问题。
 
         Enable protocol-level debug logging
+
         Shows raw hexadecimal packets for debugging communication issues.
         """
         # 设置传输层日志级别为DEBUG | Set transport layer log level to DEBUG
@@ -160,30 +165,47 @@ class ModbusLogger:
         # 设置客户端日志级别为DEBUG | Set client layer log level to DEBUG
         logging.getLogger("modbuslink.client").setLevel(logging.DEBUG)
 
-        msg = "协议调试模式已启用" if get_language() == Language.CN else "Protocol debug mode enabled"
+        # 设置服务端日志级别为DEBUG | Set server layer log level to DEBUG
+        logging.getLogger("modbuslink.server").setLevel(logging.DEBUG)
+
+        msg = get_message("协议调试模式已启用", "Protocol debug mode enabled")
         logging.getLogger("modbuslink").info(msg)
 
     @staticmethod
     def disable_protocol_debug() -> None:
-        """禁用协议级别的调试日志 | Disable protocol-level debug logging"""
+        """
+        禁用协议级别的调试日志
+
+        Disable protocol-level debug logging
+        """
         # 恢复传输层日志级别 | Restore transport layer log level
         logging.getLogger("modbuslink.transport").setLevel(logging.INFO)
 
         # 恢复客户端日志级别 | Restore client layer log level
         logging.getLogger("modbuslink.client").setLevel(logging.INFO)
 
-        msg = "协议调试模式已禁用" if get_language() == Language.CN else "Protocol debug mode disabled"
+        # 恢复服务端日志级别 | Restore server layer log level
+        logging.getLogger("modbuslink.server").setLevel(logging.INFO)
+
+        msg = get_message("协议调试模式已禁用", "Protocol debug mode disabled")
         logging.getLogger("modbuslink").info(msg)
 
 
 def get_logger(name: str) -> BilingualLogger:
     """
-    便捷函数：获取ModbusLink日志器 | Convenience function: get ModbusLink logger
+    便捷函数：获取ModbusLink日志器
+
+    Convenience function: get ModbusLink logger
 
     Args:
         name: 日志器名称 | Logger name
 
     Returns:
-        配置好的日志器实例 | Configured logger instance
+        配置好的日志器实例
+
+        Configured logger instance
     """
     return ModbusLogger.get_logger(name)
+
+
+logging.getLogger("modbuslink").addHandler(logging.NullHandler())

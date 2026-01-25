@@ -1,9 +1,7 @@
 """
-ModbusLink Async ASCII Server Example
-Demonstrates how to create and use async Modbus ASCII server.
+ModbusLink ASCII Server Example
 """
 
-import math
 import random
 import asyncio
 import logging
@@ -12,179 +10,68 @@ from src.modbuslink import (
     ModbusDataStore,
     ModbusLogger,
     Language,
-    set_language,
+    set_language
 )
 
-set_language(Language.EN)
 
-
-async def setup_laboratory_data(data_store: ModbusDataStore) -> None:
+async def setup_data_store(data_store: ModbusDataStore) -> None:
     """
-    Setup Laboratory Equipment Simulation Data
-    
+    Initialize data store values
+
     Args:
         data_store: Data store instance
     """
-    # Laboratory equipment control coils
-    # 0-7: Heater control
-    # 8-15: Fan control
-    # 16-23: Pump control
-    # 24-31: Lighting control
-    data_store.write_coils(0, [False, True, False, True, False, False, True, False])  # Heaters
-    data_store.write_coils(8, [True, True, False, False, True, True, False, False])  # Fans
-    data_store.write_coils(16, [False, True, True, False, False, True, False, True])  # Pumps
-    data_store.write_coils(24, [True, True, True, True, False, False, False, False])  # Lighting
+    # Set some initial coil values
+    data_store.write_coils(0, [True, False, True, False, True, False, True, False])
 
-    # Equipment parameter setting registers
-    # 0-9: Temperature control parameters
-    data_store.write_holding_registers(0, [250, 300, 180, 220, 350])  # Target temperatures
-    data_store.write_holding_registers(5, [5, 8, 3, 6, 10])  # Temperature tolerance
+    # Set some initial discrete input values
+    data_store.write_discrete_inputs(1, [False, True, False, True, False, True, False, True])
 
-    # 10-19: Time control parameters
-    data_store.write_holding_registers(10, [3600, 7200, 1800, 5400, 9000])  # Running time (seconds)
-    data_store.write_holding_registers(15, [60, 120, 30, 90, 180])  # Sampling interval (seconds)
+    # Set some initial holding register values
+    data_store.write_holding_registers(2, [100, 200, 300, 400, 500])
 
-    # 20-29: Speed control parameters
-    data_store.write_holding_registers(20, [1200, 1800, 800, 1500, 2000])  # Speed settings
-    data_store.write_holding_registers(25, [50, 75, 25, 60, 100])  # Speed percentage
+    # Set some initial input register values
+    data_store.write_input_registers(3, [250, 251, 252, 253, 254])
 
-    # Sensor measurement input registers
-    # 0-9: Temperature sensors
-    data_store.write_input_registers(0, [248, 298, 178, 218, 348])  # Actual temperatures
-    data_store.write_input_registers(5, [252, 302, 182, 222, 352])  # Temperature sensor 2
-
-    # 10-19: Humidity sensors
-    data_store.write_input_registers(10, [45, 52, 38, 48, 55])  # Relative humidity %
-    data_store.write_input_registers(15, [47, 54, 40, 50, 57])  # Humidity sensor 2
-
-    # 20-29: pH sensors
-    data_store.write_input_registers(20, [700, 650, 720, 680, 710])  # pH value * 100
-
-    # 30-39: Pressure sensors
-    data_store.write_input_registers(30, [1013, 1015, 1010, 1018, 1012])  # Atmospheric pressure
-
-    # 40-49: Speed feedback
-    data_store.write_input_registers(40, [1198, 1795, 798, 1498, 1995])  # Actual speed
-
-    # Digital input status
-    # 0-7: Door switch status
-    # 8-15: Safety switches
-    # 16-23: Level switches
-    # 24-31: Pressure switches
-    data_store.write_discrete_inputs(0, [False, True, False, False, True, True, False, True])  # Door switches
-    data_store.write_discrete_inputs(8, [True, True, True, True, True, True, True, True])  # Safety switches
-    data_store.write_discrete_inputs(16, [False, False, True, True, False, True, True, False])  # Level switches
-    data_store.write_discrete_inputs(24, [True, False, True, False, True, False, True, False])  # Pressure switches
-
-    print("Laboratory equipment data initialized")
-    print(f"Heater control 0-7: {data_store.read_coils(0, 8)}")
-    print(f"Temperature settings 0-4: {data_store.read_holding_registers(0, 5)}")
-    print(f"Actual temperatures 0-4: {data_store.read_input_registers(0, 5)}")
-    print(f"Door switch status 0-7: {data_store.read_discrete_inputs(0, 8)}")
+    print("Data store initialization complete")
+    print(f"Coils 0-7: {data_store.read_coils(0, 8)}")
+    print(f"Discrete Inputs 1-8: {data_store.read_discrete_inputs(1, 8)}")
+    print(f"Holding Registers 2-6: {data_store.read_holding_registers(2, 5)}")
+    print(f"Input Registers 3-7: {data_store.read_input_registers(3, 5)}\n")
 
 
-async def simulate_laboratory_experiment(data_store: ModbusDataStore) -> None:
+async def simulate_sensor_data(data_store: ModbusDataStore) -> None:
     """
-    Simulate Laboratory Experiment Process
-    
+    Simulate sensor data updates
+
     Args:
         data_store: Data store instance
     """
-
-    experiment_time = 0
-
+    counter = 0
     while True:
         try:
-            experiment_time += 1
+            # Simulate discrete input state changes
+            discrete_states = [random.choice([True, False]) for _ in range(8)]
+            data_store.write_discrete_inputs(1, discrete_states)
 
-            # Simulate temperature control process
-            target_temps = data_store.read_holding_registers(0, 5)
-            current_temps = data_store.read_input_registers(0, 5)
+            # Simulate holding register data changes
+            counter += 1
+            data_store.write_holding_registers(2, [counter])
 
-            # Temperature gradually approaches target value
-            new_temps = []
-            for i, (current, target) in enumerate(zip(current_temps, target_temps)):
-                # Add random noise and control algorithm
-                diff = target - current
-                change = diff * 0.1 + random.randint(-2, 2) + math.sin(experiment_time * 0.05) * 1
-                new_temp = current + change
-                new_temps.append(int(max(0, min(500, new_temp))))  # Limit temperature range
+            # Simulate input register data changes
+            input_value = [random.randint(200, 300) for _ in range(5)]
+            data_store.write_input_registers(3, input_value)
 
-            data_store.write_input_registers(0, new_temps)
-
-            # Simulate humidity changes
-            base_humidity = [45, 52, 38, 48, 55]
-            humidity_variations = [base + random.randint(-5, 5) + int(2 * math.cos(experiment_time * 0.08)) for base in
-                                   base_humidity]
-            humidity_variations = [max(0, min(100, h)) for h in humidity_variations]  # Limit humidity range
-            data_store.write_input_registers(10, humidity_variations)
-
-            # Simulate pH value changes
-            base_ph = [700, 650, 720, 680, 710]
-            ph_variations = [base + random.randint(-10, 10) + int(3 * math.sin(experiment_time * 0.03)) for base in
-                             base_ph]
-            ph_variations = [max(0, min(1400, ph)) for ph in ph_variations]  # 限制pH范围 | Limit pH range
-            data_store.write_input_registers(20, ph_variations)
-
-            # Simulate speed control
-            target_speeds = data_store.read_holding_registers(20, 5)
-            current_speeds = data_store.read_input_registers(40, 5)
-
-            new_speeds = []
-            for current, target in zip(current_speeds, target_speeds):
-                diff = target - current
-                change = diff * 0.15 + random.randint(-20, 20)
-                new_speed = current + change
-                new_speeds.append(int(max(0, min(3000, new_speed))))  # Limit speed range
-
-            data_store.write_input_registers(40, new_speeds)
-
-            # Simulate pressure changes
-            base_pressure = [1013, 1015, 1010, 1018, 1012]
-            pressure_variations = [base + random.randint(-5, 5) + int(1 * math.sin(experiment_time * 0.02)) for base in
-                                   base_pressure]
-            data_store.write_input_registers(30, pressure_variations)
-
-            # Randomly change some switch states
-            if experiment_time % 30 == 0:
-                # Randomly change door switch status
-                door_index = random.randint(0, 7)
-                current_doors = data_store.read_discrete_inputs(0, 8)
-                current_doors[door_index] = not current_doors[door_index]
-                data_store.write_discrete_inputs(0, current_doors)
-                print(f"Door switch status change: Switch {door_index} = {current_doors[door_index]}")
-
-            if experiment_time % 45 == 0:
-                # Randomly change level switch status
-                level_index = random.randint(16, 23)
-                current_levels = data_store.read_discrete_inputs(16, 8)
-                current_levels[level_index - 16] = not current_levels[level_index - 16]
-                data_store.write_discrete_inputs(16, current_levels)
-                print(f"Level switch status change: Switch {level_index} = {current_levels[level_index - 16]}")
-
-            # Update experiment time counter
-            data_store.write_holding_registers(100, [experiment_time])
-
-            if experiment_time % 15 == 0:
-                print(f"Experiment process simulation #{experiment_time}")
-                print(f"  Temperature: {new_temps}")
-                print(f"  Humidity: {humidity_variations}%")
-                print(f"  pH: {[ph / 100.0 for ph in ph_variations]}")
-                print(f"  Speed: {new_speeds}")
-                print(f"  Pressure: {pressure_variations}")
-
-            await asyncio.sleep(3.0)  # Update every 3 seconds
+            await asyncio.sleep(1.0)  # Update every second
 
         except Exception as e:
-            print(f"Experiment process simulation error: {e}")
-            await asyncio.sleep(3.0)
+            print(f"Sensor data simulation error: {e}")
+            await asyncio.sleep(1.0)
 
 
-async def monitor_ascii_server(server: AsyncAsciiModbusServer) -> None:
+async def monitor_server(server: AsyncAsciiModbusServer) -> None:
     """
-    监控ASCII服务器状态
-    
-    Monitor ASCII Server Status
+    Monitor ASCII server status
     
     Args:
         server: ASCII server instance
@@ -192,93 +79,98 @@ async def monitor_ascii_server(server: AsyncAsciiModbusServer) -> None:
     while True:
         try:
             if await server.is_running():
-                print(f"ASCII server status: Running")
-                print(f"Serial port: {server.port}")
-                print(f"Baudrate: {server.baudrate}")
-                print(f"Slave address: {server.slave_id}")
+                print(f"Server status: Running\n")
             else:
-                print("ASCII server status: Stopped")
+                print("Server status: Stopped\n")
                 break
 
-            await asyncio.sleep(90.0)  # Check every 90 seconds
+            await asyncio.sleep(30.0)  # Check every 30 seconds
 
         except Exception as e:
-            print(f"ASCII server monitoring error: {e}")
-            await asyncio.sleep(15.0)
+            print(f"Server monitoring error: {e}")
+            await asyncio.sleep(10.0)
 
 
-async def main():
-    """
-    Main Function
-    """
+async def main() -> None:
+    """Main Function"""
     # Setup logging
     ModbusLogger.setup_logging(
         level=logging.INFO,
         enable_debug=True
     )
 
-    print("=== ModbusLink Async ASCII Server Example ===")
-    print()
+    set_language(Language.EN)
+
+    print("=== ModbusLink ASCII Server Example ===")
 
     # Create data store
     data_store = ModbusDataStore(
-        coils_size=1000,
-        discrete_inputs_size=1000,
-        holding_registers_size=1000,
-        input_registers_size=1000
+        coils_size=10,
+        discrete_inputs_size=10,
+        holding_registers_size=10,
+        input_registers_size=10
     )
 
-    # Setup laboratory equipment data
-    await setup_laboratory_data(data_store)
-    print()
+    data_store.add_callback(
+        "coils",
+        lambda address, values: print(f"'data_store' Callback: Coils {address} updated: {values}")
+    )
+    data_store.add_callback(
+        "discrete_inputs",
+        lambda address, values: print(f"'data_store' Callback: Discrete Inputs {address} updated: {values}")
+    )
+    data_store.add_callback(
+        "holding_registers",
+        lambda address, values: print(f"'data_store' Callback: Holding Registers {address} updated: {values}")
+    )
+    data_store.add_callback(
+        "input_registers",
+        lambda address, values: print(f"'data_store' Callback: Input Registers {address} updated: {values}")
+    )
 
-    # Serial port configuration
-    # Note: Please modify the serial port name according to actual situation
-    port = "COM10"  # Windows
-    # port = "/dev/ttyUSB1"  # Linux
-    # port = "/dev/tty.usbserial-0002"  # macOS
+    # Setup initial data
+    await setup_data_store(data_store)
+
+    # ASCII Configuration
+    rtu_config = {
+        "port": "COM10",  # Windows
+        # "port": "/dev/ttyUSB0",   # Linux
+        # "port": "/dev/tty.usbserial-0001",  # macOS
+        "baudrate": 9600,
+        "bytesize": 7,
+        "parity": "E",
+        "stopbits": 1,
+        "slave_id": 1,
+    }
 
     # Create ASCII server
     server = AsyncAsciiModbusServer(
-        port=port,
-        baudrate=9600,
+        port=rtu_config["port"],
+        baudrate=rtu_config["baudrate"],
+        bytesize=rtu_config["bytesize"],
+        parity=rtu_config["parity"],
+        stopbits=rtu_config["stopbits"],
         data_store=data_store,
-        slave_id=1,  # Use different slave address
-        parity="E",  # ASCII usually uses even parity
-        stopbits=1,
-        bytesize=7,  # ASCII usually uses 7-bit data
-        timeout=2.0
+        slave_id=rtu_config["slave_id"],
     )
 
-    print(f"ASCII server configuration:")
-    print(f"  Serial port: {port}")
-    print(f"  Baudrate: 9600")
-    print(f"  Data bits: 7")
-    print(f"  Stop bits: 1")
-    print(f"  Parity: Even")
-    print(f"  Slave address: 2")
-    print(f"  Timeout: 2.0 seconds")
-    print()
+    print(f"ASCII Server Configuration:")
+    print(f"  Port: {rtu_config['port']}")
+    print(f"  Baudrate: {rtu_config['baudrate']}")
+    print(f"  Data Bits: {rtu_config['bytesize']}")
+    print(f"  Stop Bits: {rtu_config['stopbits']}")
+    print(f"  Parity: {rtu_config['parity']}")
+    print(f"  Slave ID: {rtu_config['slave_id']}\n")
 
     try:
         # Start server
         await server.start()
-        print("ASCII server started successfully!")
-        print()
-        print("You can connect to the server using:")
-        print("  - ModbusLink ASCII client")
-        print("  - Other Modbus ASCII master devices")
-        print(f"  - Serial port: {port}")
-        print("  - Communication parameters: 9600,7,E,1")
-        print("  - Frame format: ASCII encoding")
-        print()
-        print("Press Ctrl+C to stop the server")
-        print()
+        print("ASCII Server started successfully! Press Ctrl+C to stop server\n")
 
         # Start background tasks
         tasks = [
-            asyncio.create_task(simulate_laboratory_experiment(data_store)),
-            asyncio.create_task(monitor_ascii_server(server)),
+            asyncio.create_task(simulate_sensor_data(data_store)),
+            asyncio.create_task(monitor_server(server)),
             asyncio.create_task(server.serve_forever())
         ]
 
@@ -286,16 +178,9 @@ async def main():
         await asyncio.gather(*tasks)
 
     except KeyboardInterrupt:
-        print("\nReceived stop signal")
+        print("\nStop signal received")
     except Exception as e:
-        print(f"\nServer running error: {e}")
-        if "could not open port" in str(e).lower():
-            print(f"\nSerial port open failed, please check:")
-            print(f"  1. Serial port name is correct ({port})")
-            print(f"  2. Serial port is not occupied by other programs")
-            print(f"  3. Serial port device is connected")
-            print(f"  4. Have serial port access permission")
-            print(f"  5. ASCII mode serial parameters are correct (7,E,1)")
+        print(f"\nServer runtime error: {e}")
     finally:
         print("Stopping server...")
         await server.stop()
@@ -309,4 +194,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("\nProgram interrupted by user")
     except Exception as e:
-        print(f"\nProgram running error: {e}")
+        print(f"\nProgram execution error: {e}")

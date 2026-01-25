@@ -1,5 +1,5 @@
-"""ModbusLink Async TCP Server Example
-Demonstrates how to create and use async Modbus TCP server.
+"""
+ModbusLink TCP Server Example
 """
 
 import random
@@ -10,15 +10,13 @@ from src.modbuslink import (
     ModbusDataStore,
     ModbusLogger,
     Language,
-    set_language,
+    set_language
 )
-
-set_language(Language.EN)
 
 
 async def setup_data_store(data_store: ModbusDataStore) -> None:
     """
-    Setup Initial Values for Data Store
+    Initialize data store values
 
     Args:
         data_store: Data store instance
@@ -27,24 +25,24 @@ async def setup_data_store(data_store: ModbusDataStore) -> None:
     data_store.write_coils(0, [True, False, True, False, True, False, True, False])
 
     # Set some initial discrete input values
-    data_store.write_discrete_inputs(0, [False, True, False, True, False, True, False, True])
+    data_store.write_discrete_inputs(1, [False, True, False, True, False, True, False, True])
 
     # Set some initial holding register values
-    data_store.write_holding_registers(0, [100, 200, 300, 400, 500])
+    data_store.write_holding_registers(2, [100, 200, 300, 400, 500])
 
     # Set some initial input register values
-    data_store.write_input_registers(0, [250, 251, 252, 253, 254])
+    data_store.write_input_registers(3, [250, 251, 252, 253, 254])
 
-    print("Data store initialized")
+    print("Data store initialization complete")
     print(f"Coils 0-7: {data_store.read_coils(0, 8)}")
-    print(f"Discrete inputs 1-8: {data_store.read_discrete_inputs(0, 8)}")
-    print(f"Holding registers 2-6: {data_store.read_holding_registers(0, 5)}")
-    print(f"Input registers 3-7: {data_store.read_input_registers(0, 5)}\n")
+    print(f"Discrete Inputs 1-8: {data_store.read_discrete_inputs(1, 8)}")
+    print(f"Holding Registers 2-6: {data_store.read_holding_registers(2, 5)}")
+    print(f"Input Registers 3-7: {data_store.read_input_registers(3, 5)}\n")
 
 
 async def simulate_sensor_data(data_store: ModbusDataStore) -> None:
     """
-    Simulate Sensor Data Updates
+    Simulate sensor data updates
 
     Args:
         data_store: Data store instance
@@ -52,22 +50,17 @@ async def simulate_sensor_data(data_store: ModbusDataStore) -> None:
     counter = 0
     while True:
         try:
-            # Simulate changes in the input register data
-            input_value = [random.randint(200, 300) for _ in range(5)]
-            data_store.write_input_registers(0, input_value)
-
-            # Simulate the change of discrete input states
+            # Simulate discrete input state changes
             discrete_states = [random.choice([True, False]) for _ in range(8)]
-            data_store.write_discrete_inputs(0, discrete_states)
+            data_store.write_discrete_inputs(1, discrete_states)
 
-            # 更新计数器
+            # Simulate holding register data changes
             counter += 1
-            data_store.write_holding_registers(0, [counter])
+            data_store.write_holding_registers(2, [counter])
 
-            if counter % 10 == 0:
-                print(f"Sensor data update #{counter}")
-                print(f"  Discrete input: {discrete_states}")
-                print(f"  Input register: {input_value}\n")
+            # Simulate input register data changes
+            input_value = [random.randint(200, 300) for _ in range(5)]
+            data_store.write_input_registers(3, input_value)
 
             await asyncio.sleep(1.0)  # Update every second
 
@@ -78,7 +71,7 @@ async def simulate_sensor_data(data_store: ModbusDataStore) -> None:
 
 async def monitor_server(server: AsyncTcpModbusServer) -> None:
     """
-    Monitor Server Status
+    Monitor server status
 
     Args:
         server: TCP server instance
@@ -87,16 +80,16 @@ async def monitor_server(server: AsyncTcpModbusServer) -> None:
         try:
             if await server.is_running():
                 client_count = server.get_connected_clients_count()
-                print(f"Server status: Running, Connected clients: {client_count}")
+                print(f"Server status: Running, Connected clients: {client_count}\n")
             else:
-                print("Server status: Stopped")
+                print("Server status: Stopped\n")
                 break
 
             await asyncio.sleep(30.0)  # Check every 30 seconds
 
         except Exception as e:
             print(f"Server monitoring error: {e}")
-            await asyncio.sleep(5.0)
+            await asyncio.sleep(10.0)
 
 
 async def main() -> None:
@@ -104,11 +97,12 @@ async def main() -> None:
     # Setup logging
     ModbusLogger.setup_logging(
         level=logging.INFO,
-        enable_debug=True,
-        language=Language.EN
+        enable_debug=True
     )
 
-    print("=== ModbusLink Async TCP Server Example ===\n")
+    set_language(Language.EN)
+
+    print("=== ModbusLink TCP Server Example ===\n")
 
     # Create data store
     data_store = ModbusDataStore(
@@ -118,31 +112,50 @@ async def main() -> None:
         input_registers_size=10
     )
 
+    data_store.add_callback(
+        "coils",
+        lambda address, values: print(f"'data_store' Callback: Coils {address} updated: {values}")
+    )
+    data_store.add_callback(
+        "discrete_inputs",
+        lambda address, values: print(f"'data_store' Callback: Discrete Inputs {address} updated: {values}")
+    )
+    data_store.add_callback(
+        "holding_registers",
+        lambda address, values: print(f"'data_store' Callback: Holding Registers {address} updated: {values}")
+    )
+    data_store.add_callback(
+        "input_registers",
+        lambda address, values: print(f"'data_store' Callback: Input Registers {address} updated: {values}")
+    )
+
     # Setup initial data
     await setup_data_store(data_store)
 
+    # TCP Configuration
+    tcp_config = {
+        "host": "localhost",
+        "port": 502,
+        "slave_id": 1
+    }
+
     # Create TCP server
     server = AsyncTcpModbusServer(
-        host="localhost",
-        port=5020,
+        host=tcp_config["host"],
+        port=tcp_config["port"],
         data_store=data_store,
-        slave_id=1,
-        max_connections=5
+        slave_id=tcp_config["slave_id"]
     )
 
-    print(f"Starting TCP server: localhost:5020")
-    print("Slave address: 1")
-    print("Max connections: 5")
+    print(f"Starting TCP Server:")
+    print(f"  Host: {tcp_config['host']}")
+    print(f"  Port: {tcp_config['port']}")
+    print(f"  Slave ID: {tcp_config['slave_id']}\n")
 
     try:
-        # 启动服务器 | Start server
+        # Start server
         await server.start()
-        print("TCP server started successfully!\n ")
-        print("You can connect to the server using:")
-        print("  - ModbusLink client")
-        print("  - Other Modbus TCP client tools")
-        print("  - Address: localhost:5020\n")
-        print("Press Ctrl+C to stop the server\n")
+        print("TCP Server started successfully! Press Ctrl+C to stop server\n")
 
         # Start background tasks
         tasks = [
@@ -155,20 +168,20 @@ async def main() -> None:
         await asyncio.gather(*tasks)
 
     except KeyboardInterrupt:
-        print("\nReceived stop signal")
+        print("\nStop signal received")
     except Exception as e:
-        print(f"\nServer running error: {e}")
+        print(f"\nServer runtime error: {e}")
     finally:
         print("Stopping server...")
         await server.stop()
         print("Server stopped")
 
 
-if __name__ == '__main__':
-    # 运行示例
+if __name__ == "__main__":
+    # Run example
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        print("\n程序被用户中断 | Program interrupted by user")
+        print("\nProgram interrupted by user")
     except Exception as e:
-        print(f"\n程序运行错误 | Program running error：{e}")
+        print(f"\nProgram execution error: {e}")
