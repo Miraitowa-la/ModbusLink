@@ -157,7 +157,7 @@ class SyncTcpTransport(SyncBaseTransport):
         Args:
             slave_id: 从机地址/单元标识符 | Slave address/unit identifier
             pdu: 协议数据单元（功能码 + 数据） | Protocol data unit (function code + data)
-            timeout: 超时时间（秒） | Timeout time (seconds)
+            timeout: [ 未使用 ] 超时时间（秒） | [ unused ] Timeout time (seconds)
 
         Returns:
             响应的PDU部分（功能码 + 数据）
@@ -201,46 +201,66 @@ class SyncTcpTransport(SyncBaseTransport):
             try:
                 self._socket.sendall(request_frame)
 
-                # 3. 接收响应MBAP头 | Receive response MBAP header
-                response_mbap_header = self._receive_exact(7)
+                start_time = time.time()
 
-                # 解析响应MBAP头 | Parse response MBAP header
-                (
-                    response_transaction_id,
-                    response_protocol_id,
-                    response_length,
-                    response_slave_id
-                ) = struct.unpack(">HHHB", response_mbap_header)
+                while True:
+                    if time.time() - start_time > self.timeout:
+                        raise TimeOutError(
+                            cn=f"TCP通信超时: ({self.timeout}秒)",
+                            en=f"TCP communication timeout: ({self.timeout} seconds)"
+                        )
 
-                # 4. 验证MBAP头 | Verify MBAP header
-                if response_transaction_id != transaction_id:
-                    raise InvalidReplyError(
-                        cn=f"事务ID不匹配: 期望 {transaction_id}，实际 {response_transaction_id}",
-                        en=f"Transaction ID does not match: expected {transaction_id}, actual {response_transaction_id}"
-                    )
+                    # 3. 接收响应MBAP头 | Receive response MBAP header
+                    response_mbap_header = self._receive_exact(7)
 
-                if response_protocol_id != 0x0000:
-                    raise InvalidReplyError(
-                        cn=f"协议ID不匹配: 期望 0x0000，实际 {response_protocol_id}",
-                        en=f"Protocol ID does not match: expected 0x0000, actual {response_protocol_id}"
-                    )
+                    # 解析响应MBAP头 | Parse response MBAP header
+                    (
+                        response_transaction_id,
+                        response_protocol_id,
+                        response_length,
+                        response_slave_id
+                    ) = struct.unpack(">HHHB", response_mbap_header)
 
-                if response_slave_id != slave_id:
-                    raise InvalidReplyError(
-                        cn=f"从机地址不匹配: 期望 {slave_id}，实际 {response_slave_id}",
-                        en=f"Slave address does not match: expected {slave_id}, actual {response_slave_id}"
-                    )
+                    # 4. 验证MBAP头 | Verify MBAP header
+                    # 事务ID匹配检查 | Transaction ID match check
+                    if response_transaction_id != transaction_id:
+                        self._logger.warning(
+                            cn=f"事务ID过期响应: 期望 {transaction_id}，实际 {response_transaction_id}，正在丢弃...",
+                            en=f"Stale transaction ID response: expected {transaction_id}, actual {response_transaction_id}, discarding..."
+                        )
 
-                # 5.接收响应PDU | Receive response PDU
-                pdu_length = response_length - 1
+                        # 读取完过期帧 | Read stale frame
+                        self._receive_exact(response_length - 1)
 
-                if pdu_length <= 0:
-                    raise InvalidReplyError(
-                        cn=f"无效的PDU长度: {pdu_length}",
-                        en=f"Invalid PDU length: {pdu_length}"
-                    )
+                        continue
 
-                response_pdu = self._receive_exact(pdu_length)
+                    # 协议ID匹配检查 | Protocol ID match check
+                    if response_protocol_id != 0x0000:
+                        raise InvalidReplyError(
+                            cn=f"协议ID不匹配: 期望 0x0000，实际 {response_protocol_id}",
+                            en=f"Protocol ID does not match: expected 0x0000, actual {response_protocol_id}"
+                        )
+
+                    # 从机地址匹配检查 | Slave address match check
+                    if response_slave_id != slave_id:
+                        raise InvalidReplyError(
+                            cn=f"从机地址不匹配: 期望 {slave_id}，实际 {response_slave_id}",
+                            en=f"Slave address does not match: expected {slave_id}, actual {response_slave_id}"
+                        )
+
+                    # 5.接收响应PDU | Receive response PDU
+                    if response_length - 1 > 0:
+                        pdu_length = response_length - 1
+
+                    if pdu_length <= 0:
+                        raise InvalidReplyError(
+                            cn=f"无效的PDU长度: {pdu_length}",
+                            en=f"Invalid PDU length: {pdu_length}"
+                        )
+
+                    response_pdu = self._receive_exact(pdu_length)
+
+                    break
 
                 self._logger.debug(
                     cn=f"TCP接收数据: {(response_mbap_header + response_pdu).hex(' ').upper()}",
@@ -264,7 +284,50 @@ class SyncTcpTransport(SyncBaseTransport):
                     en=f"TCP communication error: {e}"
                 ) from e
 
-    def _receive_exact(self, length: int) -> bytes:
+    def flush(self) -> int:
+        """
+        同步清空接收缓冲区中的所有待处理数据
+
+        Sync Flush all pending data in receive buffer
+
+        Returns:
+            丢弃的字节数
+
+            Number of bytes discarded
+        """
+        if not self.is_open():
+            return 0
+
+        discarded = 0
+
+        try:
+            # 设置非阻塞模式 | Set non-blocking mode
+            self._socket.setblocking(False)
+
+            while True:
+                try:
+                    chunk = self._socket.recv(4096)
+                    if not chunk:
+                        break
+                    discarded += len(chunk)
+                except BlockingIOError:
+                    break
+                except socket.error:
+                    break
+        finally:
+            # 恢复超时设置 | Restore timeout setting
+            self._socket.setblocking(True)
+            self._socket.settimeout(self.timeout)
+
+        if discarded > 0:
+            self._logger.warning(
+                cn=f"已清空接收缓冲区: 丢弃 {discarded} 字节的陈旧数据",
+                en=f"Flushed receive buffer: discarded {discarded} bytes of stale data"
+            )
+
+        return discarded
+
+    def _receive_exact(self, length: int, timeout: Optional[float] = None) -> bytes:
         """
         接收指定长度的数据
 
@@ -272,6 +335,7 @@ class SyncTcpTransport(SyncBaseTransport):
 
         Args:
             length: 需要接收的字节数 | Number of bytes to receive
+            timeout: [ 未使用 ] 接收超时时间（秒） | [ unused ] Receive timeout time (seconds)
 
         Returns:
             接收到的数据
@@ -486,7 +550,7 @@ class AsyncTcpTransport(AsyncBaseTransport):
         Args:
             slave_id: 从机地址/单元标识符 | Slave address/unit identifier
             pdu: 协议数据单元（功能码 + 数据） | Protocol data unit (function code + data)
-            timeout: 超时时间（秒） | Timeout time (seconds)
+            timeout: [ 未使用 ] 超时时间（秒） | [ unused ] Timeout time (seconds)
 
         Returns:
             响应的PDU部分（功能码 + 数据）
@@ -529,48 +593,83 @@ class AsyncTcpTransport(AsyncBaseTransport):
 
             try:
                 self._writer.write(request_frame)
-                await asyncio.wait_for(self._writer.drain(), timeout=timeout)
+                await asyncio.wait_for(
+                    self._writer.drain(),
+                    timeout=self.timeout
+                )
 
-                # 3. 接收响应MBAP头 | Receive response MBAP header
-                response_mbap_header = await self._receive_exact(7)
+                start_time = time.time()
 
-                # 解析响应MBAP头 | Parse response MBAP header
-                (
-                    response_transaction_id,
-                    response_protocol_id,
-                    response_length,
-                    response_slave_id
-                ) = struct.unpack(">HHHB", response_mbap_header)
+                while True:
+                    elapsed_time = time.time() - start_time
+                    remaining_time = self.timeout - elapsed_time
+                    if remaining_time <= 0:
+                        raise TimeOutError(
+                            cn=f"TCP通信超时: ({self.timeout}秒)",
+                            en=f"TCP communication timeout: ({self.timeout} seconds)"
+                        )
 
-                # 4. 验证MBAP头 | Verify MBAP header
-                if response_transaction_id != transaction_id:
-                    raise InvalidReplyError(
-                        cn=f"事务ID不匹配: 期望 {transaction_id}，实际 {response_transaction_id}",
-                        en=f"Transaction ID does not match: expected {transaction_id}, actual {response_transaction_id}"
-                    )
+                    # 3. 接收响应MBAP头 | Receive response MBAP header
+                    response_mbap_header = await self._receive_exact(7, remaining_time)
 
-                if response_protocol_id != 0x0000:
-                    raise InvalidReplyError(
-                        cn=f"协议ID不匹配: 期望 0x0000，实际 {response_protocol_id}",
-                        en=f"Protocol ID does not match: expected 0x0000, actual {response_protocol_id}"
-                    )
+                    # 解析响应MBAP头 | Parse response MBAP header
+                    (
+                        response_transaction_id,
+                        response_protocol_id,
+                        response_length,
+                        response_slave_id
+                    ) = struct.unpack(">HHHB", response_mbap_header)
 
-                if response_slave_id != slave_id:
-                    raise InvalidReplyError(
-                        cn=f"从机地址不匹配: 期望 {slave_id}，实际 {response_slave_id}",
-                        en=f"Slave address does not match: expected {slave_id}, actual {response_slave_id}"
-                    )
+                    # 4. 验证MBAP头 | Verify MBAP header
+                    # 事务ID匹配检查 | Transaction ID match check
+                    if response_transaction_id != transaction_id:
+                        self._logger.warning(
+                            cn=f"事务ID过期响应: 期望 {transaction_id}，实际 {response_transaction_id}，正在丢弃...",
+                            en=f"Stale transaction ID response: expected {transaction_id}, actual {response_transaction_id}, discarding..."
+                        )
 
-                # 5.接收响应PDU | Receive response PDU
-                pdu_length = response_length - 1
+                        elapsed_time = time.time() - start_time
+                        remaining_time = self.timeout - elapsed_time
+                        if remaining_time <= 0:
+                            raise TimeOutError(
+                                cn=f"TCP通信超时: ({self.timeout}秒)",
+                                en=f"TCP communication timeout: ({self.timeout} seconds)"
+                            )
 
-                if pdu_length <= 0:
-                    raise InvalidReplyError(
-                        cn=f"无效的PDU长度: {pdu_length}",
-                        en=f"Invalid PDU length: {pdu_length}"
-                    )
+                        # 读取完过期帧 | Read stale frame
+                        if response_length - 1 > 0:
+                            await self._receive_exact(response_length - 1, remaining_time)
 
-                response_pdu = await self._receive_exact(pdu_length)
+                        continue
+
+                    # 协议ID匹配检查 | Protocol ID match check
+                    if response_protocol_id != 0x0000:
+                        raise InvalidReplyError(
+                            cn=f"协议ID不匹配: 期望 0x0000，实际 {response_protocol_id}",
+                            en=f"Protocol ID does not match: expected 0x0000, actual {response_protocol_id}"
+                        )
+
+                    # 从机地址匹配检查 | Slave address match check
+                    if response_slave_id != slave_id:
+                        raise InvalidReplyError(
+                            cn=f"从机地址不匹配: 期望 {slave_id}，实际 {response_slave_id}",
+                            en=f"Slave address does not match: expected {slave_id}, actual {response_slave_id}"
+                        )
+
+                    # 5.接收响应PDU | Receive response PDU
+                    pdu_length = response_length - 1
+
+                    if pdu_length <= 0:
+                        raise InvalidReplyError(
+                            cn=f"无效的PDU长度: {pdu_length}",
+                            en=f"Invalid PDU length: {pdu_length}"
+                        )
+
+                    elapsed_time = time.time() - start_time
+                    remaining_time = self.timeout - elapsed_time
+                    response_pdu = await self._receive_exact(pdu_length, remaining_time)
+
+                    break
 
                 self._logger.debug(
                     cn=f"TCP接收数据: {(response_mbap_header + response_pdu).hex(' ').upper()}",
@@ -594,7 +693,47 @@ class AsyncTcpTransport(AsyncBaseTransport):
                     en=f"TCP communication error: {e}"
                 ) from e
 
-    async def _receive_exact(self, length: int) -> bytes:
+    async def flush(self) -> int:
+        """
+        异步清空接收缓冲区中的所有待处理数据
+
+        Async Flush all pending data in receive buffer
+
+        Returns:
+            丢弃的字节数
+
+            Number of bytes discarded
+        """
+        if not self.is_open():
+            return 0
+
+        discarded = 0
+
+        try:
+            # 尝试读取所有可用数据，使用很短的超时时间
+            while True:
+                try:
+                    chunk = await asyncio.wait_for(
+                        self._reader.read(4096),
+                        timeout=0.01  # 10ms 超时
+                    )
+                    if not chunk:
+                        break
+                    discarded += len(chunk)
+                except asyncio.TimeoutError:
+                    break
+        except Exception:
+            pass
+
+        if discarded > 0:
+            self._logger.warning(
+                cn=f"已清空接收缓冲区: 丢弃 {discarded} 字节的陈旧数据",
+                en=f"Flushed receive buffer: discarded {discarded} bytes of stale data"
+            )
+
+        return discarded
+
+    async def _receive_exact(self, length: int, timeout: Optional[float] = None) -> bytes:
         """
         接收指定长度的数据
 
@@ -602,6 +741,7 @@ class AsyncTcpTransport(AsyncBaseTransport):
 
         Args:
             length: 需要接收的字节数 | Number of bytes to receive
+            timeout: 接收超时时间（秒） | Receive timeout time (seconds)
 
         Returns:
             接收到的数据
@@ -623,7 +763,7 @@ class AsyncTcpTransport(AsyncBaseTransport):
         try:
             data = await asyncio.wait_for(
                 self._reader.readexactly(length),
-                timeout=self.timeout
+                timeout=self.timeout if timeout is None else timeout
             )
         except asyncio.IncompleteReadError:
             raise ConnectError(

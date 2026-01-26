@@ -43,9 +43,11 @@ Whether building a high-performance **TCP Server** or developing an **RTU Client
     - [`1.3.1`](notes/1.3.1.md) Log language switching support (#2)
     - [`1.3.2`](notes/1.3.2.md) Language Switching Support Optimization (#2)
     - [`1.3.3`](notes/1.3.3.md) Adding missing functions for asynchronous client (#3)
-    - [`1.3.4`](notes/1.3.4.md) Asynchronous concurrent safety fix (#4) 最新发行版
+    - [`1.3.4`](notes/1.3.4.md) Asynchronous concurrent safety fix (#4)
 - `1.4.x`
     - [`1.4.0`](notes/1.4.0.md) Refactoring: Solves project redundancy issues, unifies naming conventions, and improves the performance and stability of core components
+    - [`1.4.1`](notes/1.4.1.md) RS485 mode support restored
+    - [`1.4.2`](notes/1.4.2.md) TCP transport flush() method - Resolves transaction ID mismatch after timeout
 
 ---
 
@@ -376,6 +378,103 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+```
+
+### Advanced Tip: Error Recovery & Buffer Flushing
+
+In unstable network environments, devices may occasionally respond slowly, causing timeouts. ModbusLink provides a `flush()` method to clear stale data from the receive buffer, preventing "late" responses from affecting subsequent requests.
+
+#### Sync Client Error Recovery
+
+```python
+from modbuslink.client import SyncModbusClient
+from modbuslink.transport import SyncTcpTransport
+from modbuslink import TimeOutError, InvalidReplyError
+
+
+def robust_read():
+    """Robust read with error recovery"""
+    transport = SyncTcpTransport(host='192.168.1.100', port=502, timeout=2.0)
+    client = SyncModbusClient(transport)
+    
+    with client:
+        try:
+            # Try to read data
+            data = client.read_holding_registers(slave_id=1, start_address=0, quantity=10)
+            return data
+        except (TimeOutError, InvalidReplyError) as e:
+            print(f"Error: {e}")
+            
+            # Flush receive buffer, discard stale data
+            discarded = transport.flush()
+            print(f"Flushed {discarded} bytes of stale data")
+            
+            # Retry
+            data = client.read_holding_registers(slave_id=1, start_address=0, quantity=10)
+            return data
+```
+
+#### Async Client - Home Assistant Integration Pattern
+
+Suitable for scenarios requiring long-term stable operation, such as Home Assistant integration:
+
+```python
+import asyncio
+from modbuslink.client import AsyncModbusClient
+from modbuslink.transport import AsyncTcpTransport
+from modbuslink import TimeOutError, InvalidReplyError
+
+
+async def home_assistant_polling():
+    """Home Assistant style device polling"""
+    transport = AsyncTcpTransport(host='192.168.1.100', port=502, timeout=3.0)
+    client = AsyncModbusClient(transport)
+    
+    poll_interval = 60  # Poll every 60 seconds
+    max_consecutive_errors = 3
+    consecutive_errors = 0
+    
+    async with client:
+        while True:
+            try:
+                # Read device data
+                data = await client.read_holding_registers(
+                    slave_id=1,
+                    start_address=0,
+                    quantity=10
+                )
+                
+                print(f"Device data: {data}")
+                consecutive_errors = 0  # Reset error counter on success
+                
+            except TimeOutError:
+                consecutive_errors += 1
+                print(f"Timeout (consecutive errors: {consecutive_errors}/{max_consecutive_errors})")
+                
+                # Flush buffer to prevent stale responses from affecting next request
+                discarded = await transport.flush()
+                if discarded > 0:
+                    print(f"Flushed {discarded} bytes of stale data")
+                
+                # Reconnect if too many consecutive errors
+                if consecutive_errors >= max_consecutive_errors:
+                    print("Too many consecutive errors, reconnecting...")
+                    await transport.close()
+                    await asyncio.sleep(1)
+                    await transport.open()
+                    consecutive_errors = 0
+                    
+            except InvalidReplyError as e:
+                print(f"Invalid reply: {e}")
+                # Flush buffer on transaction ID mismatch
+                await transport.flush()
+            
+            # Wait for next poll
+            await asyncio.sleep(poll_interval)
+
+
+if __name__ == "__main__":
+    asyncio.run(home_assistant_polling())
 ```
 
 ---

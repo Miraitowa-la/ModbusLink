@@ -47,6 +47,8 @@ Python 特性（Type Hints, Asyncio）。
     - [`1.3.4`](notes/1.3.4.md) 异步并发安全修复( #4 )
 - `1.4.x`
     - [`1.4.0`](notes/1.4.0.md) 重构: 解决项目冗余问题，统一命名规范，并提升核心组件的性能与稳定性
+    - [`1.4.1`](notes/1.4.1.md) RS485 模式支持恢复
+    - [`1.4.2`](notes/1.4.2.md) TCP 传输层 flush() 方法 - 解决超时后事务ID不匹配问题
 
 ---
 
@@ -394,6 +396,103 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+```
+
+### 高级技巧：错误恢复与缓冲区清空
+
+在不稳定的网络环境中，设备可能偶尔响应缓慢导致超时。ModbusLink 提供了 `flush()` 方法来清空接收缓冲区中的陈旧数据，防止"迟到"的响应影响后续请求。
+
+#### 同步客户端错误恢复
+
+```python
+from modbuslink.client import SyncModbusClient
+from modbuslink.transport import SyncTcpTransport
+from modbuslink import TimeOutError, InvalidReplyError
+
+
+def robust_read():
+    """带错误恢复的稳健读取"""
+    transport = SyncTcpTransport(host='192.168.1.100', port=502, timeout=2.0)
+    client = SyncModbusClient(transport)
+    
+    with client:
+        try:
+            # 尝试读取数据
+            data = client.read_holding_registers(slave_id=1, start_address=0, quantity=10)
+            return data
+        except (TimeOutError, InvalidReplyError) as e:
+            print(f"错误: {e}")
+            
+            # 清空接收缓冲区，丢弃陈旧数据
+            discarded = transport.flush()
+            print(f"已清空 {discarded} 字节的陈旧数据")
+            
+            # 重试
+            data = client.read_holding_registers(slave_id=1, start_address=0, quantity=10)
+            return data
+```
+
+#### 异步客户端 - Home Assistant 集成模式
+
+适用于需要长期稳定运行的场景，如 Home Assistant 集成：
+
+```python
+import asyncio
+from modbuslink.client import AsyncModbusClient
+from modbuslink.transport import AsyncTcpTransport
+from modbuslink import TimeOutError, InvalidReplyError
+
+
+async def home_assistant_polling():
+    """Home Assistant 风格的设备轮询"""
+    transport = AsyncTcpTransport(host='192.168.1.100', port=502, timeout=3.0)
+    client = AsyncModbusClient(transport)
+    
+    poll_interval = 60  # 每60秒轮询一次
+    max_consecutive_errors = 3
+    consecutive_errors = 0
+    
+    async with client:
+        while True:
+            try:
+                # 读取设备数据
+                data = await client.read_holding_registers(
+                    slave_id=1,
+                    start_address=0,
+                    quantity=10
+                )
+                
+                print(f"设备数据: {data}")
+                consecutive_errors = 0  # 成功后重置错误计数
+                
+            except TimeOutError:
+                consecutive_errors += 1
+                print(f"超时 (连续错误: {consecutive_errors}/{max_consecutive_errors})")
+                
+                # 清空缓冲区，防止陈旧响应影响下次请求
+                discarded = await transport.flush()
+                if discarded > 0:
+                    print(f"清空了 {discarded} 字节的陈旧数据")
+                
+                # 连续错误过多时重新连接
+                if consecutive_errors >= max_consecutive_errors:
+                    print("连续错误过多，重新连接...")
+                    await transport.close()
+                    await asyncio.sleep(1)
+                    await transport.open()
+                    consecutive_errors = 0
+                    
+            except InvalidReplyError as e:
+                print(f"无效响应: {e}")
+                # 事务ID不匹配时清空缓冲区
+                await transport.flush()
+            
+            # 等待下次轮询
+            await asyncio.sleep(poll_interval)
+
+
+if __name__ == "__main__":
+    asyncio.run(home_assistant_polling())
 ```
 
 ---
