@@ -48,7 +48,8 @@ Whether building a high-performance **TCP Server** or developing an **RTU Client
     - [`1.4.0`](notes/1.4.0.md) Refactoring: Solves project redundancy issues, unifies naming conventions, and improves the performance and stability of core components
     - [`1.4.1`](notes/1.4.1.md) RS485 mode support restored
     - [`1.4.2`](notes/1.4.2.md) TCP transport flush() method - Resolves transaction ID mismatch after timeout
-
+- `1.5.x` (updated according to the SemVer specification)
+  - [`1.5.0`](notes/1.5.0.md) Added the flush() method for RTU/ASCII transport layers
 ---
 
 ## 🚀 Quick Start

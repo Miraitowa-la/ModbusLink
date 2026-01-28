@@ -139,6 +139,49 @@ class SyncTcpTransport(SyncBaseTransport):
         except socket.error:
             return False
 
+    def flush(self) -> int:
+        """
+        同步清空接收缓冲区中的所有待处理数据
+
+        Sync Flush all pending data in receive buffer
+
+        Returns:
+            丢弃的字节数
+
+            Number of bytes discarded
+        """
+        if not self.is_open():
+            return 0
+
+        discarded = 0
+
+        try:
+            # 设置非阻塞模式 | Set non-blocking mode
+            self._socket.setblocking(False)
+
+            while True:
+                try:
+                    chunk = self._socket.recv(4096)
+                    if not chunk:
+                        break
+                    discarded += len(chunk)
+                except BlockingIOError:
+                    break
+                except socket.error:
+                    break
+        finally:
+            # 恢复超时设置 | Restore timeout setting
+            self._socket.setblocking(True)
+            self._socket.settimeout(self.timeout)
+
+        if discarded > 0:
+            self._logger.warning(
+                cn=f"已清空接收缓冲区: 丢弃 {discarded} 字节的陈旧数据",
+                en=f"Flushed receive buffer: discarded {discarded} bytes of stale data"
+            )
+
+        return discarded
+
     def send_and_receive(self, slave_id: int, pdu: bytes, timeout: Optional[float] = None) -> bytes:
         """
         同步TCP传输层PDU发送和接收数据
@@ -199,6 +242,7 @@ class SyncTcpTransport(SyncBaseTransport):
             )
 
             try:
+                # 发送请求 | Send request
                 self._socket.sendall(request_frame)
 
                 start_time = time.time()
@@ -283,49 +327,6 @@ class SyncTcpTransport(SyncBaseTransport):
                     cn=f"TCP通信错误: {e}",
                     en=f"TCP communication error: {e}"
                 ) from e
-
-    def flush(self) -> int:
-        """
-        同步清空接收缓冲区中的所有待处理数据
-
-        Sync Flush all pending data in receive buffer
-
-        Returns:
-            丢弃的字节数
-
-            Number of bytes discarded
-        """
-        if not self.is_open():
-            return 0
-
-        discarded = 0
-
-        try:
-            # 设置非阻塞模式 | Set non-blocking mode
-            self._socket.setblocking(False)
-
-            while True:
-                try:
-                    chunk = self._socket.recv(4096)
-                    if not chunk:
-                        break
-                    discarded += len(chunk)
-                except BlockingIOError:
-                    break
-                except socket.error:
-                    break
-        finally:
-            # 恢复超时设置 | Restore timeout setting
-            self._socket.setblocking(True)
-            self._socket.settimeout(self.timeout)
-
-        if discarded > 0:
-            self._logger.warning(
-                cn=f"已清空接收缓冲区: 丢弃 {discarded} 字节的陈旧数据",
-                en=f"Flushed receive buffer: discarded {discarded} bytes of stale data"
-            )
-
-        return discarded
 
     def _receive_exact(self, length: int, timeout: Optional[float] = None) -> bytes:
         """
@@ -532,6 +533,46 @@ class AsyncTcpTransport(AsyncBaseTransport):
 
         return True
 
+    async def flush(self) -> int:
+        """
+        异步清空接收缓冲区中的所有待处理数据
+
+        Async Flush all pending data in receive buffer
+
+        Returns:
+            丢弃的字节数
+
+            Number of bytes discarded
+        """
+        if not self.is_open():
+            return 0
+
+        discarded = 0
+
+        try:
+            # 尝试读取所有可用数据，使用很短的超时时间
+            while True:
+                try:
+                    chunk = await asyncio.wait_for(
+                        self._reader.read(4096),
+                        timeout=0.01  # 10ms 超时
+                    )
+                    if not chunk:
+                        break
+                    discarded += len(chunk)
+                except asyncio.TimeoutError:
+                    break
+        except Exception:
+            pass
+
+        if discarded > 0:
+            self._logger.warning(
+                cn=f"已清空接收缓冲区: 丢弃 {discarded} 字节的陈旧数据",
+                en=f"Flushed receive buffer: discarded {discarded} bytes of stale data"
+            )
+
+        return discarded
+
     async def send_and_receive(self, slave_id: int, pdu: bytes, timeout: Optional[float] = None) -> bytes:
         """
         异步TCP传输层PDU发送和接收数据
@@ -592,6 +633,7 @@ class AsyncTcpTransport(AsyncBaseTransport):
             )
 
             try:
+                # 发送请求 | Send request
                 self._writer.write(request_frame)
                 await asyncio.wait_for(
                     self._writer.drain(),
@@ -692,46 +734,6 @@ class AsyncTcpTransport(AsyncBaseTransport):
                     cn=f"TCP通信错误: {e}",
                     en=f"TCP communication error: {e}"
                 ) from e
-
-    async def flush(self) -> int:
-        """
-        异步清空接收缓冲区中的所有待处理数据
-
-        Async Flush all pending data in receive buffer
-
-        Returns:
-            丢弃的字节数
-
-            Number of bytes discarded
-        """
-        if not self.is_open():
-            return 0
-
-        discarded = 0
-
-        try:
-            # 尝试读取所有可用数据，使用很短的超时时间
-            while True:
-                try:
-                    chunk = await asyncio.wait_for(
-                        self._reader.read(4096),
-                        timeout=0.01  # 10ms 超时
-                    )
-                    if not chunk:
-                        break
-                    discarded += len(chunk)
-                except asyncio.TimeoutError:
-                    break
-        except Exception:
-            pass
-
-        if discarded > 0:
-            self._logger.warning(
-                cn=f"已清空接收缓冲区: 丢弃 {discarded} 字节的陈旧数据",
-                en=f"Flushed receive buffer: discarded {discarded} bytes of stale data"
-            )
-
-        return discarded
 
     async def _receive_exact(self, length: int, timeout: Optional[float] = None) -> bytes:
         """

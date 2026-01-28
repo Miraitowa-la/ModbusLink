@@ -220,7 +220,7 @@ def main():
         enable_debug=True
     )
 
-    set_language(Language.EN)
+    set_language(Language.CN)
 
     print("=== ModbusLink 同步RTU客户端示例 ===")
 

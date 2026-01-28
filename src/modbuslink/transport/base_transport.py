@@ -62,7 +62,21 @@ class SyncBaseTransport(ABC):
         """
 
     @abstractmethod
-    def send_and_receive(self, slave_id: int, pdu: bytes,  timeout: Optional[float] = None) -> bytes:
+    def flush(self) -> int:
+        """
+        同步清空接收缓冲区中的所有待处理数据
+
+        Sync Flush all pending data in receive buffer
+
+        Returns:
+            丢弃的字节数
+
+            Number of bytes discarded
+        """
+        pass
+
+    @abstractmethod
+    def send_and_receive(self, slave_id: int, pdu: bytes, timeout: Optional[float] = None) -> bytes:
         """
         发送PDU并接收响应
 
@@ -183,6 +197,20 @@ class AsyncBaseTransport(ABC):
 
             True if the connection is open, otherwise False
         """
+
+    @abstractmethod
+    async def flush(self) -> int:
+        """
+        异步清空接收缓冲区中的所有待处理数据
+
+        Async Flush all pending data in receive buffer
+
+        Returns:
+            丢弃的字节数
+
+            Number of bytes discarded
+        """
+        pass
 
     @abstractmethod
     async def send_and_receive(self, slave_id: int, pdu: bytes, timeout: Optional[float] = None) -> bytes:

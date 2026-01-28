@@ -49,6 +49,8 @@ Python 特性（Type Hints, Asyncio）。
     - [`1.4.0`](notes/1.4.0.md) 重构: 解决项目冗余问题，统一命名规范，并提升核心组件的性能与稳定性
     - [`1.4.1`](notes/1.4.1.md) RS485 模式支持恢复
     - [`1.4.2`](notes/1.4.2.md) TCP 传输层 flush() 方法 - 解决超时后事务ID不匹配问题
+- `1.5.x` (根据 SemVer 规范进行了更新)
+    - [`1.5.0`](notes/1.5.0.md) 增加 RTU/ASCII 传输层 flush() 方法
 
 ---
 
@@ -414,7 +416,7 @@ def robust_read():
     """带错误恢复的稳健读取"""
     transport = SyncTcpTransport(host='192.168.1.100', port=502, timeout=2.0)
     client = SyncModbusClient(transport)
-    
+
     with client:
         try:
             # 尝试读取数据
@@ -422,11 +424,11 @@ def robust_read():
             return data
         except (TimeOutError, InvalidReplyError) as e:
             print(f"错误: {e}")
-            
+
             # 清空接收缓冲区，丢弃陈旧数据
             discarded = transport.flush()
             print(f"已清空 {discarded} 字节的陈旧数据")
-            
+
             # 重试
             data = client.read_holding_registers(slave_id=1, start_address=0, quantity=10)
             return data
@@ -447,11 +449,11 @@ async def home_assistant_polling():
     """Home Assistant 风格的设备轮询"""
     transport = AsyncTcpTransport(host='192.168.1.100', port=502, timeout=3.0)
     client = AsyncModbusClient(transport)
-    
+
     poll_interval = 60  # 每60秒轮询一次
     max_consecutive_errors = 3
     consecutive_errors = 0
-    
+
     async with client:
         while True:
             try:
@@ -461,19 +463,19 @@ async def home_assistant_polling():
                     start_address=0,
                     quantity=10
                 )
-                
+
                 print(f"设备数据: {data}")
                 consecutive_errors = 0  # 成功后重置错误计数
-                
+
             except TimeOutError:
                 consecutive_errors += 1
                 print(f"超时 (连续错误: {consecutive_errors}/{max_consecutive_errors})")
-                
+
                 # 清空缓冲区，防止陈旧响应影响下次请求
                 discarded = await transport.flush()
                 if discarded > 0:
                     print(f"清空了 {discarded} 字节的陈旧数据")
-                
+
                 # 连续错误过多时重新连接
                 if consecutive_errors >= max_consecutive_errors:
                     print("连续错误过多，重新连接...")
@@ -481,12 +483,12 @@ async def home_assistant_polling():
                     await asyncio.sleep(1)
                     await transport.open()
                     consecutive_errors = 0
-                    
+
             except InvalidReplyError as e:
                 print(f"无效响应: {e}")
                 # 事务ID不匹配时清空缓冲区
                 await transport.flush()
-            
+
             # 等待下次轮询
             await asyncio.sleep(poll_interval)
 

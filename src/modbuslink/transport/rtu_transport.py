@@ -163,6 +163,33 @@ class SyncRtuTransport(SyncBaseTransport):
         """
         return self._serial is not None and self._serial.is_open
 
+    def flush(self) -> int:
+        """
+        同步清空接收缓冲区中的所有待处理数据
+
+        Sync Flush all pending data in receive buffer
+
+        Returns:
+            丢弃的字节数
+
+            Number of bytes discarded
+        """
+        if not self.is_open():
+            return 0
+
+        try:
+            # 获取当前缓冲区中的字节数 | Get number of bytes currently in buffer
+            count = self._serial.in_waiting
+            if count > 0:
+                self._serial.reset_input_buffer()
+                self._logger.warning(
+                    cn=f"RTU缓冲区刷新: 丢弃了 {count} 字节",
+                    en=f"RTU buffer flush: discarded {count} bytes"
+                )
+            return count
+        except serial.SerialException:
+            return 0
+
     def send_and_receive(self, slave_id: int, pdu: bytes, timeout: Optional[float] = None) -> bytes:
         """
         同步RTU传输层PDU发送和接收数据
@@ -206,7 +233,10 @@ class SyncRtuTransport(SyncBaseTransport):
             )
 
             try:
-                self._serial.reset_input_buffer()
+                # 清空接收缓冲区 | Clear the receive buffer
+                self.flush()
+
+                # 发送请求 | Send request
                 self._serial.write(request_adu)
                 self._serial.flush()
 
@@ -499,6 +529,42 @@ class AsyncRtuTransport(AsyncBaseTransport):
         """
         return self._reader is not None and self._writer is not None and not self._writer.is_closing()
 
+    async def flush(self) -> int:
+        """
+        异步清空接收缓冲区中的所有待处理数据
+
+        Async Flush all pending data in receive buffer
+
+        Returns:
+            丢弃的字节数
+
+            Number of bytes discarded
+        """
+        if not self.is_open():
+            return 0
+
+        discarded_count = 0
+        try:
+            while True:
+                # 尝试以极短的超时读取数据，清除缓冲区
+                # Try reading with extremely short timeout to clear buffer
+                try:
+                    data = await asyncio.wait_for(self._reader.read(4096), timeout=0.001)
+                    if not data:
+                        break
+                    discarded_count += len(data)
+                except asyncio.TimeoutError:
+                    break
+        except Exception:
+            pass
+
+        if discarded_count > 0:
+            self._logger.warning(
+                cn=f"RTU缓冲区刷新: 丢弃了 {discarded_count} 字节",
+                en=f"RTU buffer flush: discarded {discarded_count} bytes"
+            )
+        return discarded_count
+
     async def send_and_receive(self, slave_id: int, pdu: bytes, timeout: Optional[float] = None) -> bytes:
         """
         异步RTU传输层PDU发送和接收数据
@@ -542,13 +608,10 @@ class AsyncRtuTransport(AsyncBaseTransport):
             )
 
             try:
-                # 清空接收缓冲区 | Clear receive buffer
-                while True:
-                    try:
-                        await asyncio.wait_for(self._reader.readexactly(1024), timeout=0.01)
-                    except asyncio.TimeoutError:
-                        break
+                # 清空接收缓冲区中的所有待处理数据 | Clear all pending data in receive buffer
+                await self.flush()
 
+                # 发送请求 | Send request
                 self._writer.write(request_adu)
                 await self._writer.drain()
 
