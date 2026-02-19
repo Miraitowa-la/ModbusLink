@@ -1,27 +1,23 @@
 最佳实践指南
 ============
 
-.. contents:: 本页内容
-   :local:
-   :depth: 2
-
 本指南包含使用ModbusLink开发高质量、高性能工业应用的最佳实践。
 
-连接管理
-========
+1. 连接管理
+-------
 
-使用上下文管理器
---------------
+1.1 使用上下文管理器
+~~~~~~~~~~~~~~
 
 **推荐方式**：
 
 .. code-block:: python
 
-   from modbuslink import ModbusClient, TcpTransport
+   from modbuslink import SyncModbusClient, SyncTcpTransport
    
    # ✅ 推荐：自动管理连接
-   transport = TcpTransport(host='192.168.1.100', port=502)
-   client = ModbusClient(transport)
+   transport = SyncTcpTransport(host='192.168.1.100', port=502)
+   client = SyncModbusClient(transport)
    
    with client:
        data = client.read_holding_registers(1, 0, 10)
@@ -38,8 +34,8 @@
    finally:
        client.disconnect()  # 可能因异常而跳过
 
-连接池模式
-----------
+1.2 连接池模式
+~~~~~~~~~~
 
 .. code-block:: python
 
@@ -74,11 +70,11 @@
                await client.disconnect()
                self._created -= 1
 
-错误处理
-========
+2. 错误处理
+-------
 
-分层错误处理
------------
+2.1 分层错误处理
+~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -96,20 +92,20 @@
            for attempt in range(max_retries):
                try:
                    return self.client.read_holding_registers(slave_id, address, count)
-               except ConnectionError as e:
+               except ConnectError as e:
                    self.logger.warning(f"连接错误 (尝试 {attempt + 1}): {e}")
                    if attempt < max_retries - 1:
                        time.sleep(1)
-               except TimeoutError as e:
+               except TimeOutError as e:
                    self.logger.warning(f"超时错误 (尝试 {attempt + 1}): {e}")
                    if attempt < max_retries - 1:
                        time.sleep(2)
-               except CRCError as e:
+               except CrcError as e:
                    self.logger.error(f"CRC错误: {e}")
                    raise  # CRC错误不适合重试
 
-断路器模式
-----------
+2.2 断路器模式
+~~~~~~~~~~
 
 .. code-block:: python
 
@@ -151,11 +147,11 @@
                    raise
            return wrapper
 
-性能优化
-========
+3. 性能优化
+-------
 
-批量操作
---------
+3.1 批量操作
+~~~~~~~~
 
 .. code-block:: python
 
@@ -168,8 +164,8 @@
    # ✅ 高效：批量读取
    values = client.read_holding_registers(1, 0, 100)
 
-异步并发
---------
+3.2 异步并发
+~~~~~~~~
 
 .. code-block:: python
 
@@ -189,11 +185,11 @@
            results = await asyncio.gather(*tasks)
            return sum(results, [])
 
-数据验证
-========
+4. 数据验证
+-------
 
-输入验证
---------
+4.1 输入验证
+~~~~~~~~
 
 .. code-block:: python
 
@@ -226,8 +222,8 @@
                raise ValueError(f"读取数量范围1-125: {count}")
            return self.client.read_holding_registers(slave_id, address, count)
 
-数据转换
---------
+4.2 数据转换
+~~~~~~~~
 
 .. code-block:: python
 
@@ -256,11 +252,11 @@
                reg1, reg2 = struct.unpack('<HH', data)
                return [reg2, reg1]
 
-监控和诊断
-==========
+5. 监控和诊断
+---------
 
-性能监控
---------
+5.1 性能监控
+~~~~~~~~
 
 .. code-block:: python
 
@@ -304,8 +300,8 @@
                duration = time.time() - start_time
                self.monitor.record_request(duration, success)
 
-配置管理
-========
+6. 配置管理
+-------
 
 .. code-block:: python
 
@@ -345,11 +341,11 @@
            
            return ModbusClient(transport)
 
-生产环境最佳实践
-==============
+7. 生产环境最佳实践
+-------
 
-环境配置
---------
+7.1 环境配置
+~~~~~~~~
 
 .. code-block:: python
 
@@ -370,8 +366,8 @@
                format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
            )
 
-部署检查清单
------------
+7.2 部署检查清单
+~~~~~~~~~~
 
 **连接配置**
 - ✅ 验证网络连接和设备地址
@@ -398,11 +394,11 @@
 - ✅ 配置性能监控
 - ✅ 设置告警阈值
 
-测试策略
-========
+8. 测试策略
+-------
 
-单元测试
---------
+8.1 单元测试
+~~~~~~~~
 
 .. code-block:: python
 
@@ -419,8 +415,8 @@
            result = self.client.read_holding_registers(1, 0, 2)
            self.assertEqual(result, [1, 2])
 
-集成测试
---------
+8.2 集成测试
+~~~~~~~~
 
 .. code-block:: python
 
@@ -435,8 +431,8 @@
        yield server
        await server.stop()
 
-总结
-====
+9. 总结
+----
 
 遵循这些最佳实践可以帮助您：
 

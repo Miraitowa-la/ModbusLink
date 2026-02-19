@@ -1,14 +1,10 @@
 安装指南
 ========
 
-.. contents:: 本页内容
-   :local:
-   :depth: 2
-
-系统要求
+1. 系统要求
 --------
 
-基础要求
+1.1 基础要求
 ~~~~~~~~
 
 .. list-table:: 
@@ -26,130 +22,67 @@
    * - **存储空间**
      - 约 10MB 磁盘空间
 
-依赖库
+1.2 依赖库
 ~~~~~~
 
-**必需依赖**
-
 - **Python标准库**: asyncio, threading, struct, socket
-- **无外部依赖**: 核心功能无需额外安装包
+- **外部依赖**: pyserial, pyserial-asyncio, typing_extensions
 
-**可选依赖**
-
-.. code-block:: bash
-
-   # 串口通信支持 (RTU/ASCII)
-   pip install pyserial>=3.5
-   
-   # 异步串口支持
-   pip install pyserial-asyncio>=0.6
-   
-   # 开发工具
-   pip install pytest>=7.0 black>=22.0 ruff>=0.1.0
-
-快速安装
+2. 快速安装
 --------
 
-从PyPI安装 (推荐)
+2.1 从PyPI安装 (推荐)
 ~~~~~~~~~~~~~~~~~~
+
+**最新版本安装**
 
 .. code-block:: bash
 
    # 基础安装
    pip install modbuslink
-   
-   # 包含串口支持
-   pip install modbuslink[serial]
-   
-   # 包含开发依赖
-   pip install modbuslink[dev]
-   
-   # 完整安装（所有功能）
-   pip install modbuslink[all]
-
-.. note::
-   
-   如果您只需要TCP功能，基础安装即可。串口功能需要安装 ``pyserial`` 依赖。
-
-验证安装
-~~~~~~~~
-
-.. code-block:: python
-
-   import modbuslink
-   print(f"ModbusLink版本: {modbuslink.__version__}")
-   
-   # 检查可用组件
-   from modbuslink import ModbusClient, TcpTransport
-   print("✅ TCP功能可用")
-   
-   try:
-       from modbuslink import RtuTransport
-       print("✅ RTU功能可用")
-   except ImportError:
-       print("❌ RTU功能不可用 - 需要安装pyserial")
-
-高级安装
---------
-
-从源码安装
-~~~~~~~~~~
-
-**开发者安装**
-
-.. code-block:: bash
-
-   # 克隆仓库
-   git clone https://github.com/Miraitowa-la/ModbusLink.git
-   cd ModbusLink
-   
-   # 创建虚拟环境
-   python -m venv venv
-   
-   # 激活虚拟环境
-   # Windows:
-   venv\Scripts\activate
-   # Linux/macOS:
-   source venv/bin/activate
-   
-   # 安装为可编辑包
-   pip install -e ".[dev]"
 
 **特定版本安装**
 
 .. code-block:: bash
 
    # 安装特定版本
-   pip install modbuslink==1.0.0
-   
-   # 安装预发布版本
-   pip install --pre modbuslink
-   
-   # 从GitHub安装最新版
-   pip install git+https://github.com/Miraitowa-la/ModbusLink.git
+   pip install modbuslink==1.4.0
 
-Docker安装
+2.2 从源码安装
 ~~~~~~~~~~
 
-.. code-block:: dockerfile
+.. code-block:: bash
 
-   # Dockerfile示例
-   FROM python:3.11-slim
-   
-   # 安装ModbusLink
-   RUN pip install modbuslink[all]
-   
-   # 复制应用代码
-   COPY . /app
-   WORKDIR /app
-   
-   # 运行应用
-   CMD ["python", "your_modbus_app.py"]
+   # 克隆仓库
+   git clone https://github.com/Miraitowa-la/ModbusLink.git
+   cd ModbusLink
 
-环境配置
+   # 创建虚拟环境...
+
+   # 安装为可编辑包
+   pip install -e .
+
+2.3 验证安装
+~~~~~~~~
+
+.. code-block:: python
+
+   import modbuslink
+   print(f"ModbusLink版本: {modbuslink.__version__}")
+
+   from modbuslink import SyncTcpTransport
+   print("✅ TCP功能可用")
+
+   from modbuslink import SyncRtuTransport
+   print("✅ RTU功能可用")
+
+   from modbuslink import SyncAsciiTransport
+   print("✅ ASCII功能可用")
+
+3.  环境配置
 --------
 
-串口权限 (Linux/macOS)
+3.1 串口权限 (Linux/macOS)
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 **Ubuntu/Debian**
@@ -184,18 +117,18 @@ Docker安装
    
    # 通常无需特殊权限配置
 
-Windows串口配置
+3.2 Windows串口配置
 ~~~~~~~~~~~~~~~
 
-1. **查看设备管理器**中的端口信息
-2. **确认COM端口号**（如 COM1, COM3）
-3. **检查驱动程序**是否正确安装
-4. **防火墙设置**：确保Python应用有网络权限（TCP功能）
+1. **查看设备管理器** 中的端口信息
+2. **确认COM端口号** （如 COM1, COM3）
+3. **检查驱动程序** 是否正确安装
+4. **防火墙设置** 确保Python应用有网络权限（TCP功能）
 
-故障排除
+4. 故障排除
 --------
 
-常见安装问题
+4.1 常见安装问题
 ~~~~~~~~~~~~
 
 **ImportError: No module named 'serial'**
@@ -234,7 +167,7 @@ Windows串口配置
    clean_env\Scripts\activate     # Windows
    pip install modbuslink
 
-串口问题诊断
+4.2 串口问题诊断
 ~~~~~~~~~~~~
 
 **检查串口可用性**
@@ -262,7 +195,7 @@ Windows串口配置
    except Exception as e:
        print(f"❌ 串口连接失败: {e}")
 
-网络问题诊断
+4.3 网络问题诊断
 ~~~~~~~~~~~~
 
 **测试TCP连接**
@@ -286,33 +219,23 @@ Windows串口配置
    else:
        print("❌ TCP连接失败")
 
-性能调优
+5. 性能调优
 --------
 
-生产环境配置
+5.1 超时时间
 ~~~~~~~~~~~~
 
 .. code-block:: python
 
-   # 推荐的生产环境配置
-   import asyncio
-   from modbuslink import AsyncModbusClient, AsyncTcpTransport
-   
-   # 连接池配置
+   from modbuslink import AsyncTcpTransport
+
    transport = AsyncTcpTransport(
        host='192.168.1.100',
        port=502,
-       timeout=5.0,           # 适中的超时时间
-       connect_timeout=3.0,   # 连接超时
-       keepalive=True         # 保持连接活跃
+       timeout=5.0  # 适中的超时时间
    )
-   
-   # 异步事件循环优化
-   if hasattr(asyncio, 'WindowsSelectorEventLoopPolicy'):
-       # Windows优化
-       asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-内存优化
+5.2 内存优化
 ~~~~~~~~
 
 .. code-block:: python
@@ -323,14 +246,11 @@ Windows串口配置
        start_address=0, 
        quantity=100  # 一次读取多个寄存器
    )
-   
-   # 避免频繁创建客户端对象
-   # 使用连接池或长连接
 
-升级指南
+6. 升级指南
 --------
 
-从旧版本升级
+6.1 从旧版本升级
 ~~~~~~~~~~~~
 
 .. code-block:: bash
@@ -348,7 +268,7 @@ Windows串口配置
    
    升级前请查看 :doc:`changelog` 了解破坏性变更。
 
-下一步
+7. 下一步
 ------
 
 安装完成后，建议您：

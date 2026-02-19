@@ -141,10 +141,12 @@ jobs:
                     <a href="en/index.html" class="language-card">
                         <h2>English</h2>
                         <p>English Documentation</p>
+                        <p>(1.2.0 - old version, updating)</p>
                     </a>
                     <a href="zh/index.html" class="language-card">
                         <h2>中文</h2>
                         <p>中文文档</p>
+                        <p>(1.5.0 - new version)</p>
                     </a>
                 </div>
             </div>

@@ -1,20 +1,16 @@
 故障排除指南
 ============
 
-.. contents:: 本页内容
-   :local:
-   :depth: 3
+本指南将帮您快速诊断和解决使用ModbusLink时遇到的常见问题(这个文档可能有历史遗留问题，请麻烦告诉我)。
 
-本指南将帮您快速诊断和解决使用ModbusLink时遇到的常见问题。
+1. 连接问题
+--------
 
-连接问题
-========
-
-TCP连接问题
------------
+1.1 TCP连接问题
+~~~~~~~~~~~~
 
 网络连接失败
-~~~~~~~~~~~~
+************
 
 **问题现象**：
 ``ConnectionError: [Errno 10061] Connection refused`` 或类似网络错误
@@ -60,7 +56,7 @@ TCP连接问题
       nmap -p 502 192.168.1.100
 
 连接超时
-~~~~~~~~
+*******
 
 **问题现象**：
 ``TimeoutError: Connection timeout after 10.0 seconds``
@@ -69,17 +65,17 @@ TCP连接问题
 
 .. code-block:: python
 
-   from modbuslink import ModbusClient, TcpTransport
+   from modbuslink import SyncModbusClient, SyncTcpTransport
    
    # 调整超时设置
-   transport = TcpTransport(
+   transport = SyncTcpTransport(
        host='192.168.1.100',
        port=502,
        timeout=30.0,          # 增加超时时间
        connect_timeout=10.0   # 连接超时
    )
    
-   client = ModbusClient(transport)
+   client = SyncModbusClient(transport)
    
    # 实现重试机制
    import time
@@ -95,11 +91,11 @@ TCP连接问题
                    time.sleep(2)  # 等待2秒后重试
        return False
 
-串口连接问题
------------
+1.2 串口连接问题
+~~~~~~~~~~~~
 
 串口被占用
-~~~~~~~~~~
+***********
 
 **问题现象**：
 ``SerialException: [Errno 16] Device or resource busy``
@@ -133,10 +129,10 @@ TCP连接问题
    
    .. code-block:: python
    
-      from modbuslink import ModbusClient, RtuTransport
+      from modbuslink import SyncModbusClient, SyncRtuTransport
       
-      transport = RtuTransport(port='COM3', baudrate=9600)
-      client = ModbusClient(transport)
+      transport = SyncRtuTransport(port='COM3', baudrate=9600)
+      client = SyncModbusClient(transport)
       
       try:
           with client:  # 自动管理连接
@@ -146,7 +142,7 @@ TCP连接问题
       # 连接会自动关闭
 
 串口权限问题
-~~~~~~~~~~~~
+************
 
 **问题现象**（Linux/macOS）：
 ``SerialException: [Errno 13] Permission denied``
@@ -165,11 +161,11 @@ TCP连接问题
    # 或临时修改权限
    sudo chmod 666 /dev/ttyUSB0
 
-协议错误
-========
+2. 协议错误
+--------
 
-CRC校验错误
------------
+2.1 校验错误
+~~~~~~~~~~~~
 
 **问题现象**：
 ``CRCError: CRC check failed. Expected: 0x1234, Got: 0x5678``
@@ -196,15 +192,15 @@ CRC校验错误
    
    .. code-block:: python
    
-      from modbuslink.utils.crc import CRC16Modbus
+      from modbuslink import CRC16Modbus
       
       # 手动验证CRC
       data = b'\x01\x03\x00\x00\x00\x05'
       crc = CRC16Modbus.calculate(data)
       print(f"计算得到的CRC: 0x{crc:04X}")
 
-无效响应错误
------------
+2.2 无效响应错误
+~~~~~~~~~~~~
 
 **问题现象**：
 ``InvalidResponseError: Invalid function code in response``
@@ -249,11 +245,11 @@ CRC校验错误
           slaves = scan_slave_ids(client, 1, 10)
           print(f"活动从站列表: {slaves}")
 
-性能问题
-========
+3. 性能问题
+--------
 
-读取速度慢
-----------
+3.1 读取速度慢
+~~~~~~~~~~
 
 **优化策略**：
 
@@ -300,8 +296,8 @@ CRC校验错误
               data = client.read_holding_registers(1, 0, 10)
               # 处理数据
 
-内存使用过高
------------
+3.2 内存使用过高
+~~~~~~~~~~~~
 
 **解决方案**：
 
@@ -338,11 +334,11 @@ CRC校验错误
               
               return processed
 
-数据问题
-========
+4. 数据问题
+--------
 
-数据类型转换错误
--------------
+4.1 数据类型转换错误
+~~~~~~~~~~~~~~
 
 **问题现象**：
 数据读取结果与预期不符
@@ -386,8 +382,8 @@ CRC校验错误
       except ValueError as e:
           print(f"数据验证失败: {e}")
 
-字符串编码问题
------------
+4.2 字符串编码问题
+~~~~~~~~~~~~
 
 **问题现象**：
 字符串读取出现乱码
@@ -420,19 +416,19 @@ CRC校验错误
            
            return "解码失败"
 
-调试和监控
-==========
+5. 调试和监控
+----------
 
-启用详细日志
------------
+5.1 启用详细日志
+~~~~~~~~~~~~
 
 .. code-block:: python
 
    import logging
-   from modbuslink.utils.logging import enable_debug_logging
+   from modbuslink.utils.logging import enable_protocol_debug
    
    # 启用ModbusLink调试日志
-   enable_debug_logging()
+   enable_protocol_debug()
    
    # 配置Python日志
    logging.basicConfig(
@@ -444,8 +440,8 @@ CRC校验错误
    with client:
        data = client.read_holding_registers(1, 0, 5)
 
-协议包分析
-----------
+5.2 协议包分析
+~~~~~~~~~~
 
 .. code-block:: python
 
@@ -467,8 +463,8 @@ CRC校验错误
    debug_transport = DebugTransport(original_transport)
    client = ModbusClient(debug_transport)
 
-性能监控
---------
+5.3 性能监控
+~~~~~~~~
 
 .. code-block:: python
 
@@ -492,11 +488,11 @@ CRC校验错误
        with measure_time("写入10个寄存器"):
            client.write_multiple_registers(1, 0, list(range(10)))
 
-常见错误汇总
-============
+6. 常见错误汇总
+------------
 
-错误代码对照表
------------
+6.1 错误代码对照表
+~~~~~~~~~~~~
 
 .. list-table:: 
    :widths: 15 25 60
@@ -527,11 +523,11 @@ CRC校验错误
      - Value out of range
      - 检查写入值是否在允许范围内
 
-预防措施
-========
+7. 预防措施
+--------
 
-代码最佳实践
------------
+7.1 代码最佳实践
+~~~~~~~~~~~~
 
 1. **总是使用上下文管理器**
    
@@ -573,8 +569,8 @@ CRC校验错误
               print(f"健康检查失败: {e}")
               return False
 
-获取帮助
-========
+8. 获取帮助
+--------
 
 如果问题仍未解决，请：
 
@@ -584,5 +580,6 @@ CRC校验错误
 4. **参考设备手册** - 确认设备的Modbus实现细节
 
 联系方式：
+
 - GitHub: https://github.com/Miraitowa-la/ModbusLink/issues
 - 文档: https://miraitowa-la.github.io/ModbusLink/

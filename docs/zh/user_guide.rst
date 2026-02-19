@@ -3,56 +3,56 @@
 
 本综合指南涵盖了使用 ModbusLink 的所有方面。
 
-架构概述
+1. 架构概述
 --------
 
 ModbusLink 建立在清晰的分层架构之上，分离关注点并促进代码重用：
 
 .. code-block:: text
 
-   ┌─────────────────────────────────────┐
-   │           客户端层                   │
-   │  (ModbusClient, AsyncModbusClient)  │
-   ├─────────────────────────────────────┤
-   │          传输层                     │
-   │   (TcpTransport, RtuTransport,      │
-   │    AsciiTransport, AsyncTcpTransport,│
-   │    AsyncRtuTransport, AsyncAsciiTransport)│
-   ├─────────────────────────────────────┤
-   │           工具层                     │
-   │  (CRC16, PayloadCoder, Logger)      │
-   └─────────────────────────────────────┘
+   ┌─────────────────────────────────────────┐
+   │           客户端层                       │
+   │  (SyncModbusClient, AsyncModbusClient)  │
+   ├─────────────────────────────────────────┤
+   │           传输层                         │
+   │ (SyncTcpTransport, SyncRtuTransport,    │
+   │  SyncAsciiTransport, AsyncTcpTransport, │
+   │  AsyncRtuTransport, AsyncAsciiTransport)│
+   ├─────────────────────────────────────────┤
+   │           工具层                         │
+   │      (CRC16, CRC16, PayloadCoder)       │
+   └─────────────────────────────────────────┘
 
-传输层
+2. 传输层
 ------
 
 传输层处理底层通信细节。
 
-TCP 传输
+2.1 TCP 传输
 ~~~~~~~~
 
 TCP 传输处理带有 MBAP 头管理的 Modbus TCP 通信：
 
 .. code-block:: python
 
-   from modbuslink import TcpTransport
+   from modbuslink import SyncTcpTransport
 
-   transport = TcpTransport(
+   transport = SyncTcpTransport(
        host='192.168.1.100',
        port=502,
        timeout=10.0
    )
 
-RTU 传输
+2.2 RTU 传输
 ~~~~~~~~
 
 RTU 传输处理带有 CRC16 验证的 Modbus RTU 通信：
 
 .. code-block:: python
 
-   from modbuslink import RtuTransport
+   from modbuslink import SyncRtuTransport
 
-   transport = RtuTransport(
+   transport = SyncRtuTransport(
        port='/dev/ttyUSB0',  # Windows 上使用 'COM1'
        baudrate=9600,
        bytesize=8,
@@ -61,7 +61,7 @@ RTU 传输处理带有 CRC16 验证的 Modbus RTU 通信：
        timeout=1.0
    )
 
-异步 TCP 传输
+2.3 异步 TCP 传输
 ~~~~~~~~~~~~~
 
 对于高性能应用，使用异步 TCP 传输：
@@ -76,7 +76,7 @@ RTU 传输处理带有 CRC16 验证的 Modbus RTU 通信：
        timeout=10.0
    )
 
-ASCII 传输
+2.4 ASCII 传输
 ~~~~~~~~~~
 
 ASCII 传输处理带有 LRC 校验的 Modbus ASCII 通信：
@@ -94,7 +94,7 @@ ASCII 传输处理带有 LRC 校验的 Modbus ASCII 通信：
        timeout=1.0
    )
 
-异步 RTU 传输
+2.5 异步 RTU 传输
 ~~~~~~~~~~~~~
 
 对于高性能 RTU 应用，使用异步 RTU 传输：
@@ -109,7 +109,7 @@ ASCII 传输处理带有 LRC 校验的 Modbus ASCII 通信：
        timeout=3.0
    )
 
-异步 ASCII 传输
+2.6 异步 ASCII 传输
 ~~~~~~~~~~~~~~~
 
 对于高性能 ASCII 应用，使用异步 ASCII 传输：
@@ -124,20 +124,20 @@ ASCII 传输处理带有 LRC 校验的 Modbus ASCII 通信：
        timeout=3.0
    )
 
-客户端层
+3. 客户端层
 --------
 
 客户端层提供高级 Modbus 操作。
 
-同步客户端
+3.1 同步客户端
 ~~~~~~~~~~
 
 .. code-block:: python
 
-   from modbuslink import ModbusClient, TcpTransport
+   from modbuslink import SyncModbusClient, SyncTcpTransport
 
-   transport = TcpTransport(host='192.168.1.100', port=502)
-   client = ModbusClient(transport)
+   transport = SyncTcpTransport(host='192.168.1.100', port=502)
+   client = SyncModbusClient(transport)
 
    # 上下文管理器（推荐）
    with client:
@@ -154,7 +154,7 @@ ASCII 传输处理带有 LRC 校验的 Modbus ASCII 通信：
    finally:
        client.disconnect()
 
-异步客户端
+3.2 异步客户端
 ~~~~~~~~~~
 
 .. code-block:: python
@@ -174,10 +174,10 @@ ASCII 传输处理带有 LRC 校验的 Modbus ASCII 通信：
 
    asyncio.run(main())
 
-支持的功能码
+4. 支持的功能码
 ------------
 
-读取操作
+4.1 读取操作
 ~~~~~~~~
 
 **读取线圈 (0x01)**
@@ -224,7 +224,7 @@ ASCII 传输处理带有 LRC 校验的 Modbus ASCII 通信：
    )
    # 返回: [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
 
-写入操作
+4.2 写入操作
 ~~~~~~~~
 
 **写单个线圈 (0x05)**
@@ -267,12 +267,12 @@ ASCII 传输处理带有 LRC 校验的 Modbus ASCII 通信：
        values=[1000, 2000, 3000, 4000, 5000]
    )
 
-高级数据类型
+5. 高级数据类型
 ------------
 
-ModbusLink 提供常见数据类型的内置支持：
+ModbusLink 提供常见数据类型的内置支持，只列举"32位浮点数/32位整数/32位无符号整数"，全部包含"32位浮点数/32位整数/32位无符号整数/64位整数/64位无符号整数/字符串"：
 
-32位浮点数
+5.1 32位浮点数
 ~~~~~~~~~~
 
 .. code-block:: python
@@ -294,7 +294,7 @@ ModbusLink 提供常见数据类型的内置支持：
        word_order='big'
    )
 
-32位整数
+5.2 32位整数
 ~~~~~~~~
 
 .. code-block:: python
@@ -316,7 +316,7 @@ ModbusLink 提供常见数据类型的内置支持：
        word_order='big'
    )
 
-32位无符号整数
+5.3 32位无符号整数
 ~~~~~~~~~~~~~~
 
 .. code-block:: python
@@ -338,7 +338,7 @@ ModbusLink 提供常见数据类型的内置支持：
        word_order='big'
    )
 
-字节序和字序
+5.4 字节序和字序
 ~~~~~~~~~~~~
 
 ModbusLink 支持不同的字节序和字序：
@@ -354,7 +354,7 @@ ModbusLink 支持不同的字节序和字序：
    value3 = client.read_float32(1, 100, byte_order='little', word_order='big')   # <AB
    value4 = client.read_float32(1, 100, byte_order='little', word_order='little') # <BA
 
-回调机制
+6. 回调机制
 --------
 
 异步客户端支持操作完成通知的回调函数：
@@ -385,7 +385,7 @@ ModbusLink 支持不同的字节序和字序：
                callback=on_write_complete
            )
 
-并发操作
+7. 并发操作
 --------
 
 异步客户端支持并发操作以提高性能：
@@ -406,7 +406,7 @@ ModbusLink 支持不同的字节序和字序：
            results = await asyncio.gather(*tasks)
            print(f"并发结果: {results}")
 
-性能优化
+8. 性能优化
 --------
 
 为了获得最佳性能，请考虑以下建议：
@@ -419,26 +419,29 @@ ModbusLink 支持不同的字节序和字序：
 
 4. **合理设置超时**: 根据网络条件调整超时值。
 
-错误处理
+9. 错误处理
 --------
 
 ModbusLink 提供全面的错误处理：
 
-异常类型
+9.1 异常类型
 ~~~~~~~~
 
 .. code-block:: python
 
    from modbuslink import (
-       ModbusLinkError,      # 基础异常
-       ConnectionError,      # 连接问题
-       TimeoutError,         # 请求超时
-       CRCError,            # CRC 验证失败
-       InvalidResponseError, # 无效响应格式
-       ModbusException      # Modbus 协议错误
+       ModbusLinkError      # 基础异常基类
+       CommunicationError   # 通信错误基类 (广范围)
+       ConnectError         # 连接错误异常
+       TimeOutError         # 超时错误异常
+       ValidationError      # 数据校验错误基类 (广范围)
+       CrcError             # CRC校验错误异常
+       LrcError             # LRC校验错误异常
+       InvalidReplyError    # 无效响应错误异常
+       ModbusException      # 协议错误
    )
 
-错误处理示例
+9.2 错误处理示例
 ~~~~~~~~~~~~
 
 .. code-block:: python
@@ -447,12 +450,16 @@ ModbusLink 提供全面的错误处理：
        client.connect()
        registers = client.read_holding_registers(slave_id=1, start_address=0, quantity=10)
        
-   except ConnectionError as e:
+   except ConnectError as e:
        print(f"连接失败: {e}")
-   except TimeoutError as e:
+   except TimeOutError as e:
        print(f"请求超时: {e}")
    except CRCError as e:
        print(f"CRC 验证失败: {e}")
+   except LrcError as e:
+       print(f"LRC 验证失败: {e}")
+   except InvalidReplyError as e:
+       print(f"无效响应失败: {e}")
    except ModbusException as e:
        print(f"Modbus 错误码 {e.error_code}: {e}")
    except ModbusLinkError as e:
@@ -462,7 +469,7 @@ ModbusLink 提供全面的错误处理：
    finally:
        client.disconnect()
 
-日志记录
+10. 日志记录
 --------
 
 ModbusLink 包含全面的日志系统：
@@ -470,7 +477,7 @@ ModbusLink 包含全面的日志系统：
 .. code-block:: python
 
    import logging
-   from modbuslink.utils.logger import setup_logging
+   from modbuslink.logger import setup_logging
 
    # 启用调试日志
    setup_logging(level=logging.DEBUG)
@@ -481,7 +488,7 @@ ModbusLink 包含全面的日志系统：
        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
    )
 
-最佳实践
+11. 最佳实践
 --------
 
 1. **使用上下文管理器**: 始终使用 ``with`` 语句或 ``async with`` 进行自动资源管理。

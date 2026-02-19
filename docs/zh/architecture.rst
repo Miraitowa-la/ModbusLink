@@ -1,16 +1,12 @@
 架构设计
 ========
 
-.. contents:: 本页内容
-   :local:
-   :depth: 2
-
-概述
+1. 概述
 ----
 
 ModbusLink 采用**现代分层架构**设计，严格遵循**单一职责原则**和**开闭原则**，确保代码的可维护性、可扩展性和可测试性。
 
-整体架构图
+2. 整体架构图
 ----------
 
 .. code-block:: text
@@ -43,7 +39,7 @@ ModbusLink 采用**现代分层架构**设计，严格遵循**单一职责原则
    │                  以太网 / 串口 / 其他                       │
    └─────────────────────────────────────────────────────────────┘
 
-核心设计原则
+3. 核心设计原则
 ------------
 
 1. **分层架构** (Layered Architecture)
@@ -63,43 +59,51 @@ ModbusLink 采用**现代分层架构**设计，严格遵循**单一职责原则
    - 不同传输方式作为不同策略
    - 运行时切换传输策略
 
-传输层设计
+5. 传输层设计
 ----------
 
-传输层架构
+5.1 传输层架构
 ~~~~~~~~~~
 
 .. code-block:: text
 
-   BaseTransport (ABC)
-   ├── TcpTransport
-   ├── RtuTransport  
-   └── AsciiTransport
+   SyncBaseTransport (ABC)
+   ├── SyncTcpTransport
+   ├── SyncRtuTransport
+   └── SyncAsciiTransport
 
    AsyncBaseTransport (ABC)
    ├── AsyncTcpTransport
    ├── AsyncRtuTransport
    └── AsyncAsciiTransport
 
-核心接口
+5.2 核心接口
 ~~~~~~~~
 
 **同步传输接口**
 
 .. code-block:: python
 
-   class BaseTransport(ABC):
+   class SyncBaseTransport(ABC):
        @abstractmethod
-       def connect(self) -> None:
-           """建立连接"""
+       def open(self) -> None:
+           """打开传输连接"""
            
        @abstractmethod  
-       def disconnect(self) -> None:
-           """断开连接"""
+       def close(self) -> None:
+           """关闭传输连接"""
            
        @abstractmethod
-       def send_and_receive(self, data: bytes) -> bytes:
-           """发送数据并接收响应"""
+       def is_open(self) -> bool:
+           """检查连接状态"""
+
+       @abstractmethod
+       def flush(self) -> int:
+           """同步清空接收缓冲区中的所有待处理数据"""
+
+       @abstractmethod
+       def send_and_receive(self, slave_id: int, pdu: bytes, timeout: Optional[float] = None) -> bytes:
+           """发送PDU并接收响应"""
 
 **异步传输接口**
 
@@ -107,18 +111,26 @@ ModbusLink 采用**现代分层架构**设计，严格遵循**单一职责原则
 
    class AsyncBaseTransport(ABC):
        @abstractmethod
-       async def connect(self) -> None:
-           """异步建立连接"""
-           
-       @abstractmethod
-       async def disconnect(self) -> None:
-           """异步断开连接"""
-           
-       @abstractmethod  
-       async def send_and_receive(self, data: bytes) -> bytes:
-           """异步发送数据并接收响应"""
+       async def open(self) -> None:
+           """异步打开传输连接"""
 
-传输实现细节
+       @abstractmethod
+       async def close(self) -> None:
+           """异步关闭传输连接"""
+
+       @abstractmethod
+       def is_open(self) -> bool:
+           """检查连接状态"""
+
+       @abstractmethod
+       async def flush(self) -> int:
+           """异步清空接收缓冲区中的所有待处理数据"""
+
+       @abstractmethod
+       async def send_and_receive(self, slave_id: int, pdu: bytes, timeout: Optional[float] = None) -> bytes:
+           """异步发送PDU并接收响应"""
+
+5.3 传输实现细节
 ~~~~~~~~~~~~
 
 **TCP传输 (Modbus TCP)**
@@ -164,10 +176,10 @@ ModbusLink 采用**现代分层架构**设计，严格遵循**单一职责原则
 - **LRC**: 纵向冗余校验
 - **End**: 回车换行 (CR LF)
 
-客户端层设计
+6. 客户端层设计
 ------------
 
-客户端架构
+6.1 客户端架构
 ~~~~~~~~~~
 
 .. code-block:: text
@@ -189,17 +201,17 @@ ModbusLink 采用**现代分层架构**设计，严格遵循**单一职责原则
                      │
    ┌─────────────────────────────────────┐
    │         传输层接口                   │
-   │  BaseTransport/AsyncBaseTransport   │
+   │SyncBaseTransport/AsyncBaseTransport │
    └─────────────────────────────────────┘
 
-设计模式应用
+6.2 设计模式应用
 ~~~~~~~~~~~~
 
 **模板方法模式**
 
 .. code-block:: python
 
-   class ModbusClient:
+   class SyncModbusClient:
        def _execute_request(self, slave_id: int, function_code: int, 
                           data: bytes) -> bytes:
            """模板方法：定义请求执行流程"""
@@ -227,10 +239,10 @@ ModbusLink 采用**现代分层架构**设计，严格遵循**单一职责原则
            return func(self, *args, **kwargs)
        return wrapper
 
-服务器层设计
+7. 服务器层设计
 ------------
 
-服务器架构
+7.1 服务器架构
 ~~~~~~~~~~
 
 .. code-block:: text
@@ -250,7 +262,7 @@ ModbusLink 采用**现代分层架构**设计，严格遵循**单一职责原则
    │   TCP/RTU/ASCII服务器实现           │
    └─────────────────────────────────────┘
 
-数据存储设计
+7.2 数据存储设计
 ~~~~~~~~~~~~
 
 .. code-block:: python
@@ -268,55 +280,53 @@ ModbusLink 采用**现代分层架构**设计，严格遵循**单一职责原则
            self._input_registers = [0] * input_registers_size
            self._lock = threading.RLock()  # 可重入锁
 
-工具层设计
+8. 工具层设计
 ----------
 
-工具组件
+8.1 工具组件
 ~~~~~~~~
 
 1. **CRC计算器**
-   - 实现Modbus标准CRC-16算法
+   - 实现ModbusRTU标准CRC-16算法
    - 支持表查找优化
+
+2. **LRC计算器**
+   - 实现ModbusASCII标准LRC算法
+   - 支持验证数据
 
 2. **数据编码器**
    - 大小端字节序转换
    - 各种数据类型编解码
 
-3. **日志系统**
-   - 协议级调试信息
-   - 可配置日志级别
-
-错误处理架构
+9. 错误处理架构
 ------------
 
-异常层次结构
+9.1 异常层次结构
 ~~~~~~~~~~~~
 
 .. code-block:: text
 
-   ModbusLinkError (基础异常)
-   ├── ConnectionError (连接相关)
-   │   ├── ConnectionTimeoutError
-   │   └── ConnectionRefusedError
-   ├── ProtocolError (协议相关)
-   │   ├── CRCError
-   │   ├── InvalidResponseError
-   │   └── FunctionCodeError
-   └── DataError (数据相关)
-       ├── AddressError
-       └── ValueRangeError
+   ModbusLinkError (基础异常基类)
+   ├── CommunicationError (通信错误基类)
+   │   ├── ConnectError (连接错误异常)
+   │   └── TimeOutError (超时错误异常)
+   ├── ValidationError (数据校验错误基类)
+   │   ├── CrcError (CRC校验错误异常)
+   │   ├── LrcError (LRC校验错误异常)
+   │   └── InvalidReplyError (无效响应错误异常)
+   └── ModbusException (协议错误)
 
-异常处理策略
+9.2 异常处理策略
 ~~~~~~~~~~~~
 
 1. **传输层异常**: 网络、串口通信错误
 2. **协议层异常**: Modbus协议格式错误
 3. **应用层异常**: 业务逻辑错误
 
-性能优化设计
+10. 性能优化设计
 ------------
 
-连接池
+10.1 连接池
 ~~~~~~
 
 .. code-block:: python
@@ -334,7 +344,7 @@ ModbusLink 采用**现代分层架构**设计，严格遵循**单一职责原则
        async def release(self, client: AsyncModbusClient):
            """释放连接"""
 
-批量操作优化
+10.2 批量操作优化
 ~~~~~~~~~~~~
 
 .. code-block:: python
@@ -348,10 +358,10 @@ ModbusLink 采用**现代分层架构**设计，严格遵循**单一职责原则
        tasks = [self._read_registers(**req) for req in optimized_requests]
        return await asyncio.gather(*tasks)
 
-扩展性设计
+11. 扩展性设计
 ----------
 
-插件架构
+11.1 插件架构
 ~~~~~~~~
 
 .. code-block:: python
@@ -360,14 +370,14 @@ ModbusLink 采用**现代分层架构**设计，严格遵循**单一职责原则
        """Modbus插件基类"""
        
        @abstractmethod
-       def on_request(self, request: ModbusRequest) -> ModbusRequest:
+       def on_request(self, request: SyncModbusRequest) -> SyncModbusRequest:
            """请求预处理"""
            
        @abstractmethod  
-       def on_response(self, response: ModbusResponse) -> ModbusResponse:
+       def on_response(self, response: SyncModbusResponse) -> SyncModbusResponse:
            """响应后处理"""
 
-自定义传输层
+11.2 自定义传输层
 ~~~~~~~~~~~~
 
 .. code-block:: python
@@ -383,7 +393,7 @@ ModbusLink 采用**现代分层架构**设计，严格遵循**单一职责原则
            response = await self._websocket.recv()
            return response
 
-总结
+12. 总结
 ----
 
 ModbusLink的架构设计具有以下优势：
