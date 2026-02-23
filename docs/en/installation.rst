@@ -1,15 +1,11 @@
 Installation Guide
 ==================
 
-.. contents:: Table of Contents
-   :local:
-   :depth: 2
+1. System Requirements
+----------------------
 
-System Requirements
--------------------
-
-Basic Requirements
-~~~~~~~~~~~~~~~~~
+1.1 Basic Requirements
+~~~~~~~~~~~~~~~~~~~~~~
 
 .. list-table:: 
    :widths: 20 80
@@ -26,131 +22,68 @@ Basic Requirements
    * - **Storage**
      - Approximately 10MB disk space
 
-Dependencies
-~~~~~~~~~~~~
-
-**Required Dependencies**
+1.2 Dependencies
+~~~~~~~~~~~~~~~~
 
 - **Python Standard Library**: asyncio, threading, struct, socket
-- **No External Dependencies**: Core functionality requires no additional packages
+- **External Dependencies**: pyserial, pyserial-asyncio, typing_extensions
 
-**Optional Dependencies**
+2. Quick Installation
+---------------------
 
-.. code-block:: bash
+2.1 Install from PyPI (Recommended)
+~~~~~~~~~~~~~~~~~~
 
-   # Serial communication support (RTU/ASCII)
-   pip install pyserial>=3.5
-   
-   # Async serial support
-   pip install pyserial-asyncio>=0.6
-   
-   # Development tools
-   pip install pytest>=7.0 black>=22.0 ruff>=0.1.0
-
-Quick Installation
-------------------
-
-Install from PyPI (Recommended)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Latest Version Installation**
 
 .. code-block:: bash
 
    # Basic installation
    pip install modbuslink
-   
-   # Include serial support
-   pip install modbuslink[serial]
-   
-   # Include development dependencies
-   pip install modbuslink[dev]
-   
-   # Complete installation (all features)
-   pip install modbuslink[all]
-
-.. note::
-   
-   If you only need TCP functionality, the basic installation is sufficient. Serial functionality requires the ``pyserial`` dependency.
-
-Verify Installation
-~~~~~~~~~~~~~~~~~~
-
-.. code-block:: python
-
-   import modbuslink
-   print(f"ModbusLink version: {modbuslink.__version__}")
-   
-   # Check available components
-   from modbuslink import ModbusClient, TcpTransport
-   print("✅ TCP functionality available")
-   
-   try:
-       from modbuslink import RtuTransport
-       print("✅ RTU functionality available")
-   except ImportError:
-       print("❌ RTU functionality unavailable - need to install pyserial")
-
-Advanced Installation
----------------------
-
-Install from Source
-~~~~~~~~~~~~~~~~~~
-
-**Developer Installation**
-
-.. code-block:: bash
-
-   # Clone repository
-   git clone https://github.com/Miraitowa-la/ModbusLink.git
-   cd ModbusLink
-   
-   # Create virtual environment
-   python -m venv venv
-   
-   # Activate virtual environment
-   # Windows:
-   venv\Scripts\activate
-   # Linux/macOS:
-   source venv/bin/activate
-   
-   # Install as editable package
-   pip install -e ".[dev]"
 
 **Specific Version Installation**
 
 .. code-block:: bash
 
    # Install specific version
-   pip install modbuslink==1.0.0
-   
-   # Install pre-release version
-   pip install --pre modbuslink
-   
-   # Install latest from GitHub
-   pip install git+https://github.com/Miraitowa-la/ModbusLink.git
+   pip install modbuslink==1.4.0
 
-Docker Installation
-~~~~~~~~~~~~~~~~~~
+2.2 Install from Source
+~~~~~~~~~~~~~~~~~~~~~~~
 
-.. code-block:: dockerfile
+.. code-block:: bash
 
-   # Dockerfile example
-   FROM python:3.11-slim
-   
-   # Install ModbusLink
-   RUN pip install modbuslink[all]
-   
-   # Copy application code
-   COPY . /app
-   WORKDIR /app
-   
-   # Run application
-   CMD ["python", "your_modbus_app.py"]
+   # Clone repository
+   git clone https://github.com/Miraitowa-la/ModbusLink.git
+   cd ModbusLink
 
-Environment Configuration
--------------------------
+   # Create virtual environment...
 
-Serial Port Permissions (Linux/macOS)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   # Install as editable package
+   pip install -e .
+
+2.3 Verify Installation
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: python
+
+   import modbuslink
+   print(f"ModbusLink version: {modbuslink.__version__}")
+
+   from modbuslink import SyncTcpTransport
+   print("✅ TCP functionality available")
+
+   from modbuslink import SyncRtuTransport
+   print("✅ RTU functionality available")
+
+   from modbuslink import SyncAsciiTransport
+   print("✅ ASCII functionality available")
+
+3. Environment Configuration
+----------------------------
+
+3.1 Serial Port Permissions (Linux/macOS)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Ubuntu/Debian**
 
@@ -184,19 +117,19 @@ Serial Port Permissions (Linux/macOS)
    
    # Usually no special permissions needed
 
-Windows Serial Port Configuration
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+3.2 Windows Serial Port Configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. **Check Device Manager** for port information
 2. **Confirm COM port number** (e.g., COM1, COM3)
 3. **Verify driver installation** is correct
-4. **Firewall settings**: Ensure Python applications have network permissions (for TCP functionality)
+4. **Firewall settings** Ensure Python applications have network permissions (for TCP functionality)
 
-Troubleshooting
----------------
+4. Troubleshooting
+------------------
 
-Common Installation Issues
-~~~~~~~~~~~~~~~~~~~~~~~~~
+4.1 Common Installation Issues
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **ImportError: No module named 'serial'**
 
@@ -234,8 +167,8 @@ Common Installation Issues
    clean_env\Scripts\activate     # Windows
    pip install modbuslink
 
-Serial Port Diagnostics
-~~~~~~~~~~~~~~~~~~~~~~~
+4.2 Serial Port Diagnostics
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Check Serial Port Availability**
 
@@ -262,8 +195,8 @@ Serial Port Diagnostics
    except Exception as e:
        print(f"❌ Serial port connection failed: {e}")
 
-Network Diagnostics
-~~~~~~~~~~~~~~~~~~~
+4.3 Network Diagnostics
+~~~~~~~~~~~~~~~~~~~~~~~
 
 **Test TCP Connection**
 
@@ -286,34 +219,24 @@ Network Diagnostics
    else:
        print("❌ TCP connection failed")
 
-Performance Tuning
-------------------
+5. Performance Tuning
+---------------------
 
-Production Environment Configuration
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+5.1 Timeout Settings
+~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
-   # Recommended production environment configuration
-   import asyncio
-   from modbuslink import AsyncModbusClient, AsyncTcpTransport
-   
-   # Connection pool configuration
+   from modbuslink import AsyncTcpTransport
+
    transport = AsyncTcpTransport(
        host='192.168.1.100',
        port=502,
-       timeout=5.0,           # Moderate timeout
-       connect_timeout=3.0,   # Connection timeout
-       keepalive=True         # Keep connection alive
+       timeout=5.0  # Moderate timeout
    )
-   
-   # Async event loop optimization
-   if hasattr(asyncio, 'WindowsSelectorEventLoopPolicy'):
-       # Windows optimization
-       asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
-Memory Optimization
-~~~~~~~~~~~~~~~~~~
+5.2 Memory Optimization
+~~~~~~~~
 
 .. code-block:: python
 
@@ -323,15 +246,12 @@ Memory Optimization
        start_address=0, 
        quantity=100  # Read multiple registers at once
    )
-   
-   # Avoid frequent client object creation
-   # Use connection pools or long connections
 
-Upgrade Guide
--------------
+6. Upgrade Guide
+--------
 
-Upgrading from Older Versions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+6.1 Upgrading from Older Versions
+~~~~~~~~~~~~
 
 .. code-block:: bash
 
@@ -348,8 +268,8 @@ Upgrading from Older Versions
    
    Before upgrading, please check :doc:`changelog` for breaking changes.
 
-Next Steps
-----------
+7. Next Steps
+-------------
 
 After installation, we recommend:
 

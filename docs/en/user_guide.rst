@@ -3,57 +3,57 @@ User Guide
 
 This comprehensive guide covers all aspects of using ModbusLink.
 
-Architecture Overview
----------------------
+1. Architecture Overview
+------------------------
 
 ModbusLink is built on a clean, layered architecture that separates concerns and promotes code reusability:
 
 .. code-block:: text
 
-   ┌─────────────────────────────────────┐
-   │           Client Layer              │
-   │  (ModbusClient, AsyncModbusClient)  │
-   ├─────────────────────────────────────┤
-   │          Transport Layer            │
-   │   (TcpTransport, RtuTransport,      │
-   │    AsciiTransport, AsyncTcpTransport,│
-   │    AsyncRtuTransport, AsyncAsciiTransport)│
-   ├─────────────────────────────────────┤
-   │           Utility Layer             │
-   │  (CRC16, PayloadCoder, Logger)      │
-   └─────────────────────────────────────┘
+   ┌─────────────────────────────────────────┐
+   │           Client Layer                   │
+   │  (SyncModbusClient, AsyncModbusClient)  │
+   ├─────────────────────────────────────────┤
+   │           Transport Layer                │
+   │ (SyncTcpTransport, SyncRtuTransport,    │
+   │  SyncAsciiTransport, AsyncTcpTransport, │
+   │  AsyncRtuTransport, AsyncAsciiTransport)│
+   ├─────────────────────────────────────────┤
+   │           Utility Layer                  │
+   │      (CRC16, CRC16, PayloadCoder)       │
+   └─────────────────────────────────────────┘
 
-Transport Layer
----------------
+2. Transport Layer
+------------------
 
 The transport layer handles the low-level communication details.
 
-TCP Transport
-~~~~~~~~~~~~~
+2.1 TCP Transport
+~~~~~~~~~~~~~~~~~
 
-The TCP transport handles Modbus TCP communication with MBAP header management:
+TCP transport handles Modbus TCP communication with MBAP header management:
 
 .. code-block:: python
 
-   from modbuslink import TcpTransport
+   from modbuslink import SyncTcpTransport
 
-   transport = TcpTransport(
+   transport = SyncTcpTransport(
        host='192.168.1.100',
        port=502,
        timeout=10.0
    )
 
-RTU Transport
-~~~~~~~~~~~~~
+2.2 RTU Transport
+~~~~~~~~~~~~~~~~~
 
-The RTU transport handles Modbus RTU communication with CRC16 validation:
+RTU transport handles Modbus RTU communication with CRC16 verification:
 
 .. code-block:: python
 
-   from modbuslink import RtuTransport
+   from modbuslink import SyncRtuTransport
 
-   transport = RtuTransport(
-       port='/dev/ttyUSB0',  # or 'COM1' on Windows
+   transport = SyncRtuTransport(
+       port='/dev/ttyUSB0',  # Use 'COM1' on Windows
        baudrate=9600,
        bytesize=8,
        parity='N',
@@ -61,8 +61,8 @@ The RTU transport handles Modbus RTU communication with CRC16 validation:
        timeout=1.0
    )
 
-Async TCP Transport
-~~~~~~~~~~~~~~~~~~~
+2.3 Async TCP Transpor
+~~~~~~~~~~~~~~~~~~~~~~
 
 For high-performance applications, use the async TCP transport:
 
@@ -76,8 +76,8 @@ For high-performance applications, use the async TCP transport:
        timeout=10.0
    )
 
-ASCII Transport
-~~~~~~~~~~~~~~~
+2.4 ASCII Transport
+~~~~~~~~~~~~~~~~~~~
 
 The ASCII transport handles Modbus ASCII communication with LRC validation:
 
@@ -94,8 +94,8 @@ The ASCII transport handles Modbus ASCII communication with LRC validation:
        timeout=1.0
    )
 
-Async RTU Transport
-~~~~~~~~~~~~~~~~~~~
+2.5 Async RTU Transport
+~~~~~~~~~~~~~~~~~~~~~~~
 
 For high-performance RTU applications, use the async RTU transport:
 
@@ -109,8 +109,8 @@ For high-performance RTU applications, use the async RTU transport:
        timeout=3.0
    )
 
-Async ASCII Transport
-~~~~~~~~~~~~~~~~~~~~~
+2.6 Async ASCII Transport
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 For high-performance ASCII applications, use the async ASCII transport:
 
@@ -124,20 +124,20 @@ For high-performance ASCII applications, use the async ASCII transport:
        timeout=3.0
    )
 
-Client Layer
-------------
+3. Client Layer
+---------------
 
 The client layer provides high-level Modbus operations.
 
-Synchronous Client
-~~~~~~~~~~~~~~~~~~
+3.1 Synchronous Client
+~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
-   from modbuslink import ModbusClient, TcpTransport
+   from modbuslink import SyncModbusClient, SyncTcpTransport
 
-   transport = TcpTransport(host='192.168.1.100', port=502)
-   client = ModbusClient(transport)
+   transport = SyncTcpTransport(host='192.168.1.100', port=502)
+   client = SyncModbusClient(transport)
 
    # Context manager (recommended)
    with client:
@@ -154,8 +154,8 @@ Synchronous Client
    finally:
        client.disconnect()
 
-Asynchronous Client
-~~~~~~~~~~~~~~~~~~~
+3.2 Asynchronous Client
+~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -174,11 +174,11 @@ Asynchronous Client
 
    asyncio.run(main())
 
-Supported Function Codes
-------------------------
+4. Supported Function Codes
+---------------------------
 
-Read Operations
-~~~~~~~~~~~~~~~
+4.1 Read Operations
+~~~~~~~~~~~~~~~~~~~
 
 **Read Coils (0x01)**
 
@@ -224,8 +224,8 @@ Read Operations
    )
    # Returns: [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000]
 
-Write Operations
-~~~~~~~~~~~~~~~~
+4.2 Write Operations
+~~~~~~~~~~~~~~~~~~~~
 
 **Write Single Coil (0x05)**
 
@@ -267,13 +267,13 @@ Write Operations
        values=[1000, 2000, 3000, 4000, 5000]
    )
 
-Advanced Data Types
--------------------
+5. Advanced Data Types
+----------------------
 
-ModbusLink provides built-in support for common data types:
+ModbusLink provides built-in support for common data types, including "32-bit float/32-bit integer/32-bit unsigned integer", all including "32-bit float/32-bit integer/32-bit unsigned integer/64-bit integer/64-bit unsigned integer/string":
 
-32-bit Float
-~~~~~~~~~~~~
+5.1 32-bit Float
+~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -294,8 +294,8 @@ ModbusLink provides built-in support for common data types:
        word_order='big'
    )
 
-32-bit Integer
-~~~~~~~~~~~~~~
+5.2 32-bit Integer
+~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -316,8 +316,8 @@ ModbusLink provides built-in support for common data types:
        word_order='big'
    )
 
-32-bit Unsigned Integer
-~~~~~~~~~~~~~~~~~~~~~~~
+5.3 32-bit Unsigned Integer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -338,8 +338,8 @@ ModbusLink provides built-in support for common data types:
        word_order='big'
    )
 
-Byte and Word Order
-~~~~~~~~~~~~~~~~~~~
+5.4 Byte and Word Order
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ModbusLink supports different byte and word orders:
 
@@ -354,8 +354,8 @@ ModbusLink supports different byte and word orders:
    value3 = client.read_float32(1, 100, byte_order='little', word_order='big')   # <AB
    value4 = client.read_float32(1, 100, byte_order='little', word_order='little') # <BA
 
-Callback Mechanism
-------------------
+6. Callback Mechanism
+---------------------
 
 Async clients support callback functions for operation completion notifications:
 
@@ -385,8 +385,8 @@ Async clients support callback functions for operation completion notifications:
                callback=on_write_complete
            )
 
-Concurrent Operations
----------------------
+7. Concurrent Operations
+------------------------
 
 Async clients support concurrent operations for improved performance:
 
@@ -406,8 +406,8 @@ Async clients support concurrent operations for improved performance:
            results = await asyncio.gather(*tasks)
            print(f"Concurrent results: {results}")
 
-Performance Optimization
-------------------------
+8. Performance Optimization
+---------------------------
 
 For optimal performance, consider the following recommendations:
 
@@ -419,27 +419,30 @@ For optimal performance, consider the following recommendations:
 
 4. **Proper Timeouts**: Adjust timeout values based on network conditions.
 
-Error Handling
---------------
+9. Error Handling
+-----------------
 
 ModbusLink provides comprehensive error handling:
 
-Exception Types
-~~~~~~~~~~~~~~~
+9.1 Exception Types
+~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
    from modbuslink import (
-       ModbusLinkError,      # Base exception
-       ConnectionError,      # Connection issues
-       TimeoutError,         # Request timeout
-       CRCError,            # CRC validation failure
-       InvalidResponseError, # Invalid response format
-       ModbusException      # Modbus protocol errors
+       ModbusLinkError      # Base exception class
+       CommunicationError   # Communication error base class (broad scope)
+       ConnectError         # Connection error exception
+       TimeOutError         # Timeout error exception
+       ValidationError      # Data validation error base class (broad scope)
+       CrcError             # CRC verification error exception
+       LrcError             # LRC verification error exception
+       InvalidReplyError    # Invalid response error exception
+       ModbusException      # Protocol error
    )
 
-Error Handling Example
-~~~~~~~~~~~~~~~~~~~~~~
+9.2 Error Handling Example
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -447,12 +450,16 @@ Error Handling Example
        client.connect()
        registers = client.read_holding_registers(slave_id=1, start_address=0, quantity=10)
        
-   except ConnectionError as e:
+   except ConnectError as e:
        print(f"Connection failed: {e}")
-   except TimeoutError as e:
-       print(f"Request timed out: {e}")
+   except TimeOutError as e:
+       print(f"Request timeout: {e}")
    except CRCError as e:
-       print(f"CRC validation failed: {e}")
+       print(f"CRC verification failed: {e}")
+   except LrcError as e:
+       print(f"LRC verification failed: {e}")
+   except InvalidReplyError as e:
+       print(f"Invalid response failed: {e}")
    except ModbusException as e:
        print(f"Modbus error code {e.error_code}: {e}")
    except ModbusLinkError as e:
@@ -462,15 +469,15 @@ Error Handling Example
    finally:
        client.disconnect()
 
-Logging
--------
+10. Logging
+-----------
 
 ModbusLink includes a comprehensive logging system:
 
 .. code-block:: python
 
    import logging
-   from modbuslink.utils.logger import setup_logging
+   from modbuslink.logger import setup_logging
 
    # Enable debug logging
    setup_logging(level=logging.DEBUG)
@@ -481,8 +488,8 @@ ModbusLink includes a comprehensive logging system:
        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
    )
 
-Best Practices
---------------
+11. Best Practices
+------------------
 
 1. **Use Context Managers**: Always use ``with`` statements or ``async with`` for automatic resource management.
 

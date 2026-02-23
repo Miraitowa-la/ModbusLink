@@ -1,22 +1,18 @@
 Troubleshooting Guide
-====================
+=====================
 
-.. contents:: Table of Contents
-   :local:
-   :depth: 3
+This guide will help you quickly diagnose and resolve common issues encountered when using ModbusLink (this document may have historical legacy issues, please let me know).
 
-This guide will help you quickly diagnose and resolve common issues when using ModbusLink.
+1. Connection Issues
+--------------------
 
-Connection Issues
-=================
-
-TCP Connection Problems
------------------------
-
-Network Connection Failures
+1.1 TCP Connection Problems
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Symptoms**:
+Network Connection Failures
+**************************
+
+**Problem Symptoms**:
 ``ConnectionError: [Errno 10061] Connection refused`` or similar network errors
 
 **Resolution Steps**:
@@ -60,7 +56,7 @@ Network Connection Failures
       nmap -p 502 192.168.1.100
 
 Connection Timeouts
-~~~~~~~~~~~~~~~~~~
+*******************
 
 **Symptoms**:
 ``TimeoutError: Connection timeout after 10.0 seconds``
@@ -69,17 +65,17 @@ Connection Timeouts
 
 .. code-block:: python
 
-   from modbuslink import ModbusClient, TcpTransport
+   from modbuslink import SyncModbusClient, SyncTcpTransport
    
    # Adjust timeout settings
-   transport = TcpTransport(
+   transport = SyncTcpTransport(
        host='192.168.1.100',
        port=502,
        timeout=30.0,          # Increase timeout
        connect_timeout=10.0   # Connection timeout
    )
    
-   client = ModbusClient(transport)
+   client = SyncModbusClient(transport)
    
    # Implement retry mechanism
    import time
@@ -95,11 +91,11 @@ Connection Timeouts
                    time.sleep(2)  # Wait 2 seconds before retry
        return False
 
-Serial Connection Problems
---------------------------
+1.2 Serial Connection Problems
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Port Already in Use
-~~~~~~~~~~~~~~~~~~
+*******************
 
 **Symptoms**:
 ``SerialException: [Errno 16] Device or resource busy``
@@ -133,10 +129,10 @@ Port Already in Use
    
    .. code-block:: python
    
-      from modbuslink import ModbusClient, RtuTransport
+      from modbuslink import SyncModbusClient, SyncRtuTransport
       
-      transport = RtuTransport(port='COM3', baudrate=9600)
-      client = ModbusClient(transport)
+      transport = SyncRtuTransport(port='COM3', baudrate=9600)
+      client = SyncModbusClient(transport)
       
       try:
           with client:  # Automatic connection management
@@ -146,7 +142,7 @@ Port Already in Use
       # Connection will be closed automatically
 
 Serial Permission Issues
-~~~~~~~~~~~~~~~~~~~~~~~
+************************
 
 **Symptoms** (Linux/macOS):
 ``SerialException: [Errno 13] Permission denied``
@@ -165,11 +161,11 @@ Serial Permission Issues
    # Or temporarily change permissions
    sudo chmod 666 /dev/ttyUSB0
 
-Protocol Errors
-===============
-
-CRC Check Failures
+2. Protocol Errors
 ------------------
+
+2.1 Check Failures
+~~~~~~~~~~~~~~~~~~
 
 **Symptoms**:
 ``CRCError: CRC check failed. Expected: 0x1234, Got: 0x5678``
@@ -196,15 +192,15 @@ CRC Check Failures
    
    .. code-block:: python
    
-      from modbuslink.utils.crc import CRC16Modbus
+      from modbuslink import CRC16Modbus
       
       # Manually verify CRC
       data = b'\x01\x03\x00\x00\x00\x05'
       crc = CRC16Modbus.calculate(data)
       print(f"Calculated CRC: 0x{crc:04X}")
 
-Invalid Response Errors
------------------------
+2.2 Invalid Response Errors
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Symptoms**:
 ``InvalidResponseError: Invalid function code in response``
@@ -249,11 +245,11 @@ Invalid Response Errors
           slaves = scan_slave_ids(client, 1, 10)
           print(f"Active slaves: {slaves}")
 
-Performance Issues
-==================
+3. Performance Issues
+---------------------
 
-Slow Read Operations
--------------------
+3.1 Slow Read Operations
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Optimization Strategies**:
 
@@ -300,8 +296,8 @@ Slow Read Operations
               data = client.read_holding_registers(1, 0, 10)
               # Process data
 
-High Memory Usage
-----------------
+3.2 High Memory Usage
+~~~~~~~~~~~~~~~~~~~~~
 
 **Solutions**:
 
@@ -338,11 +334,11 @@ High Memory Usage
               
               return processed
 
-Data Issues
-===========
+4. Data Issues
+--------------
 
-Data Type Conversion Errors
----------------------------
+4.1 Data Type Conversion Errors
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Symptoms**:
 Data reading results don't match expectations
@@ -386,8 +382,8 @@ Data reading results don't match expectations
       except ValueError as e:
           print(f"Data validation failed: {e}")
 
-String Encoding Issues
----------------------
+4.2 String Encoding Issues
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Symptoms**:
 String reading produces garbled text
@@ -420,19 +416,19 @@ String reading produces garbled text
            
            return "Decoding failed"
 
-Debugging and Monitoring
-========================
+5. Debugging and Monitoring
+----------
 
-Enable Verbose Logging
-----------------------
+5.1 Enable Verbose Logging
+~~~~~~~~~~~~
 
 .. code-block:: python
 
    import logging
-   from modbuslink.utils.logging import enable_debug_logging
+   from modbuslink.utils.logging import enable_protocol_debug
    
    # Enable ModbusLink debug logging
-   enable_debug_logging()
+   enable_protocol_debug()
    
    # Configure Python logging
    logging.basicConfig(
@@ -440,12 +436,12 @@ Enable Verbose Logging
        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
    )
    
-   # All operations will now show detailed information
+   # Now all operations will show detailed information
    with client:
        data = client.read_holding_registers(1, 0, 5)
 
-Protocol Packet Analysis
-------------------------
+5.2 Protocol Packet Analysis
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -467,8 +463,8 @@ Protocol Packet Analysis
    debug_transport = DebugTransport(original_transport)
    client = ModbusClient(debug_transport)
 
-Performance Monitoring
-----------------------
+5.3 Performance Monitoring
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -492,11 +488,11 @@ Performance Monitoring
        with measure_time("Write 10 registers"):
            client.write_multiple_registers(1, 0, list(range(10)))
 
-Common Error Reference
-=====================
+6. Common Error Reference
+-------------------------
 
-Error Code Lookup Table
------------------------
+6.1 Error Code Lookup Table
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. list-table:: 
    :widths: 15 25 60
@@ -527,11 +523,11 @@ Error Code Lookup Table
      - Value out of range
      - Check if write value is within allowed range
 
-Prevention Measures
-==================
+7. Prevention Measures
+----------------------
 
-Code Best Practices
--------------------
+7.1 Code Best Practices
+~~~~~~~~~~~~~~~~~~~~~~~
 
 1. **Always Use Context Managers**
    
@@ -573,8 +569,8 @@ Code Best Practices
               print(f"Health check failed: {e}")
               return False
 
-Getting Help
-============
+8. Getting Help
+---------------
 
 If issues persist, please:
 
@@ -584,5 +580,6 @@ If issues persist, please:
 4. **Check Device Manual** - Verify device's Modbus implementation details
 
 Contact Information:
+
 - GitHub: https://github.com/Miraitowa-la/ModbusLink/issues
 - Documentation: https://miraitowa-la.github.io/ModbusLink/

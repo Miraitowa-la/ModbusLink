@@ -1,34 +1,30 @@
 Quick Start
 ===========
 
-.. contents:: Table of Contents
-   :local:
-   :depth: 2
-
 Welcome to ModbusLink! This guide will help you master ModbusLink's core features in **5 minutes**.
 
 .. tip::
    
    Before starting, ensure ModbusLink is properly installed. If not, please refer to :doc:`installation`.
 
-Basic Concepts
---------------
+1. Basic Concepts
+-----------------
 
 ModbusLink uses a simple layered architecture with just two steps:
 
 1. **Create Transport Layer** - Handle low-level communication (TCP, RTU, ASCII)
 2. **Create Client** - Provide high-level Modbus operations
 
-30-Second Demo
-==============
+2. 30-Second Demo
+-----------------
 
 .. code-block:: python
 
-   from modbuslink import ModbusClient, TcpTransport
+   from modbuslink import SyncModbusClient, SyncTcpTransport
 
    # Connect to Modbus TCP device
-   transport = TcpTransport(host='192.168.1.100', port=502)
-   client = ModbusClient(transport)
+   transport = SyncTcpTransport(host='192.168.1.100', port=502)
+   client = SyncModbusClient(transport)
 
    with client:
        # Read temperature sensor (float32 format)
@@ -39,24 +35,24 @@ ModbusLink uses a simple layered architecture with just two steps:
        client.write_single_coil(slave_id=1, address=0, value=True)
        print("Pump started!")
 
-Main Transport Methods
-======================
+3. Main Transport Methods
+-------------------------
 
-TCP Transport (Ethernet)
-------------------------
+3.1 TCP Transport (Ethernet)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Use Cases**: PLCs, HMIs, Ethernet modules
 
 .. code-block:: python
 
-   from modbuslink import ModbusClient, TcpTransport
+   from modbuslink import SyncModbusClient, SyncTcpTransport
 
-   transport = TcpTransport(
+   transport = SyncTcpTransport(
        host='192.168.1.10',    # PLC IP address
        port=502,               # Standard Modbus TCP port
        timeout=5.0             # 5-second timeout
    )
-   client = ModbusClient(transport)
+   client = SyncModbusClient(transport)
    
    with client:
        # Read production counter
@@ -66,31 +62,31 @@ TCP Transport (Ethernet)
        # Update setpoint
        client.write_float32(slave_id=1, start_address=3000, value=75.5)
 
-RTU Transport (Serial)
-----------------------
+3.2 RTU Transport (Serial)
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Use Cases**: Field instruments, sensors, legacy devices
 
 .. code-block:: python
 
-   from modbuslink import ModbusClient, RtuTransport
+   from modbuslink import SyncModbusClient, SyncRtuTransport
 
-   transport = RtuTransport(
+   transport = SyncRtuTransport(
        port='COM3',            # Windows: COM3, Linux: /dev/ttyUSB0
        baudrate=9600,
        parity='N',
        stopbits=1,
        timeout=2.0
    )
-   client = ModbusClient(transport)
+   client = SyncModbusClient(transport)
    
    with client:
        # Read flow meter
        flow_rate = client.read_float32(slave_id=5, start_address=0)
        print(f"Flow rate: {flow_rate:.2f} L/min")
 
-Advanced Data Types
-===================
+4. Advanced Data Types
+----------------------
 
 ModbusLink provides built-in support for advanced data types:
 
@@ -109,8 +105,8 @@ ModbusLink provides built-in support for advanced data types:
        device_name = client.read_string(slave_id=1, start_address=400, length=16)
        client.write_string(slave_id=1, start_address=400, value="PLC-001")
 
-High-Performance Async Operations
-=================================
+5. High-Performance Async Operations
+------------------------------------
 
 For applications handling multiple devices, use async operations:
 
@@ -134,8 +130,8 @@ For applications handling multiple devices, use async operations:
 
    asyncio.run(read_multiple_plcs())
 
-Local Testing Environment
-=========================
+6. Local Testing Environment
+----------------------------
 
 If you don't have actual Modbus devices, you can use ModbusLink's built-in server simulator:
 
@@ -157,26 +153,26 @@ If you don't have actual Modbus devices, you can use ModbusLink's built-in serve
 
    asyncio.run(run_test_server())
 
-Error Handling
-==============
+7. Error Handling
+-----------------
 
 .. code-block:: python
 
    from modbuslink import (
-       ModbusClient, TcpTransport,
-       ConnectionError, TimeoutError
+       SyncModbusClient, SyncTcpTransport,
+       ConnectError, TimeOutError
    )
 
    try:
        with client:
            registers = client.read_holding_registers(1, 0, 10)
-   except ConnectionError:
+   except ConnectError:
        print("Connection failed, check network and IP address")
-   except TimeoutError:
+   except TimeOutError:
        print("Timeout, check device status")
 
-Next Steps
-==========
+8. Next Steps
+-------------
 
 Congratulations on completing the tutorial! Next you can:
 
@@ -184,6 +180,5 @@ Congratulations on completing the tutorial! Next you can:
 2. 🏗️ Learn :doc:`architecture` design
 3. 💡 Check :doc:`examples` for more real examples
 4. 📚 Reference :doc:`api_reference` for detailed API documentation
-5. ⚡ Study :doc:`performance` optimization techniques
 
 If you encounter issues, please check :doc:`troubleshooting` or submit an issue on GitHub.

@@ -1,50 +1,49 @@
 Architecture Design
 ===================
 
-.. contents:: Table of Contents
-   :local:
-   :depth: 2
-
-Overview
---------
+1. verview
+----------
 
 ModbusLink adopts a **modern layered architecture** design, strictly following the **Single Responsibility Principle** and **Open/Closed Principle** to ensure code maintainability, extensibility, and testability.
 
-Overall Architecture Diagram
------------------------------
+2. Overall Architecture Diagram
+-------------------------------
 
 .. code-block:: text
 
    ┌─────────────────────────────────────────────────────────────┐
-   │                  Application Layer                          │
+   │                      Application Layer                      │
    │                 User Code and Business Logic                │
    └─────────────────────────────────────────────────────────────┘
                                     │
    ┌─────────────────────────────────────────────────────────────┐
-   │                    Client Layer                             │
-   │         ModbusClient, AsyncModbusClient                     │
-   │    • High-level API  • Data conversion  • Error handling   │
+   │                      Client Layer                          │
+   │         ModbusClient, AsyncModbusClient                    │
+   │    • High-level API encapsulation  • Data type conversion  │
+   │    • Error handling                                       │
    └─────────────────────────────────────────────────────────────┘
                                     │
    ┌─────────────────────────────────────────────────────────────┐
-   │                   Protocol Layer                            │
-   │                  Modbus Protocol Implementation             │
-   │    • PDU construction  • Function code handling  • Data validation │
+   │                     Protocol Layer                         │
+   │                   Modbus Protocol Implementation           │
+   │    • PDU construction  • Function code handling           │
+   │    • Data validation                                      │
    └─────────────────────────────────────────────────────────────┘
                                     │
    ┌─────────────────────────────────────────────────────────────┐
-   │                   Transport Layer                           │
-   │         TCP, RTU, ASCII Transport Implementation            │
-   │    • Connection management  • Frame processing  • Checksum calculation │
+   │                     Transport Layer                        │
+   │         TCP, RTU, ASCII Transport Implementation          │
+   │    • Connection management  • Data frame handling         │
+   │    • Checksum calculation                                 │
    └─────────────────────────────────────────────────────────────┘
                                     │
    ┌─────────────────────────────────────────────────────────────┐
-   │                    Physical Layer                           │
-   │                 Ethernet / Serial / Others                  │
+   │                     Physical Layer                         │
+   │                  Ethernet / Serial / Other                │
    └─────────────────────────────────────────────────────────────┘
 
-Core Design Principles
-----------------------
+3. Core Design Principles
+-------------------------
 
 1. **Layered Architecture**
    - Each layer only interacts with adjacent layers
@@ -63,43 +62,51 @@ Core Design Principles
    - Different transport methods as different strategies
    - Runtime transport strategy switching
 
-Transport Layer Design
-----------------------
+5. Transport Layer Design
+-------------------------
 
-Transport Architecture
-~~~~~~~~~~~~~~~~~~~~~
+5.1 Transport Architecture
+~~~~~~~~~~----------------------
 
 .. code-block:: text
 
-   BaseTransport (ABC)
-   ├── TcpTransport
-   ├── RtuTransport  
-   └── AsciiTransport
+   SyncBaseTransport (ABC)
+   ├── SyncTcpTransport
+   ├── SyncRtuTransport
+   └── SyncAsciiTransport
 
    AsyncBaseTransport (ABC)
    ├── AsyncTcpTransport
    ├── AsyncRtuTransport
    └── AsyncAsciiTransport
 
-Core Interfaces
-~~~~~~~~~~~~~~~
+5.2 Core Interfaces
+~~~~~~~~~~~~~~~~~~~
 
 **Synchronous Transport Interface**
 
 .. code-block:: python
 
-   class BaseTransport(ABC):
+   class SyncBaseTransport(ABC):
        @abstractmethod
-       def connect(self) -> None:
-           """Establish connection"""
+       def open(self) -> None:
+           """Open transport connection"""
            
        @abstractmethod  
-       def disconnect(self) -> None:
-           """Close connection"""
+       def close(self) -> None:
+           """Close transport connection"""
            
        @abstractmethod
-       def send_and_receive(self, data: bytes) -> bytes:
-           """Send data and receive response"""
+       def is_open(self) -> bool:
+           """Check connection status"""
+
+       @abstractmethod
+       def flush(self) -> int:
+           """Synchronously flush all pending data in receive buffer"""
+
+       @abstractmethod
+       def send_and_receive(self, slave_id: int, pdu: bytes, timeout: Optional[float] = None) -> bytes:
+           """Send PDU and receive response"""
 
 **Asynchronous Transport Interface**
 
@@ -107,19 +114,27 @@ Core Interfaces
 
    class AsyncBaseTransport(ABC):
        @abstractmethod
-       async def connect(self) -> None:
-           """Asynchronously establish connection"""
-           
-       @abstractmethod
-       async def disconnect(self) -> None:
-           """Asynchronously close connection"""
-           
-       @abstractmethod  
-       async def send_and_receive(self, data: bytes) -> bytes:
-           """Asynchronously send data and receive response"""
+       async def open(self) -> None:
+           """Asynchronously open transport connection"""
 
-Transport Implementation Details
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+       @abstractmethod
+       async def close(self) -> None:
+           """Asynchronously close transport connection"""
+
+       @abstractmethod
+       def is_open(self) -> bool:
+           """Check connection status"""
+
+       @abstractmethod
+       async def flush(self) -> int:
+           """Asynchronously flush all pending data in receive buffer"""
+
+       @abstractmethod
+       async def send_and_receive(self, slave_id: int, pdu: bytes, timeout: Optional[float] = None) -> bytes:
+           """Asynchronously send PDU and receive response"""
+
+5.3 Transport Implementation Details
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **TCP Transport (Modbus TCP)**
 
@@ -164,11 +179,11 @@ Transport Implementation Details
 - **LRC**: Longitudinal redundancy check
 - **End**: Carriage return and line feed (CR LF)
 
-Client Layer Design
--------------------
+6. Client Layer Design
+----------------------
 
-Client Architecture
-~~~~~~~~~~~~~~~~~~
+6.1 Client Architecture
+~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: text
 
@@ -192,14 +207,14 @@ Client Architecture
    │  BaseTransport/AsyncBaseTransport   │
    └─────────────────────────────────────┘
 
-Design Patterns Application
+6.2 Design Patterns Application
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 **Template Method Pattern**
 
 .. code-block:: python
 
-   class ModbusClient:
+   class SyncModbusClient:
        def _execute_request(self, slave_id: int, function_code: int, 
                           data: bytes) -> bytes:
            """Template method: defines request execution flow"""
@@ -227,10 +242,10 @@ Design Patterns Application
            return func(self, *args, **kwargs)
        return wrapper
 
-Server Layer Design
+7. Server Layer Design
 -------------------
 
-Server Architecture
+7.1 Server Architecture
 ~~~~~~~~~~~~~~~~~~
 
 .. code-block:: text
@@ -250,7 +265,7 @@ Server Architecture
    │   TCP/RTU/ASCII server implementation │
    └─────────────────────────────────────┘
 
-Data Storage Design
+7.2 Data Storage Design
 ~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
@@ -268,55 +283,53 @@ Data Storage Design
            self._input_registers = [0] * input_registers_size
            self._lock = threading.RLock()  # Reentrant lock
 
-Utility Layer Design
+8. Utility Layer Design
 --------------------
 
-Utility Components
+8.1 Utility Components
 ~~~~~~~~~~~~~~~~~
 
 1. **CRC Calculator**
-   - Implements Modbus standard CRC-16 algorithm
+   - Implements ModbusRTU standard CRC-16 algorithm
    - Supports lookup table optimization
 
-2. **Data Encoder**
+1. **LRC Calculator**
+   - Implements ModbusASCII standard LRC algorithm
+   - Support verification data
+
+3. **Data Encoder**
    - Big/little endian byte order conversion
    - Various data type encoding/decoding
 
-3. **Logging System**
-   - Protocol-level debugging information
-   - Configurable log levels
-
-Error Handling Architecture
+9. Error Handling Architecture
 ---------------------------
 
-Exception Hierarchy
+9.1 Exception Hierarchy
 ~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: text
 
-   ModbusLinkError (Base exception)
-   ├── ConnectionError (Connection related)
-   │   ├── ConnectionTimeoutError
-   │   └── ConnectionRefusedError
-   ├── ProtocolError (Protocol related)
-   │   ├── CRCError
-   │   ├── InvalidResponseError
-   │   └── FunctionCodeError
-   └── DataError (Data related)
-       ├── AddressError
-       └── ValueRangeError
+ModbusLinkError (Base exception class)
+├── CommunicationError (Base class for communication errors)
+│   ├── ConnectError (Connection error exception)
+│   └── TimeOutError (Timeout error exception)
+├── ValidationError (Base class for data validation errors)
+│   ├── CrcError (CRC validation error exception)
+│   ├── LrcError (LRC validation error exception)
+│   └── InvalidReplyError (Invalid reply error exception)
+└── ModbusException (Protocol error)
 
-Exception Handling Strategy
+9.2 Exception Handling Strategy
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. **Transport Layer Exceptions**: Network, serial communication errors
 2. **Protocol Layer Exceptions**: Modbus protocol format errors
 3. **Application Layer Exceptions**: Business logic errors
 
-Performance Optimization Design
+10. Performance Optimization Design
 -------------------------------
 
-Connection Pool
+10.1 Connection Pool
 ~~~~~~~~~~~~~~
 
 .. code-block:: python
@@ -334,7 +347,7 @@ Connection Pool
        async def release(self, client: AsyncModbusClient):
            """Release connection"""
 
-Batch Operation Optimization
+10.2 Batch Operation Optimization
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
@@ -348,10 +361,10 @@ Batch Operation Optimization
        tasks = [self._read_registers(**req) for req in optimized_requests]
        return await asyncio.gather(*tasks)
 
-Extensibility Design
+11. Extensibility Design
 --------------------
 
-Plugin Architecture
+11.1 Plugin Architecture
 ~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
@@ -360,14 +373,14 @@ Plugin Architecture
        """Modbus plugin base class"""
        
        @abstractmethod
-       def on_request(self, request: ModbusRequest) -> ModbusRequest:
+       def on_request(self, request: SyncModbusRequest) -> SyncModbusRequest:
            """Request preprocessing"""
            
        @abstractmethod  
-       def on_response(self, response: ModbusResponse) -> ModbusResponse:
+       def on_response(self, response: SyncModbusResponse) -> SyncModbusResponse:
            """Response postprocessing"""
 
-Custom Transport Layer
+11.2 Custom Transport Layer
 ~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
@@ -383,7 +396,7 @@ Custom Transport Layer
            response = await self._websocket.recv()
            return response
 
-Summary
+12. Summary
 -------
 
 ModbusLink's architecture design offers the following advantages:

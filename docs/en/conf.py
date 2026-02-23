@@ -16,8 +16,8 @@ copyright = '2025, Miraitowa-la'
 author = 'Miraitowa-la'
 
 # The full version, including alpha/beta/rc tags
-release = '1.2.0'
-version = '1.2.0'
+release = '1.5.0'
+version = '1.5.0'
 
 # -- General configuration ---------------------------------------------------
 
@@ -33,6 +33,7 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
     'sphinx.ext.ifconfig',
+    'sphinx.ext.githubpages',
     'sphinx_rtd_theme',
     'sphinx_design',
 ]
