@@ -1,0 +1,423 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="zh-CN" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>安装指南 &mdash; ModbusLink 1.5.0 文档</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=bbd34978"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/translations.js?v=540d3cec"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="搜索" href="search.html" />
+    <link rel="next" title="快速开始" href="quickstart.html" />
+    <link rel="prev" title="ModbusLink 文档" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            ModbusLink
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="搜索文档" aria-label="搜索文档" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="导航菜单">
+              <p class="caption" role="heading"><span class="caption-text">快速入门</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">安装指南</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id2">1. 系统要求</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id3">1.1 基础要求</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">1.2 依赖库</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">2. 快速安装</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pypi">2.1 从PyPI安装 (推荐)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">2.2 从源码安装</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id7">2.3 验证安装</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id8">3.  环境配置</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#linux-macos">3.1 串口权限 (Linux/macOS)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#windows">3.2 Windows串口配置</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id9">4. 故障排除</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id10">4.1 常见安装问题</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id11">4.2 串口问题诊断</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id12">4.3 网络问题诊断</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id13">5. 性能调优</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id14">5.1 超时时间</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id15">5.2 内存优化</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id16">6. 升级指南</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id17">6.1 从旧版本升级</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#id18">7. 下一步</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">快速开始</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architecture.html">架构设计</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">用户指南</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">用户指南</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">示例和实践</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">示例</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html">最佳实践指南</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">故障排除指南</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API文档</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API 参考</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="移动版导航菜单"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ModbusLink</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="页面导航">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">安装指南</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/installation.rst.txt" rel="nofollow"> 查看页面源码</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="id1">
+<h1>安装指南<a class="headerlink" href="#id1" title="链接到此标题。"></a></h1>
+<section id="id2">
+<h2>1. 系统要求<a class="headerlink" href="#id2" title="链接到此标题。"></a></h2>
+<section id="id3">
+<h3>1.1 基础要求<a class="headerlink" href="#id3" title="链接到此标题。"></a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 80.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>组件</p></th>
+<th class="head"><p>要求</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Python版本</strong></p></td>
+<td><p>Python 3.9+ （推荐 3.11+）</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>操作系统</strong></p></td>
+<td><p>Windows 10+, Linux (Ubuntu 18.04+), macOS 10.15+</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>内存</strong></p></td>
+<td><p>最少 100MB RAM</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>存储空间</strong></p></td>
+<td><p>约 10MB 磁盘空间</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="id4">
+<h3>1.2 依赖库<a class="headerlink" href="#id4" title="链接到此标题。"></a></h3>
+<ul class="simple">
+<li><p><strong>Python标准库</strong>: asyncio, threading, struct, socket</p></li>
+<li><p><strong>外部依赖</strong>: pyserial, pyserial-asyncio, typing_extensions</p></li>
+</ul>
+</section>
+</section>
+<section id="id5">
+<h2>2. 快速安装<a class="headerlink" href="#id5" title="链接到此标题。"></a></h2>
+<section id="pypi">
+<h3>2.1 从PyPI安装 (推荐)<a class="headerlink" href="#pypi" title="链接到此标题。"></a></h3>
+<p><strong>最新版本安装</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 基础安装</span>
+pip<span class="w"> </span>install<span class="w"> </span>modbuslink
+</pre></div>
+</div>
+<p><strong>特定版本安装</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 安装特定版本</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="nv">modbuslink</span><span class="o">==</span><span class="m">1</span>.4.0
+</pre></div>
+</div>
+</section>
+<section id="id6">
+<h3>2.2 从源码安装<a class="headerlink" href="#id6" title="链接到此标题。"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 克隆仓库</span>
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/Miraitowa-la/ModbusLink.git
+<span class="nb">cd</span><span class="w"> </span>ModbusLink
+
+<span class="c1"># 创建虚拟环境...</span>
+
+<span class="c1"># 安装为可编辑包</span>
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</pre></div>
+</div>
+</section>
+<section id="id7">
+<h3>2.3 验证安装<a class="headerlink" href="#id7" title="链接到此标题。"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">modbuslink</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ModbusLink版本: </span><span class="si">{</span><span class="n">modbuslink</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">SyncTcpTransport</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✅ TCP功能可用&quot;</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">SyncRtuTransport</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✅ RTU功能可用&quot;</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">SyncAsciiTransport</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✅ ASCII功能可用&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id8">
+<h2>3.  环境配置<a class="headerlink" href="#id8" title="链接到此标题。"></a></h2>
+<section id="linux-macos">
+<h3>3.1 串口权限 (Linux/macOS)<a class="headerlink" href="#linux-macos" title="链接到此标题。"></a></h3>
+<p><strong>Ubuntu/Debian</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 添加用户到dialout组</span>
+sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>dialout<span class="w"> </span><span class="nv">$USER</span>
+
+<span class="c1"># 重新登录使权限生效</span>
+<span class="c1"># 或临时切换组</span>
+newgrp<span class="w"> </span>dialout
+
+<span class="c1"># 查看串口设备</span>
+ls<span class="w"> </span>-la<span class="w"> </span>/dev/ttyUSB*<span class="w"> </span>/dev/ttyACM*
+</pre></div>
+</div>
+<p><strong>CentOS/RHEL</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 添加用户到uucp组</span>
+sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>uucp<span class="w"> </span><span class="nv">$USER</span>
+
+<span class="c1"># 重新登录</span>
+</pre></div>
+</div>
+<p><strong>macOS</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 查看可用串口</span>
+ls<span class="w"> </span>/dev/cu.*
+
+<span class="c1"># 通常无需特殊权限配置</span>
+</pre></div>
+</div>
+</section>
+<section id="windows">
+<h3>3.2 Windows串口配置<a class="headerlink" href="#windows" title="链接到此标题。"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>查看设备管理器</strong> 中的端口信息</p></li>
+<li><p><strong>确认COM端口号</strong> （如 COM1, COM3）</p></li>
+<li><p><strong>检查驱动程序</strong> 是否正确安装</p></li>
+<li><p><strong>防火墙设置</strong> 确保Python应用有网络权限（TCP功能）</p></li>
+</ol>
+</section>
+</section>
+<section id="id9">
+<h2>4. 故障排除<a class="headerlink" href="#id9" title="链接到此标题。"></a></h2>
+<section id="id10">
+<h3>4.1 常见安装问题<a class="headerlink" href="#id10" title="链接到此标题。"></a></h3>
+<p><strong>ImportError: No module named 'serial'</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 解决方案：安装pyserial</span>
+pip<span class="w"> </span>install<span class="w"> </span>pyserial
+</pre></div>
+</div>
+<p><strong>Permission denied on serial port</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Linux解决方案</span>
+sudo<span class="w"> </span>chmod<span class="w"> </span><span class="m">666</span><span class="w"> </span>/dev/ttyUSB0<span class="w">  </span><span class="c1"># 临时解决</span>
+sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>dialout<span class="w"> </span><span class="nv">$USER</span><span class="w">  </span><span class="c1"># 永久解决</span>
+</pre></div>
+</div>
+<p><strong>ModuleNotFoundError: No module named 'modbuslink'</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 检查安装状态</span>
+pip<span class="w"> </span>list<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>modbuslink
+
+<span class="c1"># 重新安装</span>
+pip<span class="w"> </span>uninstall<span class="w"> </span>modbuslink
+pip<span class="w"> </span>install<span class="w"> </span>modbuslink
+</pre></div>
+</div>
+<p><strong>版本冲突</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 创建干净的虚拟环境</span>
+python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>clean_env
+<span class="nb">source</span><span class="w"> </span>clean_env/bin/activate<span class="w">  </span><span class="c1"># Linux/macOS</span>
+clean_env<span class="se">\S</span>cripts<span class="se">\a</span>ctivate<span class="w">     </span><span class="c1"># Windows</span>
+pip<span class="w"> </span>install<span class="w"> </span>modbuslink
+</pre></div>
+</div>
+</section>
+<section id="id11">
+<h3>4.2 串口问题诊断<a class="headerlink" href="#id11" title="链接到此标题。"></a></h3>
+<p><strong>检查串口可用性</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">serial.tools.list_ports</span>
+
+<span class="c1"># 列出所有串口</span>
+<span class="n">ports</span> <span class="o">=</span> <span class="n">serial</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">list_ports</span><span class="o">.</span><span class="n">comports</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">port</span> <span class="ow">in</span> <span class="n">ports</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;端口: </span><span class="si">{</span><span class="n">port</span><span class="o">.</span><span class="n">device</span><span class="si">}</span><span class="s2">, 描述: </span><span class="si">{</span><span class="n">port</span><span class="o">.</span><span class="n">description</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>测试串口连接</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">serial</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">ser</span> <span class="o">=</span> <span class="n">serial</span><span class="o">.</span><span class="n">Serial</span><span class="p">(</span><span class="s1">&#39;COM3&#39;</span><span class="p">,</span> <span class="mi">9600</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># Windows</span>
+    <span class="c1"># ser = serial.Serial(&#39;/dev/ttyUSB0&#39;, 9600, timeout=1)  # Linux</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✅ 串口连接成功&quot;</span><span class="p">)</span>
+    <span class="n">ser</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;❌ 串口连接失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id12">
+<h3>4.3 网络问题诊断<a class="headerlink" href="#id12" title="链接到此标题。"></a></h3>
+<p><strong>测试TCP连接</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">socket</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">test_tcp_connection</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">settimeout</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">connect_ex</span><span class="p">((</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">result</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+<span class="k">if</span> <span class="n">test_tcp_connection</span><span class="p">(</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span> <span class="mi">502</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;✅ TCP连接正常&quot;</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;❌ TCP连接失败&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id13">
+<h2>5. 性能调优<a class="headerlink" href="#id13" title="链接到此标题。"></a></h2>
+<section id="id14">
+<h3>5.1 超时时间<a class="headerlink" href="#id14" title="链接到此标题。"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">modbuslink</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncTcpTransport</span>
+
+<span class="n">transport</span> <span class="o">=</span> <span class="n">AsyncTcpTransport</span><span class="p">(</span>
+    <span class="n">host</span><span class="o">=</span><span class="s1">&#39;192.168.1.100&#39;</span><span class="p">,</span>
+    <span class="n">port</span><span class="o">=</span><span class="mi">502</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="o">=</span><span class="mf">5.0</span>  <span class="c1"># 适中的超时时间</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id15">
+<h3>5.2 内存优化<a class="headerlink" href="#id15" title="链接到此标题。"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># 对于大量数据读取，使用批量操作</span>
+<span class="n">registers</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">read_holding_registers</span><span class="p">(</span>
+    <span class="n">slave_id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">start_address</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">quantity</span><span class="o">=</span><span class="mi">100</span>  <span class="c1"># 一次读取多个寄存器</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id16">
+<h2>6. 升级指南<a class="headerlink" href="#id16" title="链接到此标题。"></a></h2>
+<section id="id17">
+<h3>6.1 从旧版本升级<a class="headerlink" href="#id17" title="链接到此标题。"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># 查看当前版本</span>
+pip<span class="w"> </span>show<span class="w"> </span>modbuslink
+
+<span class="c1"># 升级到最新版本</span>
+pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>modbuslink
+
+<span class="c1"># 升级到特定版本</span>
+pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span><span class="nv">modbuslink</span><span class="o">==</span><span class="m">2</span>.0.0
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>升级前请查看 <span class="xref std std-doc">changelog</span> 了解破坏性变更。</p>
+</div>
+</section>
+</section>
+<section id="id18">
+<h2>7. 下一步<a class="headerlink" href="#id18" title="链接到此标题。"></a></h2>
+<p>安装完成后，建议您：</p>
+<ol class="arabic simple">
+<li><p>📖 阅读 <a class="reference internal" href="quickstart.html"><span class="doc">快速开始</span></a> 快速入门指南</p></li>
+<li><p>🏗️ 了解 <a class="reference internal" href="architecture.html"><span class="doc">架构设计</span></a> 架构设计</p></li>
+<li><p>💡 查看 <a class="reference internal" href="examples.html"><span class="doc">示例</span></a> 实际示例</p></li>
+<li><p>📚 参考 <a class="reference internal" href="api_reference.html"><span class="doc">API 参考</span></a> API文档</p></li>
+</ol>
+<p>如遇到问题，请查看 <a class="reference internal" href="troubleshooting.html"><span class="doc">故障排除指南</span></a> 或在GitHub提交Issue。</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="页脚">
+        <a href="index.html" class="btn btn-neutral float-left" title="ModbusLink 文档" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> 上一页</a>
+        <a href="quickstart.html" class="btn btn-neutral float-right" title="快速开始" accesskey="n" rel="next">下一页 <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; 版权所有 2025, Miraitowa-la。</p>
+  </div>
+
+  利用 <a href="https://www.sphinx-doc.org/">Sphinx</a> 构建，使用的 
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">主题</a>
+    由 <a href="https://readthedocs.org">Read the Docs</a> 开发.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,449 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>modbuslink.transport.base_transport &mdash; ModbusLink 1.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=e0a75244"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            ModbusLink
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">Architecture Design</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide.html">User Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples &amp; Practices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html">Best Practices Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html">Troubleshooting Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ModbusLink</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">modbuslink.transport.base_transport</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for modbuslink.transport.base_transport</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">ModbusLink 传输层抽象基类</span>
+
+<span class="sd">ModbusLink Transport Layer Abstract Base Class</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span>
+
+
+<div class="viewcode-block" id="SyncBaseTransport">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.transport.base_transport.SyncBaseTransport">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SyncBaseTransport</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    同步传输层抽象基类</span>
+
+<span class="sd">    所有同步传输层实现（TCP/RTU/ASCII）都必须继承此类并实现所有抽象方法。</span>
+
+<span class="sd">    Sync Transport Layer Abstract Base Class</span>
+
+<span class="sd">    All sync transport layer implementations (TCP, RTU, ASCII) must inherit from this class and implement all abstract methods.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="SyncBaseTransport.open">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.transport.base_transport.SyncBaseTransport.open">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        打开传输连接</span>
+
+<span class="sd">        建立与Modbus设备的连接。</span>
+
+<span class="sd">        Open Transport Connection</span>
+
+<span class="sd">        Establish a connection with the Modbus device.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ConnectError: 当无法建立连接时 | When connection cannot be established</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="SyncBaseTransport.close">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.transport.base_transport.SyncBaseTransport.close">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        关闭传输连接</span>
+
+<span class="sd">        关闭与Modbus设备的连接并释放相关资源。</span>
+
+<span class="sd">        Close Transport Connection</span>
+
+<span class="sd">        Close the connection with the Modbus device and releases related resources.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="SyncBaseTransport.is_open">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.transport.base_transport.SyncBaseTransport.is_open">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_open</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        检查连接状态</span>
+
+<span class="sd">        Check Connection Status</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            如果连接已打开则返回True，否则返回False</span>
+
+<span class="sd">            True if the connection is open, otherwise False</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="SyncBaseTransport.flush">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.transport.base_transport.SyncBaseTransport.flush">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        同步清空接收缓冲区中的所有待处理数据</span>
+
+<span class="sd">        Sync Flush all pending data in receive buffer</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            丢弃的字节数</span>
+
+<span class="sd">            Number of bytes discarded</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="SyncBaseTransport.send_and_receive">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.transport.base_transport.SyncBaseTransport.send_and_receive">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">send_and_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">pdu</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        发送PDU并接收响应</span>
+
+<span class="sd">        传输层核心方法。接收纯净的PDU（协议数据单元），</span>
+<span class="sd">        负责添加必要的传输层信息（TCP的MBAP，RTU的CRC或ASCII的LCR），</span>
+<span class="sd">        发送请求，接收响应，验证响应的完整性，然后返回回应的PDU部分。</span>
+
+<span class="sd">        Send UDP and Receive Response</span>
+
+<span class="sd">        Core method of the transport layer. Receive the pure PDU (protocol data unit),</span>
+<span class="sd">        be responsible for adding necessary transport layer information (MBAP of TCP, CRC of RTU or LCR of ASCII),</span>
+<span class="sd">        send requests, receive responses, verify the integrity of the responses, and then return the PDU part of the responses.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            slave_id: 从机地址/单元标识符 | Slave address/unit identifier</span>
+<span class="sd">            pdu: 协议数据单元（功能码 + 数据） | Protocol data unit (function code + data)</span>
+<span class="sd">            timeout: 超时时间（秒） | Timeout time (seconds)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            响应的PDU部分（功能码 + 数据）</span>
+
+<span class="sd">            Response PDU part (function code + data)</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            CommunicationError: 通信错误</span>
+<span class="sd">            ValidationError: 数据校验错误</span>
+<span class="sd">            ConnectError: 连接错误</span>
+<span class="sd">            TimeOutError: 超时错误</span>
+<span class="sd">            CrcError: CRC校验错误</span>
+<span class="sd">            LrcError: LRC校验错误</span>
+<span class="sd">            InvalidReplyError: 无效响应错误</span>
+<span class="sd">            ModbusException: Modbus协议异常</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="SyncBaseTransport.__enter__">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.transport.base_transport.SyncBaseTransport.__enter__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;SyncBaseTransport&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        上下文管理器入口</span>
+
+<span class="sd">        Context Manager Entry</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            当前对象</span>
+
+<span class="sd">            Current object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="SyncBaseTransport.__exit__">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.transport.base_transport.SyncBaseTransport.__exit__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">exc_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">type</span><span class="p">],</span>
+            <span class="n">exc_val</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">],</span>
+            <span class="n">exc_tb</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        上下文管理器出口</span>
+
+<span class="sd">        Context Manager Exit</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            exc_type: 异常类型 | Exception type</span>
+<span class="sd">            exc_val: 异常值 | Exception value</span>
+<span class="sd">            exc_tb: 异常 traceback | Exception traceback</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="AsyncBaseTransport">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.transport.base_transport.AsyncBaseTransport">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AsyncBaseTransport</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    异步传输层抽象基类</span>
+
+<span class="sd">    所有异步步传输层实现（TCP/RTU/ASCII）都必须继承此类并实现所有抽象方法。</span>
+
+<span class="sd">    Async Transport Layer Abstract Base Class</span>
+
+<span class="sd">    All async transport layer implementations (TCP, RTU, ASCII) must inherit from this class and implement all abstract methods.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AsyncBaseTransport.open">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.transport.base_transport.AsyncBaseTransport.open">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        异步打开传输连接</span>
+
+<span class="sd">        异步建立与Modbus设备的连接。</span>
+
+<span class="sd">        Async Open Transport Connection</span>
+
+<span class="sd">        Asynchronously establish a connection with the Modbus device.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ConnectError: 当无法建立连接时 | When connection cannot be established</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="AsyncBaseTransport.close">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.transport.base_transport.AsyncBaseTransport.close">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        异步关闭传输连接</span>
+
+<span class="sd">        异步关闭与Modbus设备的连接并释放相关资源。</span>
+
+<span class="sd">        Async Close Transport Connection</span>
+
+<span class="sd">        Asynchronously close the connection with the Modbus device and releases related resources.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="AsyncBaseTransport.is_open">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.transport.base_transport.AsyncBaseTransport.is_open">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_open</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        检查连接状态</span>
+
+<span class="sd">        Check Connection Status</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            如果连接已打开则返回True，否则返回False</span>
+
+<span class="sd">            True if the connection is open, otherwise False</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="AsyncBaseTransport.flush">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.transport.base_transport.AsyncBaseTransport.flush">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        异步清空接收缓冲区中的所有待处理数据</span>
+
+<span class="sd">        Async Flush all pending data in receive buffer</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            丢弃的字节数</span>
+
+<span class="sd">            Number of bytes discarded</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="AsyncBaseTransport.send_and_receive">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.transport.base_transport.AsyncBaseTransport.send_and_receive">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_and_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">pdu</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        异步发送PDU并接收响应</span>
+
+<span class="sd">        传输层核心方法。接收纯净的PDU（协议数据单元），</span>
+<span class="sd">        负责添加必要的传输层信息（TCP的MBAP，RTU的CRC或ASCII的LCR），</span>
+<span class="sd">        发送请求，接收响应，验证响应的完整性，然后返回回应的PDU部分。</span>
+
+<span class="sd">        Async Send UDP and Receive Response</span>
+
+<span class="sd">        Core method of the transport layer. Receive the pure PDU (protocol data unit),</span>
+<span class="sd">        be responsible for adding necessary transport layer information (MBAP of TCP, CRC of RTU or LCR of ASCII),</span>
+<span class="sd">        send requests, receive responses, verify the integrity of the responses, and then return the PDU part of the responses.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            slave_id: 从机地址/单元标识符 | Slave address/unit identifier</span>
+<span class="sd">            pdu: 协议数据单元（功能码 + 数据） | Protocol data unit (function code + data)</span>
+<span class="sd">            timeout: 超时时间（秒） | Timeout time (seconds)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            响应的PDU部分（功能码 + 数据）</span>
+
+<span class="sd">            Response PDU part (function code + data)</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            CommunicationError: 通信错误</span>
+<span class="sd">            ValidationError: 数据校验错误</span>
+<span class="sd">            ConnectError: 连接错误</span>
+<span class="sd">            TimeOutError: 超时错误</span>
+<span class="sd">            CrcError: CRC校验错误</span>
+<span class="sd">            LrcError: LRC校验错误</span>
+<span class="sd">            InvalidReplyError: 无效响应错误</span>
+<span class="sd">            ModbusException: Modbus协议异常</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="AsyncBaseTransport.__aenter__">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.transport.base_transport.AsyncBaseTransport.__aenter__">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aenter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AsyncBaseTransport&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        异步上下文管理器入口</span>
+
+<span class="sd">        Async Context Manager Entry</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            当前对象</span>
+
+<span class="sd">            Current object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="AsyncBaseTransport.__aexit__">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.transport.base_transport.AsyncBaseTransport.__aexit__">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="fm">__aexit__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">exc_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">type</span><span class="p">],</span>
+            <span class="n">exc_val</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="ne">BaseException</span><span class="p">],</span>
+            <span class="n">exc_tb</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        异步上下文管理器出口</span>
+
+<span class="sd">        Async Context Manager Exit</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            exc_type: 异常类型 | Exception type</span>
+<span class="sd">            exc_val: 异常值 | Exception value</span>
+<span class="sd">            exc_tb: 异常 traceback | Exception traceback</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Miraitowa-la.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

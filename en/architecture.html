@@ -1,0 +1,554 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Architecture Design &mdash; ModbusLink 1.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=e0a75244"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="User Guide" href="user_guide.html" />
+    <link rel="prev" title="Quick Start" href="quickstart.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            ModbusLink
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Architecture Design</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#verview">1. verview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#overall-architecture-diagram">2. Overall Architecture Diagram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#core-design-principles">3. Core Design Principles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#transport-layer-design">5. Transport Layer Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#core-interfaces">5.2 Core Interfaces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#transport-implementation-details">5.3 Transport Implementation Details</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#client-layer-design">6. Client Layer Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#client-architecture">6.1 Client Architecture</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#design-patterns-application">6.2 Design Patterns Application</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#server-layer-design">7. Server Layer Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#server-architecture">7.1 Server Architecture</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data-storage-design">7.2 Data Storage Design</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#utility-layer-design">8. Utility Layer Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#utility-components">8.1 Utility Components</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#error-handling-architecture">9. Error Handling Architecture</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#exception-hierarchy">9.1 Exception Hierarchy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#exception-handling-strategy">9.2 Exception Handling Strategy</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#performance-optimization-design">10. Performance Optimization Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#connection-pool">10.1 Connection Pool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#batch-operation-optimization">10.2 Batch Operation Optimization</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#extensibility-design">11. Extensibility Design</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#plugin-architecture">11.1 Plugin Architecture</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#custom-transport-layer">11.2 Custom Transport Layer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#summary">12. Summary</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="user_guide.html">User Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples &amp; Practices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="best_practices.html">Best Practices Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">Troubleshooting Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ModbusLink</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Architecture Design</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/architecture.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="architecture-design">
+<h1>Architecture Design<a class="headerlink" href="#architecture-design" title="Link to this heading"></a></h1>
+<section id="verview">
+<h2>1. verview<a class="headerlink" href="#verview" title="Link to this heading"></a></h2>
+<p>ModbusLink adopts a <strong>modern layered architecture</strong> design, strictly following the <strong>Single Responsibility Principle</strong> and <strong>Open/Closed Principle</strong> to ensure code maintainability, extensibility, and testability.</p>
+</section>
+<section id="overall-architecture-diagram">
+<h2>2. Overall Architecture Diagram<a class="headerlink" href="#overall-architecture-diagram" title="Link to this heading"></a></h2>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>┌─────────────────────────────────────────────────────────────┐
+│                      Application Layer                      │
+│                 User Code and Business Logic                │
+└─────────────────────────────────────────────────────────────┘
+                                 │
+┌─────────────────────────────────────────────────────────────┐
+│                      Client Layer                          │
+│         ModbusClient, AsyncModbusClient                    │
+│    • High-level API encapsulation  • Data type conversion  │
+│    • Error handling                                       │
+└─────────────────────────────────────────────────────────────┘
+                                 │
+┌─────────────────────────────────────────────────────────────┐
+│                     Protocol Layer                         │
+│                   Modbus Protocol Implementation           │
+│    • PDU construction  • Function code handling           │
+│    • Data validation                                      │
+└─────────────────────────────────────────────────────────────┘
+                                 │
+┌─────────────────────────────────────────────────────────────┐
+│                     Transport Layer                        │
+│         TCP, RTU, ASCII Transport Implementation          │
+│    • Connection management  • Data frame handling         │
+│    • Checksum calculation                                 │
+└─────────────────────────────────────────────────────────────┘
+                                 │
+┌─────────────────────────────────────────────────────────────┐
+│                     Physical Layer                         │
+│                  Ethernet / Serial / Other                │
+└─────────────────────────────────────────────────────────────┘
+</pre></div>
+</div>
+</section>
+<section id="core-design-principles">
+<h2>3. Core Design Principles<a class="headerlink" href="#core-design-principles" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Layered Architecture</strong>
+- Each layer only interacts with adjacent layers
+- Upper layers depend on lower layers, not vice versa
+- Facilitates independent testing and replacement</p></li>
+<li><p><strong>Dependency Injection</strong>
+- Clients receive transport layer instances through constructors
+- Reduces coupling, improves testability</p></li>
+<li><p><strong>Interface-Oriented Programming</strong>
+- Uses abstract base classes to define interfaces
+- Concrete implementations are pluggable</p></li>
+<li><p><strong>Strategy Pattern</strong>
+- Different transport methods as different strategies
+- Runtime transport strategy switching</p></li>
+</ol>
+</section>
+<section id="transport-layer-design">
+<h2>5. Transport Layer Design<a class="headerlink" href="#transport-layer-design" title="Link to this heading"></a></h2>
+<p>5.1 Transport Architecture
+~~~~~~~~~~———————-</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>SyncBaseTransport (ABC)
+├── SyncTcpTransport
+├── SyncRtuTransport
+└── SyncAsciiTransport
+
+AsyncBaseTransport (ABC)
+├── AsyncTcpTransport
+├── AsyncRtuTransport
+└── AsyncAsciiTransport
+</pre></div>
+</div>
+<section id="core-interfaces">
+<h3>5.2 Core Interfaces<a class="headerlink" href="#core-interfaces" title="Link to this heading"></a></h3>
+<p><strong>Synchronous Transport Interface</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">SyncBaseTransport</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Open transport connection&quot;&quot;&quot;</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close transport connection&quot;&quot;&quot;</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_open</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check connection status&quot;&quot;&quot;</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Synchronously flush all pending data in receive buffer&quot;&quot;&quot;</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">send_and_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">pdu</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Send PDU and receive response&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p><strong>Asynchronous Transport Interface</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">AsyncBaseTransport</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Asynchronously open transport connection&quot;&quot;&quot;</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Asynchronously close transport connection&quot;&quot;&quot;</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_open</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check connection status&quot;&quot;&quot;</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Asynchronously flush all pending data in receive buffer&quot;&quot;&quot;</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_and_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">pdu</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Asynchronously send PDU and receive response&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="transport-implementation-details">
+<h3>5.3 Transport Implementation Details<a class="headerlink" href="#transport-implementation-details" title="Link to this heading"></a></h3>
+<p><strong>TCP Transport (Modbus TCP)</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>MBAP Header (7 bytes) + PDU
+┌──────┬──────┬──────┬──────┬──────────┬─────────────┐
+│ TID  │ PID  │ Length     │ Unit ID  │ Function    │
+│ (2)  │ (2)  │ (2)        │ (1)      │ Code + Data │
+└──────┴──────┴──────┴──────┴──────────┴─────────────┘
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>TID</strong>: Transaction Identifier for request-response matching</p></li>
+<li><p><strong>PID</strong>: Protocol Identifier, 0 for Modbus</p></li>
+<li><p><strong>Length</strong>: Length of following bytes</p></li>
+<li><p><strong>Unit ID</strong>: Unit identifier (slave address)</p></li>
+</ul>
+<p><strong>RTU Transport (Modbus RTU)</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>RTU Frame
+┌─────────┬─────────────┬─────────────┐
+│ Address │ Function    │ CRC-16      │
+│ (1)     │ Code + Data │ (2)         │
+└─────────┴─────────────┴─────────────┘
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>Address</strong>: Slave address (1-247)</p></li>
+<li><p><strong>CRC-16</strong>: Cyclic redundancy check using Modbus polynomial</p></li>
+<li><p><strong>Frame interval</strong>: At least 3.5 character times</p></li>
+</ul>
+<p><strong>ASCII Transport (Modbus ASCII)</strong></p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>ASCII Frame
+┌───┬─────────┬─────────────┬─────┬─────┬───┐
+│ : │ Address │ Function    │ LRC │ CR  │ LF│
+│   │ (2)     │ Code + Data │ (2) │     │   │
+└───┴─────────┴─────────────┴─────┴─────┴───┘
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>Start</strong>: Colon character ‘:’</p></li>
+<li><p><strong>LRC</strong>: Longitudinal redundancy check</p></li>
+<li><p><strong>End</strong>: Carriage return and line feed (CR LF)</p></li>
+</ul>
+</section>
+</section>
+<section id="client-layer-design">
+<h2>6. Client Layer Design<a class="headerlink" href="#client-layer-design" title="Link to this heading"></a></h2>
+<section id="client-architecture">
+<h3>6.1 Client Architecture<a class="headerlink" href="#client-architecture" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>┌─────────────────────────────────────┐
+│         High-level Data Type API     │
+│  read_float32, write_string, etc.   │
+└─────────────────────────────────────┘
+                  │
+┌─────────────────────────────────────┐
+│         Standard Modbus API          │
+│  read_holding_registers, etc.       │
+└─────────────────────────────────────┘
+                  │
+┌─────────────────────────────────────┐
+│         Protocol Processing Layer    │
+│  PDU construction, response parsing, exception handling │
+└─────────────────────────────────────┘
+                  │
+┌─────────────────────────────────────┐
+│         Transport Layer Interface    │
+│  BaseTransport/AsyncBaseTransport   │
+└─────────────────────────────────────┘
+</pre></div>
+</div>
+</section>
+<section id="design-patterns-application">
+<h3>6.2 Design Patterns Application<a class="headerlink" href="#design-patterns-application" title="Link to this heading"></a></h3>
+<p><strong>Template Method Pattern</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">SyncModbusClient</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_execute_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">function_code</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                       <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Template method: defines request execution flow&quot;&quot;&quot;</span>
+        <span class="c1"># 1. Construct PDU</span>
+        <span class="n">pdu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_pdu</span><span class="p">(</span><span class="n">function_code</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+        <span class="c1"># 2. Send and receive</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span><span class="o">.</span><span class="n">send_and_receive</span><span class="p">(</span><span class="n">pdu</span><span class="p">)</span>
+
+        <span class="c1"># 3. Validate response</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_response</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">function_code</span><span class="p">)</span>
+
+        <span class="c1"># 4. Parse data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Decorator Pattern</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">connection_required</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Decorator to ensure connection exists&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transport</span><span class="o">.</span><span class="n">is_connected</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="s2">&quot;Not connected&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wrapper</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="server-layer-design">
+<h2>7. Server Layer Design<a class="headerlink" href="#server-layer-design" title="Link to this heading"></a></h2>
+<section id="server-architecture">
+<h3>7.1 Server Architecture<a class="headerlink" href="#server-architecture" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>┌─────────────────────────────────────┐
+│        Protocol Handler             │
+│   Request parsing, response construction, exception handling │
+└─────────────────────────────────────┘
+                  │
+┌─────────────────────────────────────┐
+│        Data Storage Layer           │
+│   Coil and register read/write operations │
+└─────────────────────────────────────┘
+                  │
+┌─────────────────────────────────────┐
+│        Transport Server             │
+│   TCP/RTU/ASCII server implementation │
+└─────────────────────────────────────┘
+</pre></div>
+</div>
+</section>
+<section id="data-storage-design">
+<h3>7.2 Data Storage Design<a class="headerlink" href="#data-storage-design" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ModbusDataStore</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Thread-safe Modbus data storage&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coils_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">65536</span><span class="p">,</span>
+                 <span class="n">discrete_inputs_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">65536</span><span class="p">,</span>
+                 <span class="n">holding_registers_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">65536</span><span class="p">,</span>
+                 <span class="n">input_registers_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">65536</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_coils</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">*</span> <span class="n">coils_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_discrete_inputs</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span> <span class="o">*</span> <span class="n">discrete_inputs_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_holding_registers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">holding_registers_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_input_registers</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">input_registers_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">RLock</span><span class="p">()</span>  <span class="c1"># Reentrant lock</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="utility-layer-design">
+<h2>8. Utility Layer Design<a class="headerlink" href="#utility-layer-design" title="Link to this heading"></a></h2>
+<section id="utility-components">
+<h3>8.1 Utility Components<a class="headerlink" href="#utility-components" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>CRC Calculator</strong>
+- Implements ModbusRTU standard CRC-16 algorithm
+- Supports lookup table optimization</p></li>
+</ol>
+<ol class="arabic simple">
+<li><p><strong>LRC Calculator</strong>
+- Implements ModbusASCII standard LRC algorithm
+- Support verification data</p></li>
+</ol>
+<ol class="arabic simple" start="3">
+<li><p><strong>Data Encoder</strong>
+- Big/little endian byte order conversion
+- Various data type encoding/decoding</p></li>
+</ol>
+</section>
+</section>
+<section id="error-handling-architecture">
+<h2>9. Error Handling Architecture<a class="headerlink" href="#error-handling-architecture" title="Link to this heading"></a></h2>
+<section id="exception-hierarchy">
+<h3>9.1 Exception Hierarchy<a class="headerlink" href="#exception-hierarchy" title="Link to this heading"></a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>
+</pre></div>
+</div>
+<p>ModbusLinkError (Base exception class)
+├── CommunicationError (Base class for communication errors)
+│   ├── ConnectError (Connection error exception)
+│   └── TimeOutError (Timeout error exception)
+├── ValidationError (Base class for data validation errors)
+│   ├── CrcError (CRC validation error exception)
+│   ├── LrcError (LRC validation error exception)
+│   └── InvalidReplyError (Invalid reply error exception)
+└── ModbusException (Protocol error)</p>
+</section>
+<section id="exception-handling-strategy">
+<h3>9.2 Exception Handling Strategy<a class="headerlink" href="#exception-handling-strategy" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p><strong>Transport Layer Exceptions</strong>: Network, serial communication errors</p></li>
+<li><p><strong>Protocol Layer Exceptions</strong>: Modbus protocol format errors</p></li>
+<li><p><strong>Application Layer Exceptions</strong>: Business logic errors</p></li>
+</ol>
+</section>
+</section>
+<section id="performance-optimization-design">
+<h2>10. Performance Optimization Design<a class="headerlink" href="#performance-optimization-design" title="Link to this heading"></a></h2>
+<section id="connection-pool">
+<h3>10.1 Connection Pool<a class="headerlink" href="#connection-pool" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ModbusConnectionPool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Modbus connection pool supporting connection reuse&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_connections</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pool</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Queue</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="n">max_connections</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connections</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">acquire</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncModbusClient</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Acquire connection&quot;&quot;&quot;</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">AsyncModbusClient</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Release connection&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="batch-operation-optimization">
+<h3>10.2 Batch Operation Optimization<a class="headerlink" href="#batch-operation-optimization" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">batch_read_registers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">requests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ReadRequest</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Batch read registers, automatically optimized to minimize requests&quot;&quot;&quot;</span>
+    <span class="c1"># Merge consecutive address requests</span>
+    <span class="n">optimized_requests</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_optimize_requests</span><span class="p">(</span><span class="n">requests</span><span class="p">)</span>
+
+    <span class="c1"># Concurrent execution</span>
+    <span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_read_registers</span><span class="p">(</span><span class="o">**</span><span class="n">req</span><span class="p">)</span> <span class="k">for</span> <span class="n">req</span> <span class="ow">in</span> <span class="n">optimized_requests</span><span class="p">]</span>
+    <span class="k">return</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">tasks</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="extensibility-design">
+<h2>11. Extensibility Design<a class="headerlink" href="#extensibility-design" title="Link to this heading"></a></h2>
+<section id="plugin-architecture">
+<h3>11.1 Plugin Architecture<a class="headerlink" href="#plugin-architecture" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ModbusPlugin</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Modbus plugin base class&quot;&quot;&quot;</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">SyncModbusRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SyncModbusRequest</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Request preprocessing&quot;&quot;&quot;</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">SyncModbusResponse</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SyncModbusResponse</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Response postprocessing&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="custom-transport-layer">
+<h3>11.2 Custom Transport Layer<a class="headerlink" href="#custom-transport-layer" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">WebSocketTransport</span><span class="p">(</span><span class="n">AsyncBaseTransport</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;WebSocket transport layer example&quot;&quot;&quot;</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_websocket</span> <span class="o">=</span> <span class="k">await</span> <span class="n">websockets</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_uri</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">send_and_receive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_websocket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_websocket</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">response</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="summary">
+<h2>12. Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<p>ModbusLink’s architecture design offers the following advantages:</p>
+<ol class="arabic simple">
+<li><p><strong>Clear layered structure</strong> with well-defined responsibilities for each layer</p></li>
+<li><p><strong>High extensibility</strong> supporting custom transport layers and protocol extensions</p></li>
+<li><p><strong>Excellent performance</strong> with async support and connection pooling</p></li>
+<li><p><strong>Comprehensive error handling</strong> providing detailed exception information</p></li>
+<li><p><strong>Good testability</strong> with each layer independently testable</p></li>
+</ol>
+<p>This design ensures ModbusLink can meet current requirements while providing flexibility for future extensions.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="quickstart.html" class="btn btn-neutral float-left" title="Quick Start" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="user_guide.html" class="btn btn-neutral float-right" title="User Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Miraitowa-la.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

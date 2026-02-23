@@ -1,0 +1,277 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>modbuslink.utils.crc &mdash; ModbusLink 1.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=e0a75244"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            ModbusLink
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">Architecture Design</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide.html">User Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples &amp; Practices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html">Best Practices Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html">Troubleshooting Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ModbusLink</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">modbuslink.utils.crc</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for modbuslink.utils.crc</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">ModbusLink CRC16校验工具模块</span>
+
+<span class="sd">ModbusLink CRC16 Checksum Utils Module</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
+
+
+<div class="viewcode-block" id="CRC16Modbus">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.utils.crc.CRC16Modbus">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CRC16Modbus</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Modbus CRC16校验工具</span>
+
+<span class="sd">    Modbus CRC16 Check Utils Module</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># 预计算的CRC高位和低位表，用于快速查表计算 | Pre-computed CRC table for fast lookup</span>
+    <span class="n">_CRC_TABLE</span> <span class="o">=</span> <span class="p">(</span><span class="mh">0x0000</span><span class="p">,</span> <span class="mh">0xC0C1</span><span class="p">,</span> <span class="mh">0xC181</span><span class="p">,</span> <span class="mh">0x0140</span><span class="p">,</span> <span class="mh">0xC301</span><span class="p">,</span> <span class="mh">0x03C0</span><span class="p">,</span> <span class="mh">0x0280</span><span class="p">,</span> <span class="mh">0xC241</span><span class="p">,</span>
+                  <span class="mh">0xC601</span><span class="p">,</span> <span class="mh">0x06C0</span><span class="p">,</span> <span class="mh">0x0780</span><span class="p">,</span> <span class="mh">0xC741</span><span class="p">,</span> <span class="mh">0x0500</span><span class="p">,</span> <span class="mh">0xC5C1</span><span class="p">,</span> <span class="mh">0xC481</span><span class="p">,</span> <span class="mh">0x0440</span><span class="p">,</span>
+                  <span class="mh">0xCC01</span><span class="p">,</span> <span class="mh">0x0CC0</span><span class="p">,</span> <span class="mh">0x0D80</span><span class="p">,</span> <span class="mh">0xCD41</span><span class="p">,</span> <span class="mh">0x0F00</span><span class="p">,</span> <span class="mh">0xCFC1</span><span class="p">,</span> <span class="mh">0xCE81</span><span class="p">,</span> <span class="mh">0x0E40</span><span class="p">,</span>
+                  <span class="mh">0x0A00</span><span class="p">,</span> <span class="mh">0xCAC1</span><span class="p">,</span> <span class="mh">0xCB81</span><span class="p">,</span> <span class="mh">0x0B40</span><span class="p">,</span> <span class="mh">0xC901</span><span class="p">,</span> <span class="mh">0x09C0</span><span class="p">,</span> <span class="mh">0x0880</span><span class="p">,</span> <span class="mh">0xC841</span><span class="p">,</span>
+                  <span class="mh">0xD801</span><span class="p">,</span> <span class="mh">0x18C0</span><span class="p">,</span> <span class="mh">0x1980</span><span class="p">,</span> <span class="mh">0xD941</span><span class="p">,</span> <span class="mh">0x1B00</span><span class="p">,</span> <span class="mh">0xDBC1</span><span class="p">,</span> <span class="mh">0xDA81</span><span class="p">,</span> <span class="mh">0x1A40</span><span class="p">,</span>
+                  <span class="mh">0x1E00</span><span class="p">,</span> <span class="mh">0xDEC1</span><span class="p">,</span> <span class="mh">0xDF81</span><span class="p">,</span> <span class="mh">0x1F40</span><span class="p">,</span> <span class="mh">0xDD01</span><span class="p">,</span> <span class="mh">0x1DC0</span><span class="p">,</span> <span class="mh">0x1C80</span><span class="p">,</span> <span class="mh">0xDC41</span><span class="p">,</span>
+                  <span class="mh">0x1400</span><span class="p">,</span> <span class="mh">0xD4C1</span><span class="p">,</span> <span class="mh">0xD581</span><span class="p">,</span> <span class="mh">0x1540</span><span class="p">,</span> <span class="mh">0xD701</span><span class="p">,</span> <span class="mh">0x17C0</span><span class="p">,</span> <span class="mh">0x1680</span><span class="p">,</span> <span class="mh">0xD641</span><span class="p">,</span>
+                  <span class="mh">0xD201</span><span class="p">,</span> <span class="mh">0x12C0</span><span class="p">,</span> <span class="mh">0x1380</span><span class="p">,</span> <span class="mh">0xD341</span><span class="p">,</span> <span class="mh">0x1100</span><span class="p">,</span> <span class="mh">0xD1C1</span><span class="p">,</span> <span class="mh">0xD081</span><span class="p">,</span> <span class="mh">0x1040</span><span class="p">,</span>
+                  <span class="mh">0xF001</span><span class="p">,</span> <span class="mh">0x30C0</span><span class="p">,</span> <span class="mh">0x3180</span><span class="p">,</span> <span class="mh">0xF141</span><span class="p">,</span> <span class="mh">0x3300</span><span class="p">,</span> <span class="mh">0xF3C1</span><span class="p">,</span> <span class="mh">0xF281</span><span class="p">,</span> <span class="mh">0x3240</span><span class="p">,</span>
+                  <span class="mh">0x3600</span><span class="p">,</span> <span class="mh">0xF6C1</span><span class="p">,</span> <span class="mh">0xF781</span><span class="p">,</span> <span class="mh">0x3740</span><span class="p">,</span> <span class="mh">0xF501</span><span class="p">,</span> <span class="mh">0x35C0</span><span class="p">,</span> <span class="mh">0x3480</span><span class="p">,</span> <span class="mh">0xF441</span><span class="p">,</span>
+                  <span class="mh">0x3C00</span><span class="p">,</span> <span class="mh">0xFCC1</span><span class="p">,</span> <span class="mh">0xFD81</span><span class="p">,</span> <span class="mh">0x3D40</span><span class="p">,</span> <span class="mh">0xFF01</span><span class="p">,</span> <span class="mh">0x3FC0</span><span class="p">,</span> <span class="mh">0x3E80</span><span class="p">,</span> <span class="mh">0xFE41</span><span class="p">,</span>
+                  <span class="mh">0xFA01</span><span class="p">,</span> <span class="mh">0x3AC0</span><span class="p">,</span> <span class="mh">0x3B80</span><span class="p">,</span> <span class="mh">0xFB41</span><span class="p">,</span> <span class="mh">0x3900</span><span class="p">,</span> <span class="mh">0xF9C1</span><span class="p">,</span> <span class="mh">0xF881</span><span class="p">,</span> <span class="mh">0x3840</span><span class="p">,</span>
+                  <span class="mh">0x2800</span><span class="p">,</span> <span class="mh">0xE8C1</span><span class="p">,</span> <span class="mh">0xE981</span><span class="p">,</span> <span class="mh">0x2940</span><span class="p">,</span> <span class="mh">0xEB01</span><span class="p">,</span> <span class="mh">0x2BC0</span><span class="p">,</span> <span class="mh">0x2A80</span><span class="p">,</span> <span class="mh">0xEA41</span><span class="p">,</span>
+                  <span class="mh">0xEE01</span><span class="p">,</span> <span class="mh">0x2EC0</span><span class="p">,</span> <span class="mh">0x2F80</span><span class="p">,</span> <span class="mh">0xEF41</span><span class="p">,</span> <span class="mh">0x2D00</span><span class="p">,</span> <span class="mh">0xEDC1</span><span class="p">,</span> <span class="mh">0xEC81</span><span class="p">,</span> <span class="mh">0x2C40</span><span class="p">,</span>
+                  <span class="mh">0xE401</span><span class="p">,</span> <span class="mh">0x24C0</span><span class="p">,</span> <span class="mh">0x2580</span><span class="p">,</span> <span class="mh">0xE541</span><span class="p">,</span> <span class="mh">0x2700</span><span class="p">,</span> <span class="mh">0xE7C1</span><span class="p">,</span> <span class="mh">0xE681</span><span class="p">,</span> <span class="mh">0x2640</span><span class="p">,</span>
+                  <span class="mh">0x2200</span><span class="p">,</span> <span class="mh">0xE2C1</span><span class="p">,</span> <span class="mh">0xE381</span><span class="p">,</span> <span class="mh">0x2340</span><span class="p">,</span> <span class="mh">0xE101</span><span class="p">,</span> <span class="mh">0x21C0</span><span class="p">,</span> <span class="mh">0x2080</span><span class="p">,</span> <span class="mh">0xE041</span><span class="p">,</span>
+                  <span class="mh">0xA001</span><span class="p">,</span> <span class="mh">0x60C0</span><span class="p">,</span> <span class="mh">0x6180</span><span class="p">,</span> <span class="mh">0xA141</span><span class="p">,</span> <span class="mh">0x6300</span><span class="p">,</span> <span class="mh">0xA3C1</span><span class="p">,</span> <span class="mh">0xA281</span><span class="p">,</span> <span class="mh">0x6240</span><span class="p">,</span>
+                  <span class="mh">0x6600</span><span class="p">,</span> <span class="mh">0xA6C1</span><span class="p">,</span> <span class="mh">0xA781</span><span class="p">,</span> <span class="mh">0x6740</span><span class="p">,</span> <span class="mh">0xA501</span><span class="p">,</span> <span class="mh">0x65C0</span><span class="p">,</span> <span class="mh">0x6480</span><span class="p">,</span> <span class="mh">0xA441</span><span class="p">,</span>
+                  <span class="mh">0x6C00</span><span class="p">,</span> <span class="mh">0xACC1</span><span class="p">,</span> <span class="mh">0xAD81</span><span class="p">,</span> <span class="mh">0x6D40</span><span class="p">,</span> <span class="mh">0xAF01</span><span class="p">,</span> <span class="mh">0x6FC0</span><span class="p">,</span> <span class="mh">0x6E80</span><span class="p">,</span> <span class="mh">0xAE41</span><span class="p">,</span>
+                  <span class="mh">0xAA01</span><span class="p">,</span> <span class="mh">0x6AC0</span><span class="p">,</span> <span class="mh">0x6B80</span><span class="p">,</span> <span class="mh">0xAB41</span><span class="p">,</span> <span class="mh">0x6900</span><span class="p">,</span> <span class="mh">0xA9C1</span><span class="p">,</span> <span class="mh">0xA881</span><span class="p">,</span> <span class="mh">0x6840</span><span class="p">,</span>
+                  <span class="mh">0x7800</span><span class="p">,</span> <span class="mh">0xB8C1</span><span class="p">,</span> <span class="mh">0xB981</span><span class="p">,</span> <span class="mh">0x7940</span><span class="p">,</span> <span class="mh">0xBB01</span><span class="p">,</span> <span class="mh">0x7BC0</span><span class="p">,</span> <span class="mh">0x7A80</span><span class="p">,</span> <span class="mh">0xBA41</span><span class="p">,</span>
+                  <span class="mh">0xBE01</span><span class="p">,</span> <span class="mh">0x7EC0</span><span class="p">,</span> <span class="mh">0x7F80</span><span class="p">,</span> <span class="mh">0xBF41</span><span class="p">,</span> <span class="mh">0x7D00</span><span class="p">,</span> <span class="mh">0xBDC1</span><span class="p">,</span> <span class="mh">0xBC81</span><span class="p">,</span> <span class="mh">0x7C40</span><span class="p">,</span>
+                  <span class="mh">0xB401</span><span class="p">,</span> <span class="mh">0x74C0</span><span class="p">,</span> <span class="mh">0x7580</span><span class="p">,</span> <span class="mh">0xB541</span><span class="p">,</span> <span class="mh">0x7700</span><span class="p">,</span> <span class="mh">0xB7C1</span><span class="p">,</span> <span class="mh">0xB681</span><span class="p">,</span> <span class="mh">0x7640</span><span class="p">,</span>
+                  <span class="mh">0x7200</span><span class="p">,</span> <span class="mh">0xB2C1</span><span class="p">,</span> <span class="mh">0xB381</span><span class="p">,</span> <span class="mh">0x7340</span><span class="p">,</span> <span class="mh">0xB101</span><span class="p">,</span> <span class="mh">0x71C0</span><span class="p">,</span> <span class="mh">0x7080</span><span class="p">,</span> <span class="mh">0xB041</span><span class="p">,</span>
+                  <span class="mh">0x5000</span><span class="p">,</span> <span class="mh">0x90C1</span><span class="p">,</span> <span class="mh">0x9181</span><span class="p">,</span> <span class="mh">0x5140</span><span class="p">,</span> <span class="mh">0x9301</span><span class="p">,</span> <span class="mh">0x53C0</span><span class="p">,</span> <span class="mh">0x5280</span><span class="p">,</span> <span class="mh">0x9241</span><span class="p">,</span>
+                  <span class="mh">0x9601</span><span class="p">,</span> <span class="mh">0x56C0</span><span class="p">,</span> <span class="mh">0x5780</span><span class="p">,</span> <span class="mh">0x9741</span><span class="p">,</span> <span class="mh">0x5500</span><span class="p">,</span> <span class="mh">0x95C1</span><span class="p">,</span> <span class="mh">0x9481</span><span class="p">,</span> <span class="mh">0x5440</span><span class="p">,</span>
+                  <span class="mh">0x9C01</span><span class="p">,</span> <span class="mh">0x5CC0</span><span class="p">,</span> <span class="mh">0x5D80</span><span class="p">,</span> <span class="mh">0x9D41</span><span class="p">,</span> <span class="mh">0x5F00</span><span class="p">,</span> <span class="mh">0x9FC1</span><span class="p">,</span> <span class="mh">0x9E81</span><span class="p">,</span> <span class="mh">0x5E40</span><span class="p">,</span>
+                  <span class="mh">0x5A00</span><span class="p">,</span> <span class="mh">0x9AC1</span><span class="p">,</span> <span class="mh">0x9B81</span><span class="p">,</span> <span class="mh">0x5B40</span><span class="p">,</span> <span class="mh">0x9901</span><span class="p">,</span> <span class="mh">0x59C0</span><span class="p">,</span> <span class="mh">0x5880</span><span class="p">,</span> <span class="mh">0x9841</span><span class="p">,</span>
+                  <span class="mh">0x8801</span><span class="p">,</span> <span class="mh">0x48C0</span><span class="p">,</span> <span class="mh">0x4980</span><span class="p">,</span> <span class="mh">0x8941</span><span class="p">,</span> <span class="mh">0x4B00</span><span class="p">,</span> <span class="mh">0x8BC1</span><span class="p">,</span> <span class="mh">0x8A81</span><span class="p">,</span> <span class="mh">0x4A40</span><span class="p">,</span>
+                  <span class="mh">0x4E00</span><span class="p">,</span> <span class="mh">0x8EC1</span><span class="p">,</span> <span class="mh">0x8F81</span><span class="p">,</span> <span class="mh">0x4F40</span><span class="p">,</span> <span class="mh">0x8D01</span><span class="p">,</span> <span class="mh">0x4DC0</span><span class="p">,</span> <span class="mh">0x4C80</span><span class="p">,</span> <span class="mh">0x8C41</span><span class="p">,</span>
+                  <span class="mh">0x4400</span><span class="p">,</span> <span class="mh">0x84C1</span><span class="p">,</span> <span class="mh">0x8581</span><span class="p">,</span> <span class="mh">0x4540</span><span class="p">,</span> <span class="mh">0x8701</span><span class="p">,</span> <span class="mh">0x47C0</span><span class="p">,</span> <span class="mh">0x4680</span><span class="p">,</span> <span class="mh">0x8641</span><span class="p">,</span>
+                  <span class="mh">0x8201</span><span class="p">,</span> <span class="mh">0x42C0</span><span class="p">,</span> <span class="mh">0x4380</span><span class="p">,</span> <span class="mh">0x8341</span><span class="p">,</span> <span class="mh">0x4100</span><span class="p">,</span> <span class="mh">0x81C1</span><span class="p">,</span> <span class="mh">0x8081</span><span class="p">,</span> <span class="mh">0x4040</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_calculate_by_table</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytearray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        [内部]查表法计算</span>
+
+<span class="sd">        [Internal] Table lookup calculation</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data: 需要计算校验码的数据帧（地址+PDU） | Data frame for checksum calculation (address+PDU)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            2字节的CRC校验码 (little-endian bytes)</span>
+
+<span class="sd">            2-byte CRC checksum (little-endian bytes)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">crc</span> <span class="o">=</span> <span class="mh">0xFFFF</span>
+        <span class="n">table</span> <span class="o">=</span> <span class="n">CRC16Modbus</span><span class="o">.</span><span class="n">_CRC_TABLE</span>
+        <span class="k">for</span> <span class="n">byte</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="p">(</span><span class="n">crc</span> <span class="o">^</span> <span class="n">byte</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mh">0xFF</span>
+            <span class="n">crc</span> <span class="o">=</span> <span class="p">(</span><span class="n">crc</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">)</span> <span class="o">^</span> <span class="n">table</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">crc</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">byteorder</span><span class="o">=</span><span class="s2">&quot;little&quot;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_calculate_direct</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytearray</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        [内部]直接计算法</span>
+
+<span class="sd">        [Internal]Direct calculation</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data: 需要计算校验码的数据帧（地址+PDU） | Data frame for checksum calculation (address+PDU)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            2字节的CRC校验码 (little-endian bytes)</span>
+
+<span class="sd">            2-byte CRC checksum (little-endian bytes)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">crc</span> <span class="o">=</span> <span class="mh">0xFFFF</span>
+        <span class="k">for</span> <span class="n">byte</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="n">crc</span> <span class="o">^=</span> <span class="n">byte</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">crc</span> <span class="o">&amp;</span> <span class="mh">0x0001</span><span class="p">:</span>
+                    <span class="n">crc</span> <span class="o">&gt;&gt;=</span> <span class="mi">1</span>
+                    <span class="n">crc</span> <span class="o">^=</span> <span class="mh">0xA001</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">crc</span> <span class="o">&gt;&gt;=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">crc</span><span class="o">.</span><span class="n">to_bytes</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">byteorder</span><span class="o">=</span><span class="s2">&quot;little&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CRC16Modbus.calculate">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.utils.crc.CRC16Modbus.calculate">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytearray</span><span class="p">],</span> <span class="n">use_table</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        计算CRC16校验码</span>
+
+<span class="sd">        Calculate CRC16 Checksum</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data: 需要计算校验码的数据帧（地址+PDU） | Data frame for checksum calculation (address+PDU)</span>
+<span class="sd">            use_table: 是否使用查表法 | Whether to use the table lookup method</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            2字节的CRC校验码 (little-endian bytes)</span>
+
+<span class="sd">            2-byte CRC checksum (little-endian bytes)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">use_table</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">CRC16Modbus</span><span class="o">.</span><span class="n">_calculate_by_table</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">CRC16Modbus</span><span class="o">.</span><span class="n">_calculate_direct</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CRC16Modbus.validate">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.utils.crc.CRC16Modbus.validate">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="n">frame_with_crc</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytearray</span><span class="p">],</span> <span class="n">use_table</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        验证包含CRC的完整数据帧</span>
+
+<span class="sd">        Validate Complete Data Frame with CRC</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            frame_with_crc: 包含CRC校验码的完整数据帧 | Complete data frame containing CRC checksum</span>
+<span class="sd">            use_table: 是否使用查表法 | Whether to use the table lookup method</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            如果CRC校验正确返回True，否则返回False</span>
+
+<span class="sd">            True if CRC verification is correct, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">frame_with_crc</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>  <span class="c1"># 至少需要1字节数据 + 2字节CRC | At least 1 byte data + 2 bytes CRC required</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># 分离数据和CRC | Separate data and CRC</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">frame_with_crc</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">received_crc</span> <span class="o">=</span> <span class="n">frame_with_crc</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span>
+
+        <span class="c1"># 计算期望的CRC | Calculate expected CRC</span>
+        <span class="n">expected_crc</span> <span class="o">=</span> <span class="n">CRC16Modbus</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">use_table</span><span class="p">)</span>
+
+        <span class="c1"># 比较CRC | Compare CRC</span>
+        <span class="k">return</span> <span class="n">received_crc</span> <span class="o">==</span> <span class="n">expected_crc</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Miraitowa-la.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

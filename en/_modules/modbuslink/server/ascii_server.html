@@ -1,0 +1,354 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>modbuslink.server.ascii_server &mdash; ModbusLink 1.5.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=e0a75244"></script>
+      <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            ModbusLink
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architecture.html">Architecture Design</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../user_guide.html">User Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples &amp; Practices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../best_practices.html">Best Practices Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../troubleshooting.html">Troubleshooting Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api_reference.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ModbusLink</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">modbuslink.server.ascii_server</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for modbuslink.server.ascii_server</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">ModbusLink 异步ASCII服务器实现</span>
+
+<span class="sd">ModbusLink Async ASCII Server Implementation</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">struct</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">binascii</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.serial_server</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncSerialModbusServer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.data_store</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModbusDataStore</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..utils.lrc</span><span class="w"> </span><span class="kn">import</span> <span class="n">LRCModbus</span>
+
+
+<div class="viewcode-block" id="AsyncAsciiModbusServer">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.server.ascii_server.AsyncAsciiModbusServer">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AsyncAsciiModbusServer</span><span class="p">(</span><span class="n">AsyncSerialModbusServer</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    异步ASCII Modbus服务器</span>
+
+<span class="sd">    实现基于串口的异步Modbus ASCII服务器。</span>
+<span class="sd">    使用LRC校验和ASCII编码。</span>
+
+<span class="sd">    Async ASCII Modbus Server</span>
+
+<span class="sd">    Implements serial port-based async Modbus ASCII server.</span>
+<span class="sd">    Uses LRC checksum and ASCII encoding.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AsyncAsciiModbusServer.__init__">
+<a class="viewcode-back" href="../../../api_reference.html#modbuslink.server.ascii_server.AsyncAsciiModbusServer.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">port</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">baudrate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">9600</span><span class="p">,</span>
+            <span class="n">bytesize</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span>
+            <span class="n">parity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;E&#39;</span><span class="p">,</span>
+            <span class="n">stopbits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">data_store</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ModbusDataStore</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">slave_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        初始化异步ASCII Modbus服务器 | Initialize Async ASCII Modbus Server</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            port: 串口名称 | Serial port name</span>
+<span class="sd">            baudrate: 波特率 | Baud rate</span>
+<span class="sd">            bytesize: 数据位 | Data bits</span>
+<span class="sd">            parity: 校验位 (&#39;N&#39;, &#39;E&#39;, &#39;O&#39;) | Parity (&#39;N&#39;, &#39;E&#39;, &#39;O&#39;)</span>
+<span class="sd">            stopbits: 停止位 | Stop bits</span>
+<span class="sd">            data_store: 数据存储实例 | Data store instance</span>
+<span class="sd">            slave_id: 从站地址 | Slave address</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span>
+            <span class="n">baudrate</span><span class="o">=</span><span class="n">baudrate</span><span class="p">,</span>
+            <span class="n">bytesize</span><span class="o">=</span><span class="n">bytesize</span><span class="p">,</span>
+            <span class="n">parity</span><span class="o">=</span><span class="n">parity</span><span class="p">,</span>
+            <span class="n">stopbits</span><span class="o">=</span><span class="n">stopbits</span><span class="p">,</span>
+            <span class="n">data_store</span><span class="o">=</span><span class="n">data_store</span><span class="p">,</span>
+            <span class="n">slave_id</span><span class="o">=</span><span class="n">slave_id</span><span class="p">,</span>
+            <span class="n">log_name</span><span class="o">=</span><span class="s2">&quot;server.ascii&quot;</span><span class="p">,</span>
+            <span class="n">protocol_name</span><span class="o">=</span><span class="s2">&quot;ASCII&quot;</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;ASCII服务器初始化: </span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">baudrate</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;ASCII server initialized: </span><span class="si">{</span><span class="n">port</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="n">baudrate</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_server_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        服务器主循环</span>
+
+<span class="sd">        Server Main Loop</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;ASCII服务器主循环启动&quot;</span><span class="p">,</span>
+            <span class="n">en</span><span class="o">=</span><span class="s2">&quot;ASCII server main loop started&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_running</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reader</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># Modbus ASCII 使用 CRLF (\r\n) 作为结束符</span>
+                    <span class="c1"># Modbus ASCII uses CRLF (\r\n) as terminator</span>
+                    <span class="n">line</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reader</span><span class="o">.</span><span class="n">readuntil</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+                    <span class="c1"># 移除首尾空白字符 (CRLF)</span>
+                    <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
+                        <span class="c1"># 如果读取到空字节，可能是端口关闭或暂时无数据</span>
+                        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
+                        <span class="k">continue</span>
+
+                    <span class="c1"># ASCII帧必须以 &#39;:&#39; 开头</span>
+                    <span class="c1"># ASCII frame must start with &#39;:&#39;</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;:&#39;</span><span class="p">):</span>
+                        <span class="c1"># 尝试寻找中间的 &#39;:&#39; (处理垃圾数据)</span>
+                        <span class="n">idx</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">idx</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="n">idx</span><span class="p">:]</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">continue</span>  <span class="c1"># 无效帧，丢弃</span>
+
+                    <span class="c1"># 处理这一行数据</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_frame</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+                <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">IncompleteReadError</span><span class="p">:</span>
+                    <span class="c1"># 流被关闭或部分读取</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_running</span><span class="p">:</span>
+                        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">LimitOverrunError</span><span class="p">:</span>
+                    <span class="c1"># 缓冲区溢出（非常长地行），可能是噪声</span>
+                    <span class="c1"># 读取所有数据清空缓冲区</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reader</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                        <span class="k">pass</span>
+                <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">:</span>
+                    <span class="k">raise</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;服务器循环异常: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Server loop exception: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+                    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>  <span class="c1"># 短暂延迟后继续 | Brief delay before continuing</span>
+
+        <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;ASCII服务器主循环被取消&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;ASCII server main loop cancelled&quot;</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;ASCII服务器主循环异常: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;ASCII server main loop exception: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;ASCII服务器主循环结束d&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="s2">&quot;ASCII server main loop ended&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_process_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ascii_frame</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        处理接收到的ASCII帧</span>
+
+<span class="sd">        Process Received RTU Frame</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ascii_frame: 接收到的ASCII帧 | Received RTU frame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># 移除起始符 &#39;:&#39; | Remove start delimiter &#39;:&#39;</span>
+            <span class="n">hex_payload</span> <span class="o">=</span> <span class="n">ascii_frame</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+            <span class="c1"># 长度检查：长度必须是偶数（每字节两字符）</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hex_payload</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;ASCII帧长度无效(非偶数)&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="s2">&quot;Invalid ASCII frame length (odd)&quot;</span>
+                <span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="c1"># 将Hex字符串转换为二进制数据 | Convert Hex string to binary data</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">binary_frame</span> <span class="o">=</span> <span class="n">binascii</span><span class="o">.</span><span class="n">unhexlify</span><span class="p">(</span><span class="n">hex_payload</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">binascii</span><span class="o">.</span><span class="n">Error</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="s2">&quot;ASCII帧包含非十六进制字符&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="s2">&quot;ASCII frame contains non-hex characters&quot;</span>
+                <span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">binary_frame</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>  <span class="c1"># 至少包含地址和LRC</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;ASCII帧长度不足: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">binary_frame</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;ASCII frame length insufficient: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">binary_frame</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="c1"># 提取地址、PDU和LRC | Extract address, PDU and LRC</span>
+            <span class="n">slave_id</span> <span class="o">=</span> <span class="n">binary_frame</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">pdu</span> <span class="o">=</span> <span class="n">binary_frame</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">received_lrc</span> <span class="o">=</span> <span class="n">binary_frame</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:]</span>
+
+            <span class="c1"># 验证LRC | Validate LRC</span>
+            <span class="n">calculated_lrc</span> <span class="o">=</span> <span class="n">LRCModbus</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">binary_frame</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="n">received_lrc</span> <span class="o">!=</span> <span class="n">calculated_lrc</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;LRC校验失败: 接收 0x</span><span class="si">{</span><span class="n">received_lrc</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">, 计算 0x</span><span class="si">{</span><span class="n">calculated_lrc</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;LRC verification failed: Received 0x</span><span class="si">{</span><span class="n">received_lrc</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">, Calculated 0x</span><span class="si">{</span><span class="n">calculated_lrc</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;接收到ASCII帧: 从站 </span><span class="si">{</span><span class="n">slave_id</span><span class="si">}</span><span class="s2">, PDU长度: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">pdu</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Received ASCII frame: Slave </span><span class="si">{</span><span class="n">slave_id</span><span class="si">}</span><span class="s2">, PDU Length: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">pdu</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+            <span class="c1"># 处理请求 | Process request</span>
+            <span class="n">response_pdu</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_request</span><span class="p">(</span><span class="n">slave_id</span><span class="p">,</span> <span class="n">pdu</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">response_pdu</span><span class="p">:</span>  <span class="c1"># 只有非广播请求才响应 | Only respond to non-broadcast requests</span>
+                <span class="c1"># 构建响应帧 | Build response frame</span>
+                <span class="n">response_frame</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s2">&quot;B&quot;</span><span class="p">,</span> <span class="n">slave_id</span><span class="p">)</span> <span class="o">+</span> <span class="n">response_pdu</span>
+
+                <span class="c1"># 添加LRC | Add LRC</span>
+                <span class="n">response_frame</span> <span class="o">+=</span> <span class="n">LRCModbus</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">response_frame</span><span class="p">)</span>
+
+                <span class="c1"># 编码为ASCII Hex | Encoded as ASCII Hex</span>
+                <span class="n">response_ascii</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="n">binascii</span><span class="o">.</span><span class="n">hexlify</span><span class="p">(</span><span class="n">response_frame</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">+</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span>
+
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">response_ascii</span><span class="p">)</span>
+                    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_writer</span><span class="o">.</span><span class="n">drain</span><span class="p">()</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                        <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;发送ASCII响应: 从站 </span><span class="si">{</span><span class="n">slave_id</span><span class="si">}</span><span class="s2">, 帧长度 </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">response_ascii</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Sent ASCII response: Slave </span><span class="si">{</span><span class="n">slave_id</span><span class="si">}</span><span class="s2">, Frame Length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">response_ascii</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="n">cn</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;处理ASCII帧时出错: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">en</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Error processing ASCII frame: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Miraitowa-la.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
