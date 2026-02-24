@@ -28,7 +28,8 @@ class SyncTcpTransport(SyncBaseTransport):
             self,
             host: str = "127.0.0.1",
             port: int = 502,
-            timeout: float = 1.0
+            timeout: float = 1.0,
+            connection_timeout: Optional[float] = None
     ) -> None:
         """
         初始化同步TCP传输层
@@ -37,7 +38,8 @@ class SyncTcpTransport(SyncBaseTransport):
         Args:
             host: 目标主机IP地址或域名（默认"127.0.0.1"） | Target host IP address or domain name (default "127.0.0.1")
             port: 目标端口（默认502） | Target port (default 502)
-            timeout: 超时时间（默认1.0秒） | Timeout time (default 1.0 second)
+            timeout: 操作超时时间（默认1.0秒） | Operation timeout (default 1.0 second)
+            connection_timeout: 连接超时时间（默认等于"timeout"） | Connection timeout (defaults to "timeout")
 
         Raises:
             ValueError: 当参数无效时 | When parameters are invalid
@@ -60,9 +62,16 @@ class SyncTcpTransport(SyncBaseTransport):
                 en="Timeout time must be a positive number"
             ))
 
+        if connection_timeout is not None and (not isinstance(connection_timeout, (int, float)) or connection_timeout < 0.0):
+            raise ValueError(get_message(
+                cn="连接超时时间必须是正数",
+                en="Connection timeout time must be a positive number"
+            ))
+
         self.host = host
         self.port = port
         self.timeout = timeout
+        self.connection_timeout = connection_timeout if connection_timeout is not None else timeout
 
         self._socket: Optional[socket.socket] = None
         self._transaction_id = 0
@@ -78,7 +87,7 @@ class SyncTcpTransport(SyncBaseTransport):
         try:
             self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self._socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)  # 禁用Nagle算法 | Disable Nagle algorithm
-            self._socket.settimeout(self.timeout)
+            self._socket.settimeout(self.connection_timeout)
             self._socket.connect((self.host, self.port))
 
             if not self.is_open:
@@ -397,7 +406,7 @@ class SyncTcpTransport(SyncBaseTransport):
 
             Object's string representation
         """
-        return f"<SyncTcpTransport host={self.host} port={self.port} timeout={self.timeout}>"
+        return f"<SyncTcpTransport host={self.host} port={self.port} timeout={self.timeout} connection_timeout={self.connection_timeout}>"
 
 
 class AsyncTcpTransport(AsyncBaseTransport):
@@ -411,7 +420,8 @@ class AsyncTcpTransport(AsyncBaseTransport):
             self,
             host: str = "127.0.0.1",
             port: int = 502,
-            timeout: float = 1.0
+            timeout: float = 1.0,
+            connection_timeout: Optional[float] = None
     ) -> None:
         """
         初始化异步TCP传输层
@@ -420,7 +430,8 @@ class AsyncTcpTransport(AsyncBaseTransport):
         Args:
             host: 目标主机IP地址或域名（默认"127.0.0.1"） | Target host IP address or domain name (default "127.0.0.1")
             port: 目标端口（默认502） | Target port (default 502)
-            timeout: 超时时间（默认1.0秒） | Timeout time (default 1.0 second)
+            timeout: 操作超时时间（默认1.0秒） | Operation timeout (default 1.0 second)
+            connection_timeout: 连接超时时间（默认等于"timeout"） | Connection timeout (defaults to "timeout")
 
         Raises:
             ValueError: 当参数无效时 | When parameters are invalid
@@ -443,9 +454,16 @@ class AsyncTcpTransport(AsyncBaseTransport):
                 en="Timeout time must be a positive number"
             ))
 
+        if connection_timeout is not None and (not isinstance(connection_timeout, (int, float)) or connection_timeout < 0.0):
+            raise ValueError(get_message(
+                cn="连接超时时间必须是正数",
+                en="Connection timeout time must be a positive number"
+            ))
+
         self.host = host
         self.port = port
         self.timeout = timeout
+        self.connection_timeout = connection_timeout if connection_timeout is not None else timeout
 
         self._reader: Optional[asyncio.StreamReader] = None
         self._writer: Optional[asyncio.StreamWriter] = None
@@ -462,7 +480,7 @@ class AsyncTcpTransport(AsyncBaseTransport):
         try:
             self._reader, self._writer = await asyncio.wait_for(
                 asyncio.open_connection(self.host, self.port),
-                timeout=self.timeout
+                timeout=self.connection_timeout
             )
 
             # 禁用Nagle算法 | Disable Nagle algorithm
@@ -796,4 +814,4 @@ class AsyncTcpTransport(AsyncBaseTransport):
 
             Object's string representation
         """
-        return f"<AsyncTcpTransport host={self.host} port={self.port} timeout={self.timeout}>"
+        return f"<AsyncTcpTransport host={self.host} port={self.port} timeout={self.timeout} connection_timeout={self.connection_timeout}>"

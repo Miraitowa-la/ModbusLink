@@ -50,6 +50,7 @@ Whether building a high-performance **TCP Server** or developing an **RTU Client
     - [`1.4.2`](notes/1.4.2.md) TCP transport flush() method - Resolves transaction ID mismatch after timeout
 - `1.5.x` (updated according to the SemVer specification)
   - [`1.5.0`](notes/1.5.0.md) Added the flush() method for RTU/ASCII transport layers
+  - [`1.5.1`](notes/1.5.1.md) Added connection_timeout parameter for TCP transport layers
 ---
 
 ## 🚀 Quick Start
@@ -89,6 +90,20 @@ The core design philosophy of ModbusLink is **"Decoupling"**. Client logic (`Cli
 ### 1. TCP Client
 
 Suitable for connecting to PLCs or meters via Ethernet (Modbus TCP).
+
+**Note**: Since v1.5.1, TCP transport layers support an optional `connection_timeout` parameter to control connection establishment timeout separately from data operation timeout. This is useful for environments where you want fast connection failure but longer data operation timeouts.
+
+```python
+# Example: Fast connection, slow data operations
+from modbuslink.transport import SyncTcpTransport
+
+transport = SyncTcpTransport(
+    host='192.168.1.10',
+    port=502,
+    timeout=10.0,              # Data operation timeout (send/receive)
+    connection_timeout=3.0      # Connection establishment timeout
+)
+```
 
 #### TCP Synchronous Client (Sync)
 
