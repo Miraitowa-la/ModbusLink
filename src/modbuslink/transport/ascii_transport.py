@@ -104,7 +104,7 @@ class SyncAsciiTransport(SyncBaseTransport):
                 timeout=self.timeout
             )
 
-            if not self.is_open:
+            if not self.is_open():
                 raise ConnectError(
                     cn=f"无法建立ASCII连接 ({self.port}@{self.baudrate})",
                     en=f"Unable to established ASCII connection ({self.port}:{self.baudrate})"
@@ -135,7 +135,7 @@ class SyncAsciiTransport(SyncBaseTransport):
 
         Close Sync ASCII Transport Layer
         """
-        if self._serial and self.is_open:
+        if self._serial and self.is_open():
             try:
                 self._serial.close()
                 self._logger.info(
@@ -459,7 +459,7 @@ class AsyncAsciiTransport(AsyncBaseTransport):
                 stopbits=self.stopbits,
             )
 
-            if not self.is_open:
+            if not self.is_open():
                 raise ConnectError(
                     cn=f"无法建立ASCII连接 ({self.port}@{self.baudrate})",
                     en=f"Unable to established ASCII connection ({self.port}:{self.baudrate})"

@@ -51,6 +51,7 @@ Whether building a high-performance **TCP Server** or developing an **RTU Client
 - `1.5.x` (updated according to the SemVer specification)
   - [`1.5.0`](notes/1.5.0.md) Added the flush() method for RTU/ASCII transport layers
   - [`1.5.1`](notes/1.5.1.md) Added connection_timeout parameter for TCP transport layers
+  - [`1.5.2`](notes/1.5.2.md) Fixed transport connection state checks and removed generated egg-info files from Git
 ---
 
 ## 🚀 Quick Start

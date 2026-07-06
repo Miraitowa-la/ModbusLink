@@ -104,7 +104,7 @@ class SyncRtuTransport(SyncBaseTransport):
                 timeout=self.timeout
             )
 
-            if not self.is_open:
+            if not self.is_open():
                 raise ConnectError(
                     cn=f"无法建立RTU连接 ({self.port}@{self.baudrate})",
                     en=f"Unable to established RTU connection ({self.port}:{self.baudrate})"
@@ -135,7 +135,7 @@ class SyncRtuTransport(SyncBaseTransport):
 
         Close Sync RTU Transport Layer
         """
-        if self._serial and self.is_open:
+        if self._serial and self.is_open():
             try:
                 self._serial.close()
                 self._logger.info(
@@ -460,7 +460,7 @@ class AsyncRtuTransport(AsyncBaseTransport):
                 stopbits=self.stopbits,
             )
 
-            if not self.is_open:
+            if not self.is_open():
                 raise ConnectError(
                     cn=f"无法建立RTU连接 ({self.port}@{self.baudrate})",
                     en=f"Unable to established RTU connection ({self.port}:{self.baudrate})"

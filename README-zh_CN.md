@@ -52,6 +52,7 @@ Python 特性（Type Hints, Asyncio）。
 - `1.5.x` (根据 SemVer 规范进行了更新)
     - [`1.5.0`](notes/1.5.0.md) 增加 RTU/ASCII 传输层 flush() 方法
     - [`1.5.1`](notes/1.5.1.md) TCP 传输层增加 connection_timeout 参数
+    - [`1.5.2`](notes/1.5.2.md) 修复传输层连接状态检查，并将生成的 egg-info 文件移出 Git
 ---
 
 ## 🚀 快速开始

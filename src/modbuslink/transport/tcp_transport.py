@@ -90,7 +90,7 @@ class SyncTcpTransport(SyncBaseTransport):
             self._socket.settimeout(self.connection_timeout)
             self._socket.connect((self.host, self.port))
 
-            if not self.is_open:
+            if not self.is_open():
                 raise ConnectError(
                     cn=f"无法建立TCP连接 ({self.host}:{self.port})",
                     en=f"Unable to established TCP connection ({self.host}:{self.port})"
@@ -488,7 +488,7 @@ class AsyncTcpTransport(AsyncBaseTransport):
             if sock is not None:
                 sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
-            if not self.is_open:
+            if not self.is_open():
                 raise ConnectError(
                     cn=f"无法建立TCP连接 ({self.host}:{self.port})",
                     en=f"Unable to established TCP connection ({self.host}:{self.port})"
